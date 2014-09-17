@@ -10,7 +10,10 @@ public interface ManageCommands {
 	void addTask();
 
 	// Returns the list of tasks
-	void showAllTasks();
+	void displayAllTasks();
+	
+	// Returns the details of a particular task
+	void displayTask();
 
 	// Updates the task
 	void updateTask();

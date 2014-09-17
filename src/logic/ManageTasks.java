@@ -1,5 +1,7 @@
 package logic;
 
+import models.Task;
+
 /**
  * 
  * @author pn interface for the shared 
@@ -7,16 +9,31 @@ package logic;
  *         use.
  */
 public interface ManageTasks {
-	// Adds a task to the list of tasks
-	void createTask();
+	/**
+	 * Creates a new task
+	 * @return the task
+	 * to add params
+	 */
+	Task createTask();
 
-	// Return a single task
-	void returnTask();
+	/**
+	 * returns the task with the id
+	 * @param id: id of the task to be returned
+	 * @return the corresponding task object with that ID
+	 */
+	Task returnTask(int id);
 
-	// Updates the task
-	void updateTask();
+	/**
+	 * updates the task with the id
+	 * @param id: id of the task to be updated
+	 * @return the updated task object with that ID
+	 */
+	Task updateTask(int id);
 
-	// Deletes the Task()
-	void deleteTask();
+	/**
+	 * Deletes the task with the id 
+	 * @param id: id of the task to be deleted
+	 */
+	void deleteTask(int id);
 
 }
