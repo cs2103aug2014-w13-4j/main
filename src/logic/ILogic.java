@@ -1,6 +1,6 @@
 package logic;
 
-public interface LogicInterface {
+public interface ILogic {
 	public Feedback executeCommand(Command command);
 
 }
