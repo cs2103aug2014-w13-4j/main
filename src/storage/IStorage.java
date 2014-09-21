@@ -1,7 +1,7 @@
 package storage;
 
 import models.Task;
-import models.CommandBuffer;
+import models.Command;
 
 /**
  *
