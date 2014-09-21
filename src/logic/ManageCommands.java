@@ -11,7 +11,7 @@ public interface ManageCommands {
 
 	// Returns the list of tasks
 	void displayAllTasks();
-	
+
 	// Returns the details of a particular task
 	void displayTask();
 
@@ -32,7 +32,7 @@ public interface ManageCommands {
 
 	// Adds a conditional task
 	void addConditionalTask();
-	
+
 	// Confirms a conditional task
 	void confirmConditionalTask();
 
