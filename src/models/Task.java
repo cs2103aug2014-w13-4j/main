@@ -1,13 +1,14 @@
 package models;
 
-import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class Task {
+	private int id = null;
 	private String name;
-	private Date dateDue;
-	private Date dateStart;
-	private Date dateEnd;
+	private Calendar dateDue;
+	private Calendar dateStart;
+	private Calendar dateEnd;
 	private int priorityLevel;
 	private String note;
 	private ArrayList<String> tags;
@@ -17,7 +18,7 @@ public class Task {
 	private boolean isDeleted = false;
 	private boolean isConfirmed = false;
 	
-	public Task(String name, Date dateStart, Date dateDue, int priorityLevel) {
+	public Task(String name, Calendar dateStart, Calendar dateDue, int priorityLevel) {
 		this.name = name;
 		this.setDateStart(dateStart);
 		this.dateDue = dateDue;
@@ -28,11 +29,11 @@ public class Task {
 		this.name = name;
 	}
 	
-	public void setDateDue(Date dateDue) {
+	public void setDateDue(Calendar dateDue) {
 		this.dateDue = dateDue;
 	}
 	
-	public void setDateStart(Date dateStart) {
+	public void setDateStart(Calendar dateStart) {
 		this.dateStart = dateStart;
 	}
 
@@ -40,7 +41,7 @@ public class Task {
 		this.priorityLevel = priorityLevel;
 	}
 
-	public void setDateEnd(Date dateEnd) {
+	public void setDateEnd(Calendar dateEnd) {
 		this.dateEnd = dateEnd;
 	}
 
@@ -76,15 +77,15 @@ public class Task {
 		return name;
 	}
 	
-	public Date getDateDue() {
+	public Calendar getDateDue() {
 		return dateDue;
 	}
 
-	public Date getDateStart() {
+	public Calendar getDateStart() {
 		return dateStart;
 	}
 
-	public Date getDateEnd() {
+	public Calendar getDateEnd() {
 		return dateEnd;
 	}
 
@@ -118,5 +119,13 @@ public class Task {
 
 	public boolean isConfirmed() {
 		return isConfirmed;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 }
