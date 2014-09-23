@@ -6,11 +6,16 @@ import java.util.Hashtable;
 public class Command implements ICommand {
 	
 	private CommandEnum commandType;
+	private String commandArgument;
 	private Hashtable<ParamEnum, ArrayList<String>> params;
 	
 	public Command(CommandEnum commandType) {
 		this.commandType = commandType;
 		this.params = new Hashtable<ParamEnum, ArrayList<String>>();
+	}
+	
+	public void addCommandArgument(String arg) {
+		commandArgument = arg;
 	}
 	
 	public void addParam(ParamEnum param, String args) {
@@ -29,6 +34,10 @@ public class Command implements ICommand {
 	
 	public CommandEnum getCommand() {
 		return commandType;
+	}
+	
+	public String getCommandArgument() {
+		return commandArgument;
 	}
 	
 	/**
