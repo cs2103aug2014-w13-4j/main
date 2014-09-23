@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 public class Task {
-	private int id = null;
+	private int id;
 	private String name;
 	private Calendar dateDue;
 	private Calendar dateStart;
