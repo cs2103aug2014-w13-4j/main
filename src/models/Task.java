@@ -18,11 +18,7 @@ public class Task {
 	private boolean isDeleted = false;
 	private boolean isConfirmed = false;
 	
-	public Task(String name, Calendar dateStart, Calendar dateDue, int priorityLevel) {
-		this.name = name;
-		this.setDateStart(dateStart);
-		this.dateDue = dateDue;
-		this.setPriorityLevel(priorityLevel);
+	public Task() {
 	}
 	
 	public void setName(String name) {
