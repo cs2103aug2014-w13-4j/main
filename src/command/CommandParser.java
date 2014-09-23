@@ -9,7 +9,7 @@ public class CommandParser implements ICommandParser {
 	
 	private static final String FIRST_WORD_PATTERN = "^([\\w]+)";
 	private static final String INDIVIDUAL_PARAM_PATTERN = "%1$s|";
-	private static final String	COMPLETE_PATTERN = "(%1$s|%2$s)(.*?)(?=%2$s$)";
+	private static final String COMPLETE_PATTERN = "(%1$s|%2$s)(.*?)(?=%2$s$)";
 	
 	private static final Integer ENUM_TYPE = 1;
 	private static final Integer ENUM_ARGUMENT = 2;
