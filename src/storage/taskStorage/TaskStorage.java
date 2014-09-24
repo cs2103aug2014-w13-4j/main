@@ -24,6 +24,14 @@ public class TaskStorage {
     private static final String MESSAGE_IS_DELETED = "Is deleted :";
     private static final String MESSAGE_IS_COMFIRMED = "Is comfirmed: ";
 
+    private static final int  ID_ATTRIBUTE = 1;
+    private static final int  NAME_ATTRIBUTE = 3;
+    private static final int  DATE_DUE_ATTRIBUTE = 5;
+    private static final int  DATE_START_ATTRIBUTE = 7;
+    private static final int  DATE_END_ATTRIBUTE = 9;
+    private static final int  PRIORITY_LEVEL_ATTRIBUTE = 11;
+    private static final int  NOTE_ATTRIBUTE = 13;
+
 
      /**
      * constructor``
@@ -69,7 +77,11 @@ public class TaskStorage {
     }
 
     private Task stringToTask(String taskString) {
-        
+        String[] taskStringArray = taskString.split(SEPARATOR);
+        int taskID = Integer.valueOf(taskStringArray[ID_ATTRIBUTE]);
+        String taskName = taskStringArray([NAME_ATTRIBUTE]);
+
+
     }
 
     // Add/Update a task to file
