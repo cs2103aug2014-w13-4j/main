@@ -10,12 +10,9 @@ import models.exceptions.TaskNotFoundException;
  * It also supports power search.
  */
 public interface Storage implements IStorage {
-    private ArrayList<Task> taskBuffer;
     private ArrayList<String> tagBuffer;
-    private int nextTaskIndex;
     private TaskStorage taskFile;
-    private TagStorage tagFile;
-    private static Storage instance = null;
+    private TagStorage tagFile;    
 
     /**
      * constructor
@@ -23,7 +20,7 @@ public interface Storage implements IStorage {
      * It can only be called with in the current class (Storage.getInstance())
      * This is to ensure that only there is exactly one instance of Storage class
      */
-    private Storage(){
+    public Storage() throws IOException{
         taskFile = new TaskStorage("taskStorage.data");
         tagFile = new TagStorage("TagStorage.data");
         taskBuffer = taskFile.getAllTasks();
@@ -31,30 +28,47 @@ public interface Storage implements IStorage {
         nextTaskIndex = taskFile.getNestTaskIndex();
     }
 
-    public static Storage getInstance() throws IOException{
-        if (instance == null) {
-            instance = new Storage();
-        }
-        return instance;
+    // Add/Update a task to file
+    public void writeTaskToFile(Task task) throws TaskNotFoundException, IOException {
+        taskFile.writeTaskToFile(task);
+        tagFile.updateTagToFile(task.tags);
     }
 
-    // Add/Update a task to file
-    void writeTaskToFile(Task task);
+    // Delete a task from file
+    public void deleteTaskFromFile(int taskID) throws TaskNotFoundException, IOException {
+        taskFile.deleteTaskFromFile(taskID); 
+    }
 
-    // delete a task to file
-    void deleteTaskFromFile(int taskID) throws TaskNotFoundException;
+    private void updateTags(Task task) {
+        for (String tag: task.tags) {
+            if (tagBuffer.contains(tag)) {
+                continue;
+            } else {
+                tagFile.addToFile(tag);
+                tagBuffer.add(tag);
+            }
+        }        
+    }
 
     // Get a task by task ID
-    Task getTasks(int taskID) throws TaskNotFoundException;
+    Task getTask(int taskID) throws TaskNotFoundException {
+        taskFile.getTask(taskID);
+    }
 
     // Get a list of all the Tasks
-    ArrayList<Task> getAllTasks();
+    ArrayList<Task> getAllTasks() {
+        taskFile.getAllTasks();
+    }
 
     // Get a list of tasks that are done
-    ArrayList<Task> getDoneTasks();
+    ArrayList<Task> getCompletedTasks() {
+        taskFile.getCompletedTasks();
+    }
 
     // Get a list of tasks that are not completed
-    ArrayList<Task> getActiveTasks();
+    ArrayList<Task> getActiveTasks() {
+        tagFile.getActiveTasks();
+    }
 
     // Get a list of tags 
     ArrayList<String> getTags();
