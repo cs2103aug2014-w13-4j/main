@@ -24,14 +24,16 @@ public class TaskStorage {
     private static final String MESSAGE_IS_DELETED = "Is deleted :";
     private static final String MESSAGE_IS_COMFIRMED = "Is comfirmed: ";
 
-    private static final int  ID_ATTRIBUTE = 1;
-    private static final int  NAME_ATTRIBUTE = 3;
-    private static final int  DATE_DUE_ATTRIBUTE = 5;
-    private static final int  DATE_START_ATTRIBUTE = 7;
-    private static final int  DATE_END_ATTRIBUTE = 9;
-    private static final int  PRIORITY_LEVEL_ATTRIBUTE = 11;
-    private static final int  NOTE_ATTRIBUTE = 13;
-
+    private static final int ID_ATTRIBUTE = 1;
+    private static final int NAME_ATTRIBUTE = 3;
+    private static final int DATE_DUE_ATTRIBUTE = 5;
+    private static final int DATE_START_ATTRIBUTE = 7;
+    private static final int DATE_END_ATTRIBUTE = 9;
+    private static final int PRIORITY_LEVEL_ATTRIBUTE = 11;
+    private static final int NOTE_ATTRIBUTE = 13;
+    private static final int IS_DELETED_ATTRIBUTE = 15;
+    private static final int IS_COMFIRMED_ATTRIBUTE = 17;
+    private static final int TAGS_ATTRIBUTE = 19;
 
      /**
      * constructor``
@@ -54,10 +56,15 @@ public class TaskStorage {
     }
 
     private String TaskToString(Task task) {
-        String[] taskStringArray = new String[]{MESSAGE_ID, task.getID(), MESSAGE_NAME, task.getName(), MESSAGE_DATE_DUE, task.getDateDue(),
-            MESSAGE_DATE_START, task.getDateStart(), MESSAGE_DATE_END, task.getDateEnd(), MESSAGE_PRIORITY_LEVEL, task.getPriorityLevel(),
-            MESSAGE_NOTE, task.getNote(), MESSAGE_PARENT_TASKS};
+        String[] taskStringArray = new String[]{MESSAGE_ID, task.getID(), MESSAGE_NAME, task.getName(),
+            MESSAGE_DATE_DUE, task.getDateDue(), MESSAGE_DATE_START, task.getDateStart(), MESSAGE_DATE_END,
+            task.getDateEnd(), MESSAGE_PRIORITY_LEVEL, task.getPriorityLevel(), MESSAGE_NOTE, task.getNote(), 
+            MESSAGE_IS_DELETED, ask.isDeleted(), MESSAGE_IS_COMFIRMED, task.isComfirmed(), MESSAGE_TAGS};
         String taskString = taskStringArray.join(MESSAGE_SEPARATOR);
+        for (String tag : task.getTags()) {
+            taskString = taskString + MESSAGE_SEPARATOR + parentID;
+        }
+        taskString = taskString + MESSAGE_SEPARATOR + MESSAGE_PARENT_TASKS;
         for (int parentID : task.getParentTasks()) {
             taskString = taskString + MESSAGE_SEPARATOR + parentID;
         }
@@ -69,19 +76,68 @@ public class TaskStorage {
         for (int conditionalID : task.getConditionalTasks()) {
             taskString = taskString + MESSAGE_SEPARATOR + conditionalID;
         }
-        taskString = taskString + MESSAGE_SEPARATOR + MESSAGE_IS_DELETED;
-        taskString = taskString + MESSAGE_SEPARATOR + task.isDeleted();
-        taskString = taskString + MESSAGE_SEPARATOR + MESSAGE_IS_COMFIRMED;
-        taskString = taskString + MESSAGE_SEPARATOR + task.isComfirmed();
         return taskString;
     }
 
     private Task stringToTask(String taskString) {
-        String[] taskStringArray = taskString.split(SEPARATOR);
+        int arrayIndex;
+        String tagStored;
+        int taskStored;
+        Task task = new Task();
+        // ??need to confirm date format
+        DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+        Calendar calendar = Calendar.getInstance();
+
+        String[] taskStringArray = taskString.split(MESSAGE_SEPARATOR);
         int taskID = Integer.valueOf(taskStringArray[ID_ATTRIBUTE]);
-        String taskName = taskStringArray([NAME_ATTRIBUTE]);
+        String taskName = taskStringArray[NAME_ATTRIBUTE];        
+        Calendar taskDateDue = calendar.setTime(dateFormat.parse(taskStringArray[DATE_DUE_ATTRIBUTE]));
+        Calendar taskDateStart = calendar.setTime(dateFormat.parse(taskStringArray[DATE_START_ATTRIBUTE]));
+        Calendar taskDateEnd = calendar.setTime(dateFormat.parse(taskStringArray[DATE_END_ATTRIBUTE]));
+        int taskPriorityLevel = Integer.valueOf(taskStringArray[PRIORITY_LEVEL_ATTRIBUTE]);
+        String taskNote = taskStringArray[NOTE_ATTRIBUTE];
+        boolean taskIsDeleted = Boolean.valueOf(taskStringArray[IS_DELETED_ATTRIBUTE]);
+        boolean taskIsConfirmed = Boolean.valueOf(taskStringArray[IS_COMFIRMED_ATTRIBUTE]);
+        ArrayList<String> taskTags = new ArrayList<String>();
+        arrayIndex = TAGS_ATTRIBUTE;
+        while (!taskStringArray[arrayIndex].equals(MESSAGE_PARENT_TASKS)) {
+            tagStored = taskStringArray[arrayIndex];
+            taskTags.add(tagStored);
+            arrayIndex ++''
+        }
+        ArrayList<int> taskParentTasks = new ArrayList<int>();
+        arrayIndex ++;
+        while (!taskStringArray[arrayIndex].equals(MESSAGE_CHILD_TASKS)) {
+            taskStored = Integer.valueOf(taskStringArray[arrayIndex]);
+            taskParentTasks.add(taskStored);
+            arrayIndex ++;
+        }
+        ArrayList<int> taskChildTasks = new ArrayList<int>();
+        arrayIndex ++;
+        while (!taskStringArray[arrayIndex].equals(MESSAGE_CONDITIONAL_TASKS)) {
+            taskStored = Integer.valueOf(taskStringArray[arrayIndex]);
+            taskChildTasks.add(taskStored);
+            arrayIndex ++;
+        }
+        ArrayList<int> taskConditionalTasks = new ArrayList<int>();
+        arrayIndex ++;
+        while (arrayIndex <= (taskStringArray.length() - 1)) {
+            taskStored = Integer.valueOf(taskStringArray[arrayIndex]);
+            taskConditionalTasks.add(taskStored);
+            arrayIndex ++;
+        }
 
-
+        task.setID(taskID);
+        task.setName(taskName);
+        task.setDateDue(taskDateDue);
+        task.setDateStart(taskDateStart);
+        task.setDateEnd(taskDateEnd);
+        task.setPriorityLevel(taskPriorityLevel);
+        task.setNote(taskNote);
+        task.setTags(taskTags);
+        task.setParentTasks(taskParentTasks);
+        task.setChildTasks(taskChildTasks);
+        task.setConditionalTasks(taskConditionalTasks);
     }
 
     // Add/Update a task to file
