@@ -138,6 +138,7 @@ public class TaskStorage {
         task.setParentTasks(taskParentTasks);
         task.setChildTasks(taskChildTasks);
         task.setConditionalTasks(taskConditionalTasks);
+        return task;
     }
 
     // Add/Update a task to file

@@ -31,23 +31,12 @@ public interface Storage implements IStorage {
     // Add/Update a task to file
     public void writeTaskToFile(Task task) throws TaskNotFoundException, IOException {
         taskFile.writeTaskToFile(task);
-        tagFile.updateTagToFile(task.tags);
+        tagFile.updateTagToFile(task.getTags());
     }
 
     // Delete a task from file
     public void deleteTaskFromFile(int taskID) throws TaskNotFoundException, IOException {
         taskFile.deleteTaskFromFile(taskID); 
-    }
-
-    private void updateTags(Task task) {
-        for (String tag: task.tags) {
-            if (tagBuffer.contains(tag)) {
-                continue;
-            } else {
-                tagFile.addToFile(tag);
-                tagBuffer.add(tag);
-            }
-        }        
     }
 
     // Get a task by task ID
