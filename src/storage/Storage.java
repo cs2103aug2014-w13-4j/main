@@ -74,6 +74,8 @@ public interface Storage implements IStorage {
     ArrayList<String> getTags();
 
     // Search a list of tasks with certain tags
-    ArrayList<Task> searchTask(ArrayList<String> tag);
+    ArrayList<Task> searchTask(ArrayList<String> tags) {
+        tagFile.searchTask(tags);
+    }
 
 }
