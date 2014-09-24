@@ -8,19 +8,21 @@ import models.Feedback;
 import models.Task;
 import command.*;
 
+//TODO: Throw exceptions when mandatory fields are missing
 public class Logic implements ILogic {
 	private static final int INVALID_ID = -1;
 	private static final String ADD_MESSAGE = "%1$s is successfully added.";
-	private static final String ERROR_MESSAGE = "Invalid Number Input!";
+	private static final String INVALID_INDEX_MESSAGE = "Invalid Number Input!";
 	private static final String DELETE_MESSAGE = "%1$s is successfully deleted";
 	private static final int INVALID_LEVEL = -1;
+	private static final String EDIT_MESSAGE = "%1$s is successfully edited.";
 
 	public Feedback executeCommand(Command command) {
-		// TODO Auto-generated method stub
 		CommandEnum commandType = command.getCommand();
 		Hashtable<ParamEnum, ArrayList<String>> params = command.getParam();
 		String name;
 		Task task;
+		int id;
 		switch (commandType) {
 		case ADD:
 			task = createTaskForAdd(command);
@@ -28,16 +30,26 @@ public class Logic implements ILogic {
 			name = task.getName();
 			return createFeedback(createMessage(ADD_MESSAGE, name));
 		case DELETE:
-			int id = getIdFromCommand(command);
+			id = getIdFromCommand(command);
 			if (isValidId(id)) {
 				name = getTaskName(id);
 				deleteTaskFromFile(id);
 				return createFeedback(createMessage(DELETE_MESSAGE, name));
 			} else {
-				return createFeedback(ERROR_MESSAGE);
+				return createFeedback(INVALID_INDEX_MESSAGE);
 			}
 		case UPDATE:
-
+			id = getIdFromCommand(command);
+			if (isValidId(id)) {
+				task = getTasks(id);
+				updateTask(command, task);
+				writeTaskToFile(task);
+				name = task.getName();
+				return createFeedback(createMessage(EDIT_MESSAGE, name));
+			} else {
+				return createFeedback(INVALID_INDEX_MESSAGE);
+			}
+			
 		case UNDO:
 			return null;
 		case SELECT:
@@ -56,10 +68,29 @@ public class Logic implements ILogic {
 		}
 
 	}
+	
+	private Task createTaskForAdd(Command command) {
+		Task task = new Task();
+		task.setId(-1);
+		setNameFromCommand(command, task);
+		setStartDateFromCommand(command, task);
+		setEndDateFromCommand(command, task);
+		setDueDateFromCommand(command, task);
+		setTagsFromCommand(command, task);
+		setLevelFromCommand(command, task);
+		setNoteFromCommand(command, task);
+		return task;
+	}
 
-	private Task createTaskForEdit(Command command) {
+	private Task updateTask(Command command, Task task) {
+		updateName(command, task);
+		updateDueDate(command, task);
+		return task;
+	}
+
+	private void updateDueDate(Command command, Task oldTask) {
 		// TODO Auto-generated method stub
-		return null;
+		
 	}
 
 	private static String createMessage(String message, String variableText1) {
@@ -86,20 +117,20 @@ public class Logic implements ILogic {
 
 	private void setStartDateFromCommand(Command command, Task task) {
 		if (hasStartDate(command)) {
-			// set task date;
+			//TODO: set task date;
 		}
 	}
 
 	private void setEndDateFromCommand(Command command, Task task) {
 		if (hasEndDate(command)) {
-			// set task date;
+			//TODO: set task date;
 		}
 
 	}
 
 	private void setDueDateFromCommand(Command command, Task task) {
 		if (hasDueDate(command)) {
-			// set task date;
+			//TODO: set task date;
 		}
 
 	}
@@ -110,17 +141,14 @@ public class Logic implements ILogic {
 			task.setId(id);
 		}
 	}
+	
 
-	private Task createTaskForAdd(Command command) {
-		Task task = new Task();
-		setNameFromCommand(command, task);
-		setStartDateFromCommand(command, task);
-		setEndDateFromCommand(command, task);
-		setDueDateFromCommand(command, task);
-		setTagsFromCommand(command, task);
-		setLevelFromCommand(command, task);
-		setNoteFromCommand(command, task);
-		return task;
+	private void updateName(Command command, Task oldTask) {
+		if (hasNewName(command)) {
+			String taskName = command.getParam().get(ParamEnum.NAME).get(0);
+			oldTask.setName(taskName);
+		}
+		
 	}
 
 	private void setLevelFromCommand(Command command, Task task) {
@@ -172,6 +200,10 @@ public class Logic implements ILogic {
 		return command.getParam().containsKey(ParamEnum.DATE);
 	}
 
+	private boolean hasNewName(Command command) {
+		return command.getParam().containsKey(ParamEnum.NAME);
+	}
+
 	private boolean hasLevel(Command command) {
 		return command.getParam().containsKey(ParamEnum.LEVEL);
 	}
@@ -181,6 +213,7 @@ public class Logic implements ILogic {
 	}
 
 	private boolean isValidId(int id) {
+		//TODO: Store the largest current id in storage
 		return id > INVALID_ID;
 	}
 
