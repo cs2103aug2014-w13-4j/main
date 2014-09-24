@@ -10,7 +10,8 @@ public enum ParamEnum {
 	ORDER_BY ("order by"),
 	DESCRIPTION ("with"),
 	EITHER ("either"),
-	OR ("or");
+	OR ("or"),
+	NAME ("name");
 	
 	private final String regex;
 	
