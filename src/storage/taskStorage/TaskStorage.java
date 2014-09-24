@@ -22,11 +22,11 @@ public class TaskStorage {
     private static final String MESSAGE_CHILD_TASKS = "Child tasks: ";
     private static final String MESSAGE_CONDITIONAL_TASKS = "Conditional tasks: ";
     private static final String MESSAGE_IS_DELETED = "Is deleted :";
-    private static final String MESSAGE_IS_COMPLETED = "Is completed: ";
+    private static final String MESSAGE_IS_COMFIRMED = "Is comfirmed: ";
 
 
      /**
-     * constructor
+     * constructor``
      */
     public TaskStorage(String fileName) {
         dataFile = new File(fileName);
@@ -46,19 +46,35 @@ public class TaskStorage {
     }
 
     private String TaskToString(Task task) {
-        String taskString = MESSAGE_ID + MESSAGE_SEPARATOR +task.getID() + MESSAGE_SEPARATOR + MESSAGE_NAME + MESSAGE_SEPARATOR +
-            task.getName() + MESSAGE_SEPARATOR + MESSAGE_DATE_DUE + MESSAGE_SEPARATOR + task.getDateDue() + MESSAGE_SEPARATOR +
-            MESSAGE_DATE_START + MESSAGE_SEPARATOR + task.getDateStart() + MESSAGE_SEPARATOR + MESSAGE_DATE_END + MESSAGE_SEPARATOR +
-            task.getDateEnd() + MESSAGE_SEPARATOR + MESSAGE_PRIORITY_LEVEL + MESSAGE_SEPARATOR + task.getPriorityLevel() + MESSAGE_SEPARATOR +
-            MESSAGE_NOTE + MESSAGE_SEPARATOR + task.getNote() + MESSAGE_SEPARATOR;
-            
+        String[] taskStringArray = new String[]{MESSAGE_ID, task.getID(), MESSAGE_NAME, task.getName(), MESSAGE_DATE_DUE, task.getDateDue(),
+            MESSAGE_DATE_START, task.getDateStart(), MESSAGE_DATE_END, task.getDateEnd(), MESSAGE_PRIORITY_LEVEL, task.getPriorityLevel(),
+            MESSAGE_NOTE, task.getNote(), MESSAGE_PARENT_TASKS};
+        String taskString = taskStringArray.join(MESSAGE_SEPARATOR);
+        for (int parentID : task.getParentTasks()) {
+            taskString = taskString + MESSAGE_SEPARATOR + parentID;
+        }
+        taskString = taskString + MESSAGE_SEPARATOR + MESSAGE_CHILD_TASKS;
+        for (int childID : task.getChildTasks()) {
+            taskString = taskString + MESSAGE_SEPARATOR + childID;
+        }
+        taskString = taskString + MESSAGE_SEPARATOR + MESSAGE_CONDITIONAL_TASKS;
+        for (int conditionalID : task.getConditionalTasks()) {
+            taskString = taskString + MESSAGE_SEPARATOR + conditionalID;
+        }
+        taskString = taskString + MESSAGE_SEPARATOR + MESSAGE_IS_DELETED;
+        taskString = taskString + MESSAGE_SEPARATOR + task.isDeleted();
+        taskString = taskString + MESSAGE_SEPARATOR + MESSAGE_IS_COMFIRMED;
+        taskString = taskString + MESSAGE_SEPARATOR + task.isComfirmed();
+        return taskString;
+    }
 
+    private Task stringToTask(String taskString) {
+        
     }
 
     // Add/Update a task to file
     public void writeTaskToFile(Task task) throws TaskNotFoundException, IOException {
         int taskID = task.getID();
-        // Need to ask Peining
         if (taskID == ID_FOR_NEW_TASK) {
             // Add new task to task file
             task.setID(nextTaskIndex);
