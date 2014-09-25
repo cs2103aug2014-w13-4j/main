@@ -1,10 +1,22 @@
 package storage.taskStorage;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Scanner;
+
+import models.Task;
+import models.exceptions.TaskNotFoundException;
+
 public class TaskStorage {
     private ArrayList<Task> taskBuffer;
     private int nextTaskIndex;
     private File dataFile;
-    private static Storage instance = null;
 
     private static final int ID_FOR_NEW_TASK = -1;
     private static final int ID_FOR_FIRST_TASK = 0;
@@ -38,10 +50,11 @@ public class TaskStorage {
      /**
      * constructor``
      */
-    public TaskStorage(String fileName) {
+    public TaskStorage(String fileName) throws IOException{
+    	Task task;
         dataFile = new File(fileName);
 
-        if (!dataFile.exist()) {
+        if (!dataFile.exists()) {
             dataFile.createNewFile();
         }
 
@@ -56,7 +69,7 @@ public class TaskStorage {
     }
 
     private String TaskToString(Task task) {
-        String[] taskStringArray = new String[]{MESSAGE_ID, task.getID(), MESSAGE_NAME, task.getName(),
+        String[] taskStringArray = new String[]{MESSAGE_ID, task.getId(), MESSAGE_NAME, task.getName(),
             MESSAGE_DATE_DUE, task.getDateDue(), MESSAGE_DATE_START, task.getDateStart(), MESSAGE_DATE_END,
             task.getDateEnd(), MESSAGE_PRIORITY_LEVEL, task.getPriorityLevel(), MESSAGE_NOTE, task.getNote(), 
             MESSAGE_IS_DELETED, ask.isDeleted(), MESSAGE_IS_COMFIRMED, task.isComfirmed(), MESSAGE_TAGS};
@@ -103,31 +116,31 @@ public class TaskStorage {
         while (!taskStringArray[arrayIndex].equals(MESSAGE_PARENT_TASKS)) {
             tagStored = taskStringArray[arrayIndex];
             taskTags.add(tagStored);
-            arrayIndex ++''
+            arrayIndex ++;
         }
-        ArrayList<int> taskParentTasks = new ArrayList<int>();
+        ArrayList<Integer> taskParentTasks = new ArrayList<Integer>();
         arrayIndex ++;
         while (!taskStringArray[arrayIndex].equals(MESSAGE_CHILD_TASKS)) {
             taskStored = Integer.valueOf(taskStringArray[arrayIndex]);
             taskParentTasks.add(taskStored);
             arrayIndex ++;
         }
-        ArrayList<int> taskChildTasks = new ArrayList<int>();
+        ArrayList<Integer> taskChildTasks = new ArrayList<Integer>();
         arrayIndex ++;
         while (!taskStringArray[arrayIndex].equals(MESSAGE_CONDITIONAL_TASKS)) {
             taskStored = Integer.valueOf(taskStringArray[arrayIndex]);
             taskChildTasks.add(taskStored);
             arrayIndex ++;
         }
-        ArrayList<int> taskConditionalTasks = new ArrayList<int>();
+        ArrayList<Integer> taskConditionalTasks = new ArrayList<Integer>();
         arrayIndex ++;
-        while (arrayIndex <= (taskStringArray.length() - 1)) {
+        while (arrayIndex <= (taskStringArray.length - 1)) {
             taskStored = Integer.valueOf(taskStringArray[arrayIndex]);
             taskConditionalTasks.add(taskStored);
             arrayIndex ++;
         }
 
-        task.setID(taskID);
+        task.setId(taskID);
         task.setName(taskName);
         task.setDateDue(taskDateDue);
         task.setDateStart(taskDateStart);
@@ -143,10 +156,10 @@ public class TaskStorage {
 
     // Add/Update a task to file
     public void writeTaskToFile(Task task) throws TaskNotFoundException, IOException {
-        int taskID = task.getID();
+        int taskID = task.getId();
         if (taskID == ID_FOR_NEW_TASK) {
             // Add new task to task file
-            task.setID(nextTaskIndex);
+            task.setId(nextTaskIndex);
             nextTaskIndex ++;
             addTask(task);
             // Add new task to task buffer
@@ -167,7 +180,7 @@ public class TaskStorage {
     public void deleteTaskFromFile(int taskID) throws TaskNotFoundException, IOException {
         if (isTaskExist(taskID)){
             for (Task task: taskBuffer) {
-                if (task.getID() == taskID) {
+                if (task.getId() == taskID) {
                     task.setDeleted(true);
                     break;
                 }
@@ -188,10 +201,11 @@ public class TaskStorage {
     } 
 
     // append task string to the end of the file
-    private void addTask(Task task) throws IOException {     
+    private void addTask(Task task) throws IOException { 
+    	BufferedWriter bufferedWriter = null;
         try {
             String taskString = TaskToString(task);
-            BufferedWrite bufferedWriter = new BufferedWritter(new FileWriter(dataFile, true));
+            bufferedWriter = new BufferedWriter(new FileWriter(dataFile, true));
             bufferedWriter.write(taskString);
         } finally {
             bufferedWriter.close();
@@ -199,29 +213,32 @@ public class TaskStorage {
     }
 
     private void updateTask() throws IOException {
+    	BufferedWriter bufferedWriter = null;
         try {
             String taskString;
-            BufferedWrite bufferedWriter = new BufferedWritter(new FileWriter(dataFile));
+            bufferedWriter = new BufferedWriter(new FileWriter(dataFile));
             for (Task task: taskBuffer) {
                 taskString = TaskToString(task);
                 bufferedWriter.write(taskString + "\r\n");
             }
         } finally {
-            bufferedWriter.close();
+        	bufferedWriter.close();
         }
     }
 
     // Get a task by task ID
-    Task getTask(int taskID) throws TaskNotFoundException {
+    public Task getTask(int taskID) throws TaskNotFoundException {
+    	Task requiredTask = null;
         if (isTaskExist(taskID)) {
             for (Task task: taskBuffer) {
-                if (task.getID() == taskID) {
-                    return task;
+                if (task.getId() == taskID) {
+                    requiredTask = task;
                 }
             }
         } else {
             throw new TaskNotFoundException("Cannot return  task since the current task doesn't exist");
         }
+        return requiredTask;
     }
 
     // Get all tasks
@@ -230,7 +247,7 @@ public class TaskStorage {
     }
 
     // Get a list of tasks that are done
-    ArrayList<Task> getCompletedTasks() {
+    public ArrayList<Task> getCompletedTasks() {
         ArrayList<Task> completedTaskList = new ArrayList<Task>();
         for (Task task: taskBuffer) {
             if (task.getDateEnd() == null) {
@@ -239,10 +256,11 @@ public class TaskStorage {
                 completedTaskList.add(task);
             }
         }
+        return completedTaskList;
     }
 
     // Get a list of tasks that are not completed
-    ArrayList<Task> getActiveTasks() {
+    public ArrayList<Task> getActiveTasks() {
         ArrayList<Task> activeTaskList = new ArrayList<Task>();
         for (Task task: taskBuffer) {
             if (task.getDateEnd() == null) {
@@ -251,16 +269,17 @@ public class TaskStorage {
                 continue;
             }
         }
+        return activeTaskList;
     }
 
     // Search a list of tasks with certain tags
-    ArrayList<Task> searchTask(ArrayList<String> tags) {
+    public ArrayList<Task> searchTask(ArrayList<String> tags) {
         ArrayList<Task> taskList = new ArrayList<Task>();
         boolean hasTags;
         for (Task task: taskBuffer) {
             hasTags = true;
             for (String tag: tags) {
-                if (task.getTags.contains(tag)) {
+                if (task.getTags().contains(tag)) {
                     continue;
                 } else {
                     hasTags = false;
@@ -271,5 +290,6 @@ public class TaskStorage {
                 taskList.add(task);
             }
         }
+        return taskList;
     }
 }

@@ -1,5 +1,10 @@
 package storage;
 
+import java.io.IOException;
+import java.util.ArrayList;
+
+import storage.tagStorage.TagStorage;
+import storage.taskStorage.TaskStorage;
 import models.Task;
 import models.exceptions.TaskNotFoundException;
 
@@ -9,8 +14,7 @@ import models.exceptions.TaskNotFoundException;
  * This class reads/writes task to file.
  * It also supports power search.
  */
-public interface Storage implements IStorage {
-    private ArrayList<String> tagBuffer;
+public class Storage implements IStorage {
     private TaskStorage taskFile;
     private TagStorage tagFile;    
 
@@ -23,9 +27,6 @@ public interface Storage implements IStorage {
     public Storage() throws IOException{
         taskFile = new TaskStorage("taskStorage.data");
         tagFile = new TagStorage("TagStorage.data");
-        taskBuffer = taskFile.getAllTasks();
-        tagBuffer = tagFile.getAllTags();
-        nextTaskIndex = taskFile.getNestTaskIndex();
     }
 
     // Add/Update a task to file
@@ -40,31 +41,32 @@ public interface Storage implements IStorage {
     }
 
     // Get a task by task ID
-    Task getTask(int taskID) throws TaskNotFoundException {
-        taskFile.getTask(taskID);
+    public Task getTask(int taskID) throws TaskNotFoundException {
+        return taskFile.getTask(taskID);
     }
 
     // Get a list of all the Tasks
-    ArrayList<Task> getAllTasks() {
-        taskFile.getAllTasks();
+    public ArrayList<Task> getAllTasks() {
+        return taskFile.getAllTasks();
     }
 
     // Get a list of tasks that are done
-    ArrayList<Task> getCompletedTasks() {
-        taskFile.getCompletedTasks();
+    public ArrayList<Task> getCompletedTasks() {
+        return taskFile.getCompletedTasks();
     }
 
     // Get a list of tasks that are not completed
-    ArrayList<Task> getActiveTasks() {
-        tagFile.getActiveTasks();
+    public ArrayList<Task> getActiveTasks() {
+        return taskFile.getActiveTasks();
     }
 
     // Get a list of tags 
-    ArrayList<String> getTags();
-
-    // Search a list of tasks with certain tags
-    ArrayList<Task> searchTask(ArrayList<String> tags) {
-        tagFile.searchTask(tags);
+    public ArrayList<String> getAllTags() {
+    	return tagFile.getAllTags();
     }
 
+    // Search a list of tasks with certain tags
+    public ArrayList<Task> searchTask(ArrayList<String> tags) {
+        return taskFile.searchTask(tags);
+    }
 }

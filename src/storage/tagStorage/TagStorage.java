@@ -1,5 +1,10 @@
 package storage.tagStorage;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Scanner;
+
 public class TagStorage {
     private File dataFile;
     private ArrayList<String> tagBuffer;
@@ -7,15 +12,16 @@ public class TagStorage {
     /**
      * constructor``
      */
-    public TagStorage(String fileName) {
+    public TagStorage(String fileName) throws IOException {
+    	String tag;
         dataFile = new File(fileName);
 
-        if (!dataFile.exist()) {
+        if (!dataFile.exists()) {
             dataFile.createNewFile();
         }
 
         Scanner fileScanner = new Scanner(dataFile);
-        tagBuffer =  new ArrayList<Task>();
+        tagBuffer =  new ArrayList<String>();
         while (fileScanner.hasNextLine()) {
             tag = fileScanner.nextLine();
             tagBuffer.add(tag);
@@ -23,19 +29,23 @@ public class TagStorage {
     }
 
     // Get all tags
-    ArrayList<String> getAllTags() {
+    public ArrayList<String> getAllTags() {
         return tagBuffer;
     }
 
     // Update tag list when adding or updating tasks
-    private void updateTagToFile(ArrayList<String> tags) {
-        for (String tag: task.tags) {
+    public void updateTagToFile(ArrayList<String> tags) {
+        for (String tag: tags) {
             if (tagBuffer.contains(tag)) {
                 continue;
             } else {
-                tagFile.addToFile(tag);
+                addToFile(tag);
                 tagBuffer.add(tag);
             }
         }        
+    }
+    
+    public void addToFile(String tag) {
+    	
     }
 }

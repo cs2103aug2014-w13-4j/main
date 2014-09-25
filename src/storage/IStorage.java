@@ -1,5 +1,8 @@
 package storage;
 
+import java.io.IOException;
+import java.util.ArrayList;
+
 import models.Task;
 import models.exceptions.TaskNotFoundException;
 
@@ -28,7 +31,7 @@ public interface IStorage {
     ArrayList<Task> getActiveTasks();
 
     // Get a list of tags 
-    ArrayList<String> getTags();
+    ArrayList<String> getAllTags();
 
     // Search a list of tasks with certain tags
     ArrayList<Task> searchTask(ArrayList<String> tag);
