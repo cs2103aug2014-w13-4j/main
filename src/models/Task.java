@@ -17,6 +17,7 @@ public class Task {
 	private ArrayList<Integer> conditionalTasks;
 	private boolean isDeleted = false;
 	private boolean isConfirmed = false;
+	private boolean isCompleted = false;
 	
 	public Task() {
 	}
@@ -67,6 +68,14 @@ public class Task {
 
 	public void setConfirmed(boolean isConfirmed) {
 		this.isConfirmed = isConfirmed;
+	}
+
+	public void setCompleted(boolean isCompleted) {
+		this.isCompleted = isCompleted;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public String getName() {
@@ -121,7 +130,7 @@ public class Task {
 		return id;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public boolean isCompleted() {
+		return isCompleted;
 	}
 }
