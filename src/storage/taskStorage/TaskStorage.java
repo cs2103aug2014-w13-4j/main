@@ -5,14 +5,22 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Scanner;
 
 import models.Task;
+import models.exceptions.FileFormatNotSupportedException;
 import models.exceptions.TaskNotFoundException;
 
+/**
+*
+* @author Chuyu 
+* This class reads/writes task to file.
+* It also supports power search.
+*/
 public class TaskStorage {
     private ArrayList<Task> taskBuffer;
     private int nextTaskIndex;
@@ -49,8 +57,9 @@ public class TaskStorage {
 
      /**
      * constructor``
+     * @throws FileFormatNotSupportedException, IOException
      */
-    public TaskStorage(String fileName) throws IOException{
+    public TaskStorage(String fileName) throws IOException, FileFormatNotSupportedException{
     	Task task;
         dataFile = new File(fileName);
 
@@ -92,66 +101,72 @@ public class TaskStorage {
         return taskString;
     }
 
-    private Task stringToTask(String taskString) {
+    private Task stringToTask(String taskString) throws FileFormatNotSupportedException {
         int arrayIndex;
         String tagStored;
         int taskStored;
         Task task = new Task();
         // ??need to confirm date format
         DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-        Calendar calendar = Calendar.getInstance();
+        Calendar taskDateDue = Calendar.getInstance();
+        Calendar taskDateStart = Calendar.getInstance();
+        Calendar taskDateEnd = Calendar.getInstance();
 
-        String[] taskStringArray = taskString.split(MESSAGE_SEPARATOR);
-        int taskID = Integer.valueOf(taskStringArray[ID_ATTRIBUTE]);
-        String taskName = taskStringArray[NAME_ATTRIBUTE];        
-        Calendar taskDateDue = calendar.setTime(dateFormat.parse(taskStringArray[DATE_DUE_ATTRIBUTE]));
-        Calendar taskDateStart = calendar.setTime(dateFormat.parse(taskStringArray[DATE_START_ATTRIBUTE]));
-        Calendar taskDateEnd = calendar.setTime(dateFormat.parse(taskStringArray[DATE_END_ATTRIBUTE]));
-        int taskPriorityLevel = Integer.valueOf(taskStringArray[PRIORITY_LEVEL_ATTRIBUTE]);
-        String taskNote = taskStringArray[NOTE_ATTRIBUTE];
-        boolean taskIsDeleted = Boolean.valueOf(taskStringArray[IS_DELETED_ATTRIBUTE]);
-        boolean taskIsConfirmed = Boolean.valueOf(taskStringArray[IS_COMFIRMED_ATTRIBUTE]);
-        ArrayList<String> taskTags = new ArrayList<String>();
-        arrayIndex = TAGS_ATTRIBUTE;
-        while (!taskStringArray[arrayIndex].equals(MESSAGE_PARENT_TASKS)) {
-            tagStored = taskStringArray[arrayIndex];
-            taskTags.add(tagStored);
+        try{
+            String[] taskStringArray = taskString.split(MESSAGE_SEPARATOR);
+            int taskID = Integer.valueOf(taskStringArray[ID_ATTRIBUTE]);
+            String taskName = taskStringArray[NAME_ATTRIBUTE];       
+            taskDateDue.setTime(dateFormat.parse(taskStringArray[DATE_DUE_ATTRIBUTE]));
+            taskDateStart.setTime(dateFormat.parse(taskStringArray[DATE_START_ATTRIBUTE]));
+            taskDateEnd.setTime(dateFormat.parse(taskStringArray[DATE_END_ATTRIBUTE]));
+            int taskPriorityLevel = Integer.valueOf(taskStringArray[PRIORITY_LEVEL_ATTRIBUTE]);
+            String taskNote = taskStringArray[NOTE_ATTRIBUTE];
+            boolean taskIsDeleted = Boolean.valueOf(taskStringArray[IS_DELETED_ATTRIBUTE]);
+            boolean taskIsConfirmed = Boolean.valueOf(taskStringArray[IS_COMFIRMED_ATTRIBUTE]);
+            ArrayList<String> taskTags = new ArrayList<String>();
+            arrayIndex = TAGS_ATTRIBUTE;
+            while (!taskStringArray[arrayIndex].equals(MESSAGE_PARENT_TASKS)) {
+                tagStored = taskStringArray[arrayIndex];
+                taskTags.add(tagStored);
+                arrayIndex ++;
+            }
+            ArrayList<Integer> taskParentTasks = new ArrayList<Integer>();
             arrayIndex ++;
-        }
-        ArrayList<Integer> taskParentTasks = new ArrayList<Integer>();
-        arrayIndex ++;
-        while (!taskStringArray[arrayIndex].equals(MESSAGE_CHILD_TASKS)) {
-            taskStored = Integer.valueOf(taskStringArray[arrayIndex]);
-            taskParentTasks.add(taskStored);
+            while (!taskStringArray[arrayIndex].equals(MESSAGE_CHILD_TASKS)) {
+                taskStored = Integer.valueOf(taskStringArray[arrayIndex]);
+                taskParentTasks.add(taskStored);
+                arrayIndex ++;
+            }
+            ArrayList<Integer> taskChildTasks = new ArrayList<Integer>();
             arrayIndex ++;
-        }
-        ArrayList<Integer> taskChildTasks = new ArrayList<Integer>();
-        arrayIndex ++;
-        while (!taskStringArray[arrayIndex].equals(MESSAGE_CONDITIONAL_TASKS)) {
-            taskStored = Integer.valueOf(taskStringArray[arrayIndex]);
-            taskChildTasks.add(taskStored);
+            while (!taskStringArray[arrayIndex].equals(MESSAGE_CONDITIONAL_TASKS)) {
+                taskStored = Integer.valueOf(taskStringArray[arrayIndex]);
+                taskChildTasks.add(taskStored);
+                arrayIndex ++;
+            }
+            ArrayList<Integer> taskConditionalTasks = new ArrayList<Integer>();
             arrayIndex ++;
-        }
-        ArrayList<Integer> taskConditionalTasks = new ArrayList<Integer>();
-        arrayIndex ++;
-        while (arrayIndex <= (taskStringArray.length - 1)) {
-            taskStored = Integer.valueOf(taskStringArray[arrayIndex]);
-            taskConditionalTasks.add(taskStored);
-            arrayIndex ++;
-        }
+            while (arrayIndex <= (taskStringArray.length - 1)) {
+                taskStored = Integer.valueOf(taskStringArray[arrayIndex]);
+                taskConditionalTasks.add(taskStored);
+                arrayIndex ++;
+            }
 
-        task.setId(taskID);
-        task.setName(taskName);
-        task.setDateDue(taskDateDue);
-        task.setDateStart(taskDateStart);
-        task.setDateEnd(taskDateEnd);
-        task.setPriorityLevel(taskPriorityLevel);
-        task.setNote(taskNote);
-        task.setTags(taskTags);
-        task.setParentTasks(taskParentTasks);
-        task.setChildTasks(taskChildTasks);
-        task.setConditionalTasks(taskConditionalTasks);
-        return task;
+            task.setId(taskID);
+            task.setName(taskName);
+            task.setDateDue(taskDateDue);
+            task.setDateStart(taskDateStart);
+            task.setDateEnd(taskDateEnd);
+            task.setPriorityLevel(taskPriorityLevel);
+            task.setNote(taskNote);
+            task.setTags(taskTags);
+            task.setParentTasks(taskParentTasks);
+            task.setChildTasks(taskChildTasks);
+            task.setConditionalTasks(taskConditionalTasks);
+            return task;
+        } catch (Exception e) {
+            throw new FileFormatNotSupportedException("File format is not supported.");
+        }
     }
 
     // Add/Update a task to file

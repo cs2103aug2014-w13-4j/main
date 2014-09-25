@@ -8,7 +8,7 @@ import models.exceptions.TaskNotFoundException;
 
 /**
  *
- * @author chuyu 
+ * @author Chuyu 
  * This interface supports all the storage functionality
  */
 public interface IStorage {

@@ -6,11 +6,12 @@ import java.util.ArrayList;
 import storage.tagStorage.TagStorage;
 import storage.taskStorage.TaskStorage;
 import models.Task;
+import models.exceptions.FileFormatNotSupportedException;
 import models.exceptions.TaskNotFoundException;
 
 /**
  *
- * @author chuyu 
+ * @author Chuyu 
  * This class reads/writes task to file.
  * It also supports power search.
  */
@@ -23,8 +24,9 @@ public class Storage implements IStorage {
      * This constructor follows the singleton pattern
      * It can only be called with in the current class (Storage.getInstance())
      * This is to ensure that only there is exactly one instance of Storage class
+     * @throws FileFormatNotSupportedException, IOException
      */
-    public Storage() throws IOException{
+    public Storage() throws IOException, FileFormatNotSupportedException{
         taskFile = new TaskStorage("taskStorage.data");
         tagFile = new TagStorage("TagStorage.data");
     }

@@ -5,12 +5,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+*
+* @author Chuyu 
+* This class reads/writes tags to file.
+*/
 public class TagStorage {
     private File dataFile;
     private ArrayList<String> tagBuffer;
 
     /**
-     * constructor``
+     * constructor
      */
     public TagStorage(String fileName) throws IOException {
     	String tag;
