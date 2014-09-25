@@ -16,14 +16,11 @@ public class Logic implements ILogic {
 	private static final String DELETE_MESSAGE = "%1$s is successfully deleted";
 	private static final int INVALID_LEVEL = -1;
 	private static final String EDIT_MESSAGE = "%1$s is successfully edited.";
-	private static final String SELECT_MESSAGE = "%1$s is selected.";
+	//private static final String SELECT_MESSAGE = "%1$s is selected.";
+	private static final String COMPLETE_MESSAGE = "%l$s is marked as completed.";
 
 	public Feedback executeCommand(Command command) {
 		CommandEnum commandType = command.getCommand();
-		Hashtable<ParamEnum, ArrayList<String>> params = command.getParam();
-		String name;
-		Task task;
-		int id;
 		switch (commandType) {
 		case ADD:
 			return add(command);
@@ -51,8 +48,17 @@ public class Logic implements ILogic {
 	}
 
 	private Feedback markAsDone(Command command) {
-		// TODO Auto-generated method stub
-		return null;
+		int id = getIdFromCommand(command);
+		if (isValidId(id)) {
+			Task task = getTasks(id);
+			String name = task.getName();
+			task.setCompleted(true);
+			writeTaskToFile(task);
+			ArrayList<Task> taskList = getAllTasks();
+			return createFeedback(taskList,createMessage(COMPLETE_MESSAGE, name));
+		} else {
+			return createFeedback(null, INVALID_INDEX_MESSAGE);
+		}
 	}
 
 	private Feedback add(Command command) {
@@ -67,7 +73,8 @@ public class Logic implements ILogic {
 	private Feedback delete(Command command) {
 		int id = getIdFromCommand(command);
 		if (isValidId(id)) {
-			String name = getTaskName(id);
+			Task task = getTasks(id);
+			String name = task.getName();
 			deleteTaskFromFile(id);
 			ArrayList<Task> taskList = getAllTasks();
 			return createFeedback(taskList,createMessage(DELETE_MESSAGE, name));
@@ -180,12 +187,6 @@ public class Logic implements ILogic {
 
 	}
 
-	private void setIdFromCommand(Command command, Task task) {
-		int id = getIdFromCommand(command);
-		if (isValidId(id)) {
-			task.setId(id);
-		}
-	}
 	
 
 	private void setLevelFromCommand(Command command, Task task) {
