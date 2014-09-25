@@ -34,7 +34,7 @@ public class Logic implements ILogic {
 		case UNDO:
 			return null;
 		case SELECT:
-			return select(command);
+			return null;
 		case DISPLAY:
 			return null;
 		case DONE:
@@ -91,7 +91,9 @@ public class Logic implements ILogic {
 		}
 	}
 
-	private Feedback select(Command command) {
+	//Not in use yet
+	/**
+	private Feedback view(Command command) {
 		String name;
 		int id;
 		id = getIdFromCommand(command);
@@ -105,7 +107,7 @@ public class Logic implements ILogic {
 			return createFeedback(null, INVALID_INDEX_MESSAGE);
 		}
 	}
-
+	**/
 	private Task createTaskForAdd(Command command) {
 		Task task = new Task();
 		task.setId(-1);
