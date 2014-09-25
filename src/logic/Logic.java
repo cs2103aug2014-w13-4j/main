@@ -16,6 +16,7 @@ public class Logic implements ILogic {
 	private static final String DELETE_MESSAGE = "%1$s is successfully deleted";
 	private static final int INVALID_LEVEL = -1;
 	private static final String EDIT_MESSAGE = "%1$s is successfully edited.";
+	private static final String SELECT_MESSAGE = "%1$s is selected.";
 
 	public Feedback executeCommand(Command command) {
 		CommandEnum commandType = command.getCommand();
@@ -25,35 +26,15 @@ public class Logic implements ILogic {
 		int id;
 		switch (commandType) {
 		case ADD:
-			task = createTaskForAdd(command);
-			writeTaskToFile(task);
-			name = task.getName();
-			return createFeedback(createMessage(ADD_MESSAGE, name));
+			return add(command);
 		case DELETE:
-			id = getIdFromCommand(command);
-			if (isValidId(id)) {
-				name = getTaskName(id);
-				deleteTaskFromFile(id);
-				return createFeedback(createMessage(DELETE_MESSAGE, name));
-			} else {
-				return createFeedback(INVALID_INDEX_MESSAGE);
-			}
+			return delete(command);
 		case UPDATE:
-			id = getIdFromCommand(command);
-			if (isValidId(id)) {
-				task = getTasks(id);
-				updateTask(command, task);
-				writeTaskToFile(task);
-				name = task.getName();
-				return createFeedback(createMessage(EDIT_MESSAGE, name));
-			} else {
-				return createFeedback(INVALID_INDEX_MESSAGE);
-			}
-			
+			return update(command);
 		case UNDO:
 			return null;
 		case SELECT:
-			return null;
+			return select(command);
 		case DISPLAY:
 			return null;
 		case DONE:
@@ -68,7 +49,63 @@ public class Logic implements ILogic {
 		}
 
 	}
-	
+
+	private Feedback add(Command command) {
+		String name;
+		Task task;
+		task = createTaskForAdd(command);
+		writeTaskToFile(task);
+		name = task.getName();
+		ArrayList<Task> taskList = getAllTasks();
+		return createFeedback(taskList, createMessage(ADD_MESSAGE, name));
+	}
+
+	private Feedback delete(Command command) {
+		String name;
+		int id;
+		id = getIdFromCommand(command);
+		if (isValidId(id)) {
+			name = getTaskName(id);
+			deleteTaskFromFile(id);
+			ArrayList<Task> taskList = getAllTasks();
+			return createFeedback(taskList,createMessage(DELETE_MESSAGE, name));
+		} else {
+			return createFeedback(null, INVALID_INDEX_MESSAGE);
+		}
+	}
+
+	private Feedback update(Command command) {
+		String name;
+		Task task;
+		int id;
+		id = getIdFromCommand(command);
+		if (isValidId(id)) {
+			task = getTasks(id);
+			updateTask(command, task);
+			writeTaskToFile(task);
+			name = task.getName();
+			ArrayList<Task> taskList = getAllTasks();
+			return createFeedback(taskList, createMessage(EDIT_MESSAGE, name));
+		} else {
+			return createFeedback(null, INVALID_INDEX_MESSAGE);
+		}
+	}
+
+	private Feedback select(Command command) {
+		String name;
+		int id;
+		id = getIdFromCommand(command);
+		if (isValidId(id)) {
+			ArrayList<Task> taskList = new ArrayList<Task>();
+			Task selectedTask = getTasks(id);
+			taskList.add(selectedTask);
+			name = selectedTask.getName();
+			return createFeedback(taskList, createMessage(SELECT_MESSAGE, name));
+		} else {
+			return createFeedback(null, INVALID_INDEX_MESSAGE);
+		}
+	}
+
 	private Task createTaskForAdd(Command command) {
 		Task task = new Task();
 		task.setId(-1);
@@ -88,17 +125,11 @@ public class Logic implements ILogic {
 		return task;
 	}
 
-	private void updateDueDate(Command command, Task oldTask) {
-		// TODO Auto-generated method stub
-		
-	}
-
 	private static String createMessage(String message, String variableText1) {
 		return String.format(message, variableText1);
 	}
 
-	private Feedback createFeedback(String message) {
-		ArrayList<Task> taskList = getAllTasks();
+	private Feedback createFeedback(ArrayList<Task> taskList, String message) {
 		return new Feedback(message, taskList);
 	}
 
@@ -111,8 +142,21 @@ public class Logic implements ILogic {
 	}
 
 	private String getTaskName(int id) {
-		Task task = getTask(id);
+		Task task = getTasks(id);
 		return task.getName();
+	}
+
+	private void updateName(Command command, Task oldTask) {
+		if (hasNewName(command)) {
+			String taskName = command.getParam().get(ParamEnum.NAME).get(0);
+			oldTask.setName(taskName);
+		}
+		
+	}
+
+	private void updateDueDate(Command command, Task oldTask) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private void setStartDateFromCommand(Command command, Task task) {
@@ -142,14 +186,6 @@ public class Logic implements ILogic {
 		}
 	}
 	
-
-	private void updateName(Command command, Task oldTask) {
-		if (hasNewName(command)) {
-			String taskName = command.getParam().get(ParamEnum.NAME).get(0);
-			oldTask.setName(taskName);
-		}
-		
-	}
 
 	private void setLevelFromCommand(Command command, Task task) {
 		if (hasLevel(command)) {
