@@ -3,6 +3,7 @@ package models;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+//TODO: set dateStart
 public class Task {
 	private int id;
 	private String name;
@@ -17,6 +18,7 @@ public class Task {
 	private ArrayList<Integer> conditionalTasks;
 	private boolean isDeleted = false;
 	private boolean isConfirmed = false;
+	private boolean isCompleted = false;
 	
 	public Task() {
 	}
@@ -69,6 +71,14 @@ public class Task {
 		this.isConfirmed = isConfirmed;
 	}
 
+	public void setCompleted(boolean isCompleted) {
+		this.isCompleted = isCompleted;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -83,6 +93,10 @@ public class Task {
 
 	public Calendar getDateEnd() {
 		return dateEnd;
+	}
+
+	public int getId() {
+		return id;
 	}
 
 	public int getPriorityLevel() {
@@ -117,11 +131,12 @@ public class Task {
 		return isConfirmed;
 	}
 
-	public int getId() {
-		return id;
+	public boolean isCompleted() {
+		return isCompleted;
 	}
-
-	public void setId(int id) {
-		this.id = id;
+	
+	public void addTags(ArrayList<String> newTags) {
+		newTags.removeAll(this.tags);
+		this.tags.addAll(newTags);
 	}
 }
