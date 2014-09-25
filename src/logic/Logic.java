@@ -38,7 +38,7 @@ public class Logic implements ILogic {
 		case DISPLAY:
 			return null;
 		case DONE:
-			return null;
+			return markAsDone(command);
 		case TAG:
 			return null;
 		case LEVEL:
@@ -50,22 +50,24 @@ public class Logic implements ILogic {
 
 	}
 
+	private Feedback markAsDone(Command command) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	private Feedback add(Command command) {
-		String name;
 		Task task;
 		task = createTaskForAdd(command);
 		writeTaskToFile(task);
-		name = task.getName();
+		String name = task.getName();
 		ArrayList<Task> taskList = getAllTasks();
 		return createFeedback(taskList, createMessage(ADD_MESSAGE, name));
 	}
 
 	private Feedback delete(Command command) {
-		String name;
-		int id;
-		id = getIdFromCommand(command);
+		int id = getIdFromCommand(command);
 		if (isValidId(id)) {
-			name = getTaskName(id);
+			String name = getTaskName(id);
 			deleteTaskFromFile(id);
 			ArrayList<Task> taskList = getAllTasks();
 			return createFeedback(taskList,createMessage(DELETE_MESSAGE, name));
@@ -75,15 +77,12 @@ public class Logic implements ILogic {
 	}
 
 	private Feedback update(Command command) {
-		String name;
-		Task task;
-		int id;
-		id = getIdFromCommand(command);
+		int id = getIdFromCommand(command);
 		if (isValidId(id)) {
-			task = getTasks(id);
+			Task task = getTasks(id);
 			updateTask(command, task);
 			writeTaskToFile(task);
-			name = task.getName();
+			String name = task.getName();
 			ArrayList<Task> taskList = getAllTasks();
 			return createFeedback(taskList, createMessage(EDIT_MESSAGE, name));
 		} else {
