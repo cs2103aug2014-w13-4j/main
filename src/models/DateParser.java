@@ -8,9 +8,11 @@ import java.util.Locale;
 
 public class DateParser {
 
-	private static String[] validDateFormats = { "dd-MM-yyyy HH:mm a",
+	private static final int MONTH_REPRESENTATION = Calendar.SHORT;
+	private static final String[] VALID_DATE_FORMATS = { "dd-MM-yyyy HH:mm a",
 			"dd-MM-yyyy", "dd.MM.yyyy" };
 
+	
 	/**
 	 * Reads a date in the string format, and returns its corresponding calendar
 	 * representation
@@ -20,10 +22,10 @@ public class DateParser {
 	 * @return the calendar object representing the date
 	 */
 	public static Calendar parseDate(String dateString) {
-		for (int i = 0; i < validDateFormats.length; i++) {
+		for (int i = 0; i < VALID_DATE_FORMATS.length; i++) {
 			try {
 				SimpleDateFormat formatter = new SimpleDateFormat(
-						validDateFormats[i]);
+						VALID_DATE_FORMATS[i]);
 				Date date = formatter.parse(dateString);
 				Calendar calendar = Calendar.getInstance();
 				calendar.setTime(date);
@@ -42,7 +44,7 @@ public class DateParser {
 		} else {
 			int day = myCalendar.get(Calendar.DAY_OF_MONTH);
 			String month = myCalendar.getDisplayName(Calendar.MONTH,
-					Calendar.SHORT, Locale.getDefault());
+					MONTH_REPRESENTATION, Locale.getDefault());
 			int year = myCalendar.get(Calendar.YEAR);
 			int hour = myCalendar.get(Calendar.HOUR_OF_DAY);
 			int minute = myCalendar.get(Calendar.MINUTE);
