@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Scanner;
 
+import com.sun.xml.internal.ws.util.StringUtils;
+
 import models.Task;
 import models.exceptions.FileFormatNotSupportedException;
 import models.exceptions.TaskNotFoundException;
@@ -78,11 +80,20 @@ public class TaskStorage {
     }
 
     private String TaskToString(Task task) {
-        String[] taskStringArray = new String[]{MESSAGE_ID, task.getId(), MESSAGE_NAME, task.getName(),
-            MESSAGE_DATE_DUE, task.getDateDue(), MESSAGE_DATE_START, task.getDateStart(), MESSAGE_DATE_END,
-            task.getDateEnd(), MESSAGE_PRIORITY_LEVEL, task.getPriorityLevel(), MESSAGE_NOTE, task.getNote(), 
-            MESSAGE_IS_DELETED, ask.isDeleted(), MESSAGE_IS_COMFIRMED, task.isComfirmed(), MESSAGE_TAGS};
-        String taskString = taskStringArray.join(MESSAGE_SEPARATOR);
+    	String taskID = Integer.toString(task.getId());
+        String taskName = task.getName();
+        String taskDateDue = task.getDateDue().toString();
+        String taskDateStart = task.getDateStart().toString();
+        String taskDateEnd = task.getDateEnd().toString();
+        String taskPriorityLevel = Integer.toString(task.getPriorityLevel());
+        String taskNote = task.getNote();
+        String taskIsDeleted = Boolean.toString(task.isDeleted());
+        String taskIsConfirmed = Boolean.toString(task.isConfirmed());
+        String[] taskStringArray = new String[]{MESSAGE_ID, taskID, MESSAGE_NAME, taskName,
+            MESSAGE_DATE_DUE, taskDateDue, MESSAGE_DATE_START, taskDateStart, MESSAGE_DATE_END,
+            taskDateEnd, MESSAGE_PRIORITY_LEVEL, taskPriorityLevel, MESSAGE_NOTE, taskNote, 
+            MESSAGE_IS_DELETED, taskIsDeleted, MESSAGE_IS_COMFIRMED, taskIsConfirmed, MESSAGE_TAGS};
+        String taskString = StringUtils.join(taskStringArray, MESSAGE_SEPARATOR);
         for (String tag : task.getTags()) {
             taskString = taskString + MESSAGE_SEPARATOR + parentID;
         }
