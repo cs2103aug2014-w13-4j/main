@@ -23,9 +23,25 @@ public class Logic implements ILogic {
 	private static final String DISPLAY_MESSAGE = "All tasks are displayed.";
 	private static final String ERROR_IO_MESSAGE = "There is an error in loading the file.";
 	private Storage storage = null;
+	private static Logic instance = null;
 
-	public Logic() {
+	private Logic() {
 
+	}
+
+	/**
+     * constructor
+     * This constructor follows the singleton pattern
+     * It can only be called with in the current class (Logic.getInstance())
+     * This is to ensure that only there is exactly one instance of Logic class
+     * @throws FileFormatNotSupportedException, IOException
+	 * @return Logic object
+	 */
+	public static Logic getInstance() {
+		if (instance == null) {
+			instance = new Logic();
+		}
+		return instance;
 	}
 
 	// Method to initialise the logic model
@@ -80,26 +96,28 @@ public class Logic implements ILogic {
 		return createFeedback(taskList, createMessage(DISPLAY_MESSAGE, null));
 	}
 
-	private Feedback markAsDone(Command command) throws TaskNotFoundException, IOException {
+	private Feedback markAsDone(Command command) throws TaskNotFoundException,
+			IOException {
 		int id = getIdFromCommand(command);
-			Task task = storage.getTask(id);
-			String name = task.getName();
-			task.setCompleted(true);
-			storage.writeTaskToFile(task);
-			ArrayList<Task> taskList = storage.getAllTasks();
-			return createFeedback(taskList,
-					createMessage(COMPLETE_MESSAGE, name));
+		Task task = storage.getTask(id);
+		String name = task.getName();
+		task.setCompleted(true);
+		storage.writeTaskToFile(task);
+		ArrayList<Task> taskList = storage.getAllTasks();
+		return createFeedback(taskList, createMessage(COMPLETE_MESSAGE, name));
 	}
 
-	private Feedback add(Command command) throws TaskNotFoundException, IOException {
-			Task task = createTaskForAdd(command);
-			storage.writeTaskToFile(task);
-			String name = task.getName();
-			ArrayList<Task> taskList = storage.getAllTasks();
-			return createFeedback(taskList, createMessage(ADD_MESSAGE, name));
+	private Feedback add(Command command) throws TaskNotFoundException,
+			IOException {
+		Task task = createTaskForAdd(command);
+		storage.writeTaskToFile(task);
+		String name = task.getName();
+		ArrayList<Task> taskList = storage.getAllTasks();
+		return createFeedback(taskList, createMessage(ADD_MESSAGE, name));
 	}
 
-	private Feedback delete(Command command) throws TaskNotFoundException, IOException {
+	private Feedback delete(Command command) throws TaskNotFoundException,
+			IOException {
 		int id = getIdFromCommand(command);
 		Task task = storage.getTask(id);
 		String name = task.getName();
@@ -108,7 +126,8 @@ public class Logic implements ILogic {
 		return createFeedback(taskList, createMessage(DELETE_MESSAGE, name));
 	}
 
-	private Feedback update(Command command) throws TaskNotFoundException, IOException {
+	private Feedback update(Command command) throws TaskNotFoundException,
+			IOException {
 		int id = getIdFromCommand(command);
 		Task task = storage.getTask(id);
 		updateTask(command, task);
@@ -117,7 +136,6 @@ public class Logic implements ILogic {
 		ArrayList<Task> taskList = storage.getAllTasks();
 		return createFeedback(taskList, createMessage(EDIT_MESSAGE, name));
 	}
-
 
 	private Task createTaskForAdd(Command command) {
 		Task task = new Task();
