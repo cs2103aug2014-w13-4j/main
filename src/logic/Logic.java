@@ -1,11 +1,13 @@
 package logic;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Hashtable;
 
+import storage.Storage;
 import models.Feedback;
 import models.Task;
+import models.exceptions.FileFormatNotSupportedException;
+import models.exceptions.TaskNotFoundException;
 import command.*;
 
 //TODO: Throw exceptions when mandatory fields are missing
@@ -16,104 +18,138 @@ public class Logic implements ILogic {
 	private static final String DELETE_MESSAGE = "%1$s is successfully deleted";
 	private static final int INVALID_LEVEL = -1;
 	private static final String EDIT_MESSAGE = "%1$s is successfully edited.";
-	//private static final String SELECT_MESSAGE = "%1$s is selected.";
+	// private static final String SELECT_MESSAGE = "%1$s is selected.";
 	private static final String COMPLETE_MESSAGE = "%l$s is marked as completed.";
+	private static final String ERROR_STORAGE_MESSAGE = "There is an error loading the storage.";
+	private static final String DISPLAY_MESSAGE = "All tasks are displayed.";
+	private static final String ERROR_IO_MESSAGE = "There is an error in loading the file.";
+	private Storage storage = null;
+
+	public Logic() {
+
+	}
+
+	// Method to initialise the logic model
+	public Feedback initialize() {
+		try {
+			storage = new Storage();
+			return display();
+		} catch (IOException | FileFormatNotSupportedException e) {
+			return createFeedback(null, ERROR_STORAGE_MESSAGE);
+		}
+	}
 
 	public Feedback executeCommand(Command command) {
-		CommandEnum commandType = command.getCommand();
-		switch (commandType) {
-		case ADD:
-			return add(command);
-		case DELETE:
-			return delete(command);
-		case UPDATE:
-			return update(command);
-		case UNDO:
-			return null;
-		case SELECT:
-			return null;
-		case DISPLAY:
-			return null;
-		case DONE:
-			return markAsDone(command);
-		case TAG:
-			return null;
-		case LEVEL:
-			return null;
-		default:
-			return null;
-
+		if (storage == null) {
+			return createFeedback(null, ERROR_STORAGE_MESSAGE);
+		} else {
+			CommandEnum commandType = command.getCommand();
+			switch (commandType) {
+			case ADD:
+				return add(command);
+			case DELETE:
+				return delete(command);
+			case UPDATE:
+				return update(command);
+			case UNDO:
+				return null;
+			case SELECT:
+				return null;
+			case DISPLAY:
+				return display();
+			case DONE:
+				return markAsDone(command);
+			case TAG:
+				return null;
+			case LEVEL:
+				return null;
+			default:
+				return null;
+			}
 		}
+	}
 
+	private Feedback display() {
+		ArrayList<Task> taskList = storage.getAllTasks();
+		return createFeedback(taskList, createMessage(DISPLAY_MESSAGE, null));
 	}
 
 	private Feedback markAsDone(Command command) {
 		int id = getIdFromCommand(command);
-		if (isValidId(id)) {
-			Task task = getTasks(id);
+		try {
+			Task task = storage.getTask(id);
 			String name = task.getName();
 			task.setCompleted(true);
-			writeTaskToFile(task);
-			ArrayList<Task> taskList = getAllTasks();
-			return createFeedback(taskList,createMessage(COMPLETE_MESSAGE, name));
-		} else {
-			return createFeedback(null, INVALID_INDEX_MESSAGE);
+			storage.writeTaskToFile(task);
+			ArrayList<Task> taskList = storage.getAllTasks();
+			return createFeedback(taskList,
+					createMessage(COMPLETE_MESSAGE, name));
+		} catch (TaskNotFoundException e) {
+			ArrayList<Task> taskList = storage.getAllTasks();
+			return createFeedback(taskList, INVALID_INDEX_MESSAGE);
+		} catch (IOException e) {
+			return createFeedback(null, ERROR_IO_MESSAGE);
 		}
 	}
 
 	private Feedback add(Command command) {
-		Task task;
-		task = createTaskForAdd(command);
-		writeTaskToFile(task);
-		String name = task.getName();
-		ArrayList<Task> taskList = getAllTasks();
-		return createFeedback(taskList, createMessage(ADD_MESSAGE, name));
+		try {
+			Task task = createTaskForAdd(command);
+			storage.writeTaskToFile(task);
+			String name = task.getName();
+			ArrayList<Task> taskList = storage.getAllTasks();
+			return createFeedback(taskList, createMessage(ADD_MESSAGE, name));
+		} catch (TaskNotFoundException e) {
+			ArrayList<Task> taskList = storage.getAllTasks();
+			return createFeedback(taskList, INVALID_INDEX_MESSAGE);
+		} catch (IOException e) {
+			return createFeedback(null, ERROR_IO_MESSAGE);
+		}
 	}
 
 	private Feedback delete(Command command) {
-		int id = getIdFromCommand(command);
-		if (isValidId(id)) {
-			Task task = getTasks(id);
-			String name = task.getName();
-			deleteTaskFromFile(id);
-			ArrayList<Task> taskList = getAllTasks();
-			return createFeedback(taskList,createMessage(DELETE_MESSAGE, name));
-		} else {
-			return createFeedback(null, INVALID_INDEX_MESSAGE);
+		try {
+			int id = getIdFromCommand(command);
+			if (isValidId(id)) {
+				Task task = storage.getTask(id);
+				String name = task.getName();
+				storage.deleteTaskFromFile(id);
+				ArrayList<Task> taskList = storage.getAllTasks();
+				return createFeedback(taskList, createMessage(DELETE_MESSAGE, name));
+			} else {
+				ArrayList<Task> taskList = storage.getAllTasks();
+				return createFeedback(taskList, INVALID_INDEX_MESSAGE);
+			}
+		} catch (TaskNotFoundException e) {
+			ArrayList<Task> taskList = storage.getAllTasks();
+			return createFeedback(taskList, INVALID_INDEX_MESSAGE);
+		} catch (IOException e) {
+			return createFeedback(null, ERROR_IO_MESSAGE);
 		}
 	}
 
 	private Feedback update(Command command) {
-		int id = getIdFromCommand(command);
-		if (isValidId(id)) {
-			Task task = getTasks(id);
-			updateTask(command, task);
-			writeTaskToFile(task);
-			String name = task.getName();
-			ArrayList<Task> taskList = getAllTasks();
-			return createFeedback(taskList, createMessage(EDIT_MESSAGE, name));
-		} else {
-			return createFeedback(null, INVALID_INDEX_MESSAGE);
+		try {
+			int id = getIdFromCommand(command);
+			if (isValidId(id)) {
+				Task task = storage.getTask(id);
+				updateTask(command, task);
+				storage.writeTaskToFile(task);
+				String name = task.getName();
+				ArrayList<Task> taskList = storage.getAllTasks();
+				return createFeedback(taskList, createMessage(EDIT_MESSAGE, name));
+			} else {
+				return createFeedback(null, INVALID_INDEX_MESSAGE);
+			}
+		} catch (TaskNotFoundException e) {
+			ArrayList<Task> taskList = storage.getAllTasks();
+			return createFeedback(taskList, INVALID_INDEX_MESSAGE);
+		} catch (IOException e) {
+			return createFeedback(null, ERROR_IO_MESSAGE);
 		}
 	}
 
-	//Not in use yet
-	/**
-	private Feedback view(Command command) {
-		String name;
-		int id;
-		id = getIdFromCommand(command);
-		if (isValidId(id)) {
-			ArrayList<Task> taskList = new ArrayList<Task>();
-			Task selectedTask = getTasks(id);
-			taskList.add(selectedTask);
-			name = selectedTask.getName();
-			return createFeedback(taskList, createMessage(SELECT_MESSAGE, name));
-		} else {
-			return createFeedback(null, INVALID_INDEX_MESSAGE);
-		}
-	}
-	**/
+
 	private Task createTaskForAdd(Command command) {
 		Task task = new Task();
 		task.setId(-1);
@@ -149,45 +185,38 @@ public class Logic implements ILogic {
 		}
 	}
 
-	private String getTaskName(int id) {
-		Task task = getTasks(id);
-		return task.getName();
-	}
-
 	private void updateName(Command command, Task oldTask) {
 		if (hasNewName(command)) {
 			String taskName = command.getParam().get(ParamEnum.NAME).get(0);
 			oldTask.setName(taskName);
 		}
-		
+
 	}
 
 	private void updateDueDate(Command command, Task oldTask) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	private void setStartDateFromCommand(Command command, Task task) {
 		if (hasStartDate(command)) {
-			//TODO: set task date;
+			// TODO: set task date;
 		}
 	}
 
 	private void setEndDateFromCommand(Command command, Task task) {
 		if (hasEndDate(command)) {
-			//TODO: set task date;
+			// TODO: set task date;
 		}
 
 	}
 
 	private void setDueDateFromCommand(Command command, Task task) {
 		if (hasDueDate(command)) {
-			//TODO: set task date;
+			// TODO: set task date;
 		}
 
 	}
-
-	
 
 	private void setLevelFromCommand(Command command, Task task) {
 		if (hasLevel(command)) {
@@ -251,7 +280,7 @@ public class Logic implements ILogic {
 	}
 
 	private boolean isValidId(int id) {
-		//TODO: Store the largest current id in storage
+		// TODO: Store the largest current id in storage
 		return id > INVALID_ID;
 	}
 
