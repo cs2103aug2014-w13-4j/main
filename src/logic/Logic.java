@@ -23,9 +23,9 @@ public class Logic implements ILogic {
 	private static final String DISPLAY_MESSAGE = "All tasks are displayed.";
 	private static final String ERROR_IO_MESSAGE = "There is an error in loading the file.";
 	private Storage storage = null;
-	private static Logic instance = null;
+	
 
-	private Logic() {
+	public Logic() {
 
 	}
 
@@ -36,13 +36,23 @@ public class Logic implements ILogic {
      * This is to ensure that only there is exactly one instance of Logic class
      * @throws FileFormatNotSupportedException, IOException
 	 * @return Logic object
+	 * 
+	 * To be implemented in the future
 	 */
+	/**
+	private static Logic instance = null;
+	
+	private Logic() {
+
+	}
+	
 	public static Logic getInstance() {
 		if (instance == null) {
 			instance = new Logic();
 		}
 		return instance;
 	}
+	**/
 
 	/**
 	 * Initialises the logic object by creating its corresponding storage object
