@@ -44,7 +44,11 @@ public class Logic implements ILogic {
 		return instance;
 	}
 
-	// Method to initialise the logic model
+	/**
+	 * Initialises the logic object by creating its corresponding storage object
+	 * It also catches the exceptions that can be thrown
+	 * @return the feedback indicating whether the storage has been successfully loaded. 
+	 */
 	public Feedback initialize() {
 		try {
 			storage = new Storage();
@@ -54,6 +58,12 @@ public class Logic implements ILogic {
 		}
 	}
 
+	/**
+	 * Main function to call to execute command
+	 * 
+	 * @param the command created by the commandParser
+	 * @return the feedback (tasklist and message) corresponding to the particular command
+	 */
 	public Feedback executeCommand(Command command) {
 		if (storage == null) {
 			return createFeedback(null, ERROR_STORAGE_MESSAGE);
@@ -91,11 +101,22 @@ public class Logic implements ILogic {
 		}
 	}
 
+	/**
+	 * Displays all the tasks in the file
+	 * @return feedback containing all the tasks in the file, and the message.
+	 */
 	private Feedback display() {
 		ArrayList<Task> taskList = storage.getAllTasks();
 		return createFeedback(taskList, createMessage(DISPLAY_MESSAGE, null));
 	}
 
+	/**
+	 * Marks a particular task as done
+	 * @param command: the command created by commandParser
+	 * @return feedback containing the updated list of tasks in the file, and the message.
+	 * @throws TaskNotFoundException
+	 * @throws IOException
+	 */
 	private Feedback markAsDone(Command command) throws TaskNotFoundException,
 			IOException {
 		int id = getIdFromCommand(command);
@@ -107,6 +128,13 @@ public class Logic implements ILogic {
 		return createFeedback(taskList, createMessage(COMPLETE_MESSAGE, name));
 	}
 
+	/**
+	 * Adds a new task to the file
+	 * @param command: the command created by commandParser
+	 * @return feedback containing the updated list of tasks in the file, and the message.
+	 * @throws TaskNotFoundException
+	 * @throws IOException
+	 */
 	private Feedback add(Command command) throws TaskNotFoundException,
 			IOException {
 		Task task = createTaskForAdd(command);
@@ -116,6 +144,13 @@ public class Logic implements ILogic {
 		return createFeedback(taskList, createMessage(ADD_MESSAGE, name));
 	}
 
+	/**
+	 * Deletes a task from the file
+	 * @param command: the command created by commandParser
+	 * @return feedback containing the updated list of tasks in the file, and the message.
+	 * @throws TaskNotFoundException
+	 * @throws IOException
+	 */
 	private Feedback delete(Command command) throws TaskNotFoundException,
 			IOException {
 		int id = getIdFromCommand(command);
@@ -126,6 +161,13 @@ public class Logic implements ILogic {
 		return createFeedback(taskList, createMessage(DELETE_MESSAGE, name));
 	}
 
+	/**
+	 * Updates the task in the file
+	 * @param command: the command created by commandParser
+	 * @return feedback containing the updated list of tasks in the file, and the message.
+	 * @throws TaskNotFoundException
+	 * @throws IOException
+	 */
 	private Feedback update(Command command) throws TaskNotFoundException,
 			IOException {
 		int id = getIdFromCommand(command);
