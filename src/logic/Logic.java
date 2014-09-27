@@ -42,28 +42,35 @@ public class Logic implements ILogic {
 		if (storage == null) {
 			return createFeedback(null, ERROR_STORAGE_MESSAGE);
 		} else {
-			CommandEnum commandType = command.getCommand();
-			switch (commandType) {
-			case ADD:
-				return add(command);
-			case DELETE:
-				return delete(command);
-			case UPDATE:
-				return update(command);
-			case UNDO:
-				return null;
-			case SELECT:
-				return null;
-			case DISPLAY:
-				return display();
-			case DONE:
-				return markAsDone(command);
-			case TAG:
-				return null;
-			case LEVEL:
-				return null;
-			default:
-				return null;
+			try {
+				CommandEnum commandType = command.getCommand();
+				switch (commandType) {
+				case ADD:
+					return add(command);
+				case DELETE:
+					return delete(command);
+				case UPDATE:
+					return update(command);
+				case UNDO:
+					return null;
+				case SELECT:
+					return null;
+				case DISPLAY:
+					return display();
+				case DONE:
+					return markAsDone(command);
+				case TAG:
+					return null;
+				case LEVEL:
+					return null;
+				default:
+					return null;
+				}
+			} catch (TaskNotFoundException e) {
+				ArrayList<Task> taskList = storage.getAllTasks();
+				return createFeedback(taskList, INVALID_INDEX_MESSAGE);
+			} catch (IOException e) {
+				return createFeedback(null, ERROR_IO_MESSAGE);
 			}
 		}
 	}
@@ -73,9 +80,8 @@ public class Logic implements ILogic {
 		return createFeedback(taskList, createMessage(DISPLAY_MESSAGE, null));
 	}
 
-	private Feedback markAsDone(Command command) {
+	private Feedback markAsDone(Command command) throws TaskNotFoundException, IOException {
 		int id = getIdFromCommand(command);
-		try {
 			Task task = storage.getTask(id);
 			String name = task.getName();
 			task.setCompleted(true);
@@ -83,60 +89,33 @@ public class Logic implements ILogic {
 			ArrayList<Task> taskList = storage.getAllTasks();
 			return createFeedback(taskList,
 					createMessage(COMPLETE_MESSAGE, name));
-		} catch (TaskNotFoundException e) {
-			ArrayList<Task> taskList = storage.getAllTasks();
-			return createFeedback(taskList, INVALID_INDEX_MESSAGE);
-		} catch (IOException e) {
-			return createFeedback(null, ERROR_IO_MESSAGE);
-		}
 	}
 
-	private Feedback add(Command command) {
-		try {
+	private Feedback add(Command command) throws TaskNotFoundException, IOException {
 			Task task = createTaskForAdd(command);
 			storage.writeTaskToFile(task);
 			String name = task.getName();
 			ArrayList<Task> taskList = storage.getAllTasks();
 			return createFeedback(taskList, createMessage(ADD_MESSAGE, name));
-		} catch (TaskNotFoundException e) {
-			ArrayList<Task> taskList = storage.getAllTasks();
-			return createFeedback(taskList, INVALID_INDEX_MESSAGE);
-		} catch (IOException e) {
-			return createFeedback(null, ERROR_IO_MESSAGE);
-		}
 	}
 
-	private Feedback delete(Command command) {
-		try {
-			int id = getIdFromCommand(command);
-			Task task = storage.getTask(id);
-			String name = task.getName();
-			storage.deleteTaskFromFile(id);
-			ArrayList<Task> taskList = storage.getAllTasks();
-			return createFeedback(taskList, createMessage(DELETE_MESSAGE, name));
-		} catch (TaskNotFoundException e) {
-			ArrayList<Task> taskList = storage.getAllTasks();
-			return createFeedback(taskList, INVALID_INDEX_MESSAGE);
-		} catch (IOException e) {
-			return createFeedback(null, ERROR_IO_MESSAGE);
-		}
+	private Feedback delete(Command command) throws TaskNotFoundException, IOException {
+		int id = getIdFromCommand(command);
+		Task task = storage.getTask(id);
+		String name = task.getName();
+		storage.deleteTaskFromFile(id);
+		ArrayList<Task> taskList = storage.getAllTasks();
+		return createFeedback(taskList, createMessage(DELETE_MESSAGE, name));
 	}
 
-	private Feedback update(Command command) {
-		try {
-			int id = getIdFromCommand(command);
-			Task task = storage.getTask(id);
-			updateTask(command, task);
-			storage.writeTaskToFile(task);
-			String name = task.getName();
-			ArrayList<Task> taskList = storage.getAllTasks();
-			return createFeedback(taskList, createMessage(EDIT_MESSAGE, name));
-		} catch (TaskNotFoundException e) {
-			ArrayList<Task> taskList = storage.getAllTasks();
-			return createFeedback(taskList, INVALID_INDEX_MESSAGE);
-		} catch (IOException e) {
-			return createFeedback(null, ERROR_IO_MESSAGE);
-		}
+	private Feedback update(Command command) throws TaskNotFoundException, IOException {
+		int id = getIdFromCommand(command);
+		Task task = storage.getTask(id);
+		updateTask(command, task);
+		storage.writeTaskToFile(task);
+		String name = task.getName();
+		ArrayList<Task> taskList = storage.getAllTasks();
+		return createFeedback(taskList, createMessage(EDIT_MESSAGE, name));
 	}
 
 
