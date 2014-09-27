@@ -3,6 +3,7 @@ package models;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+//TODO: set dateStart
 public class Task {
 	private int id;
 	private String name;
@@ -94,6 +95,10 @@ public class Task {
 		return dateEnd;
 	}
 
+	public int getId() {
+		return id;
+	}
+
 	public int getPriorityLevel() {
 		return priorityLevel;
 	}
@@ -126,11 +131,12 @@ public class Task {
 		return isConfirmed;
 	}
 
-	public int getId() {
-		return id;
-	}
-
 	public boolean isCompleted() {
 		return isCompleted;
+	}
+	
+	public void addTags(ArrayList<String> newTags) {
+		newTags.removeAll(this.tags);
+		this.tags.addAll(newTags);
 	}
 }
