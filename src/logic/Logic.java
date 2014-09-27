@@ -225,11 +225,8 @@ public class Logic implements ILogic {
 	}
 
 	private void updateName(Command command, Task oldTask) {
-		if (hasNewName(command)) {
-			String taskName = command.getParam().get(ParamEnum.NAME).get(0);
-			oldTask.setName(taskName);
-		}
-
+		String taskName = command.getParam().get(ParamEnum.NAME).get(0);
+		oldTask.setName(taskName);
 	}
 
 	private void updateDueDate(Command command, Task oldTask) {
@@ -238,41 +235,31 @@ public class Logic implements ILogic {
 	}
 
 	private void setStartDateFromCommand(Command command, Task task) {
-		if (hasStartDate(command)) {
 			// TODO: set task date;
-		}
 	}
 
 	private void setEndDateFromCommand(Command command, Task task) {
-		if (hasEndDate(command)) {
-			// TODO: set task date;
-		}
-
+		// TODO: set task date;
 	}
 
 	private void setDueDateFromCommand(Command command, Task task) {
-		if (hasDueDate(command)) {
-			// TODO: set task date;
-		}
-
+		// TODO: set task date;
 	}
 
 	private void setLevelFromCommand(Command command, Task task) {
-		if (hasLevel(command)) {
-			int level;
-			try {
-				level = Integer.parseInt(command.getParam()
-						.get(ParamEnum.LEVEL).get(0));
-			} catch (NumberFormatException e) {
-				level = INVALID_LEVEL;
-			}
-			// TODO: Decide on range of priority levels
-			// TODO: Should an error message be thrown if an invalid level is
-			// given?
-			// Should the task be saved in that case?
-			if (level > INVALID_LEVEL) {
-				task.setPriorityLevel(level);
-			}
+		int level;
+		try {
+			level = Integer.parseInt(command.getParam()
+					.get(ParamEnum.LEVEL).get(0));
+		} catch (NumberFormatException e) {
+			level = INVALID_LEVEL;
+		}
+		// TODO: Decide on range of priority levels
+		// TODO: Should an error message be thrown if an invalid level is
+		// given?
+		// Should the task be saved in that case?
+		if (level > INVALID_LEVEL) {
+			task.setPriorityLevel(level);
 		}
 	}
 
@@ -282,40 +269,14 @@ public class Logic implements ILogic {
 	}
 
 	private void setNoteFromCommand(Command command, Task task) {
-		if (hasNote(command)) {
-			String note = command.getParam().get(ParamEnum.NOTE).get(0);
-			task.setNote(note);
-		}
+		String note = command.getParam().get(ParamEnum.NOTE).get(0);
+		task.setNote(note);
 
 	}
 
 	private void setTagsFromCommand(Command command, Task task) {
 		ArrayList<String> tags = command.getParam().get(ParamEnum.TAG);
 		task.setTags(tags);
-	}
-
-	private boolean hasStartDate(Command command) {
-		return command.getParam().containsKey(ParamEnum.START_DATE);
-	}
-
-	private boolean hasEndDate(Command command) {
-		return command.getParam().containsKey(ParamEnum.START_DATE);
-	}
-
-	private boolean hasDueDate(Command command) {
-		return command.getParam().containsKey(ParamEnum.DATE);
-	}
-
-	private boolean hasNewName(Command command) {
-		return command.getParam().containsKey(ParamEnum.NAME);
-	}
-
-	private boolean hasLevel(Command command) {
-		return command.getParam().containsKey(ParamEnum.LEVEL);
-	}
-
-	private boolean hasNote(Command command) {
-		return command.getParam().containsKey(ParamEnum.NOTE);
 	}
 
 }
