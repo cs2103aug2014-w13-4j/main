@@ -18,7 +18,6 @@ public class Logic implements ILogic {
 	private static final String DELETE_MESSAGE = "%1$s is successfully deleted";
 	private static final int INVALID_LEVEL = -1;
 	private static final String EDIT_MESSAGE = "%1$s is successfully edited.";
-	// private static final String SELECT_MESSAGE = "%1$s is selected.";
 	private static final String COMPLETE_MESSAGE = "%l$s is marked as completed.";
 	private static final String ERROR_STORAGE_MESSAGE = "There is an error loading the storage.";
 	private static final String DISPLAY_MESSAGE = "All tasks are displayed.";
@@ -110,16 +109,11 @@ public class Logic implements ILogic {
 	private Feedback delete(Command command) {
 		try {
 			int id = getIdFromCommand(command);
-			if (isValidId(id)) {
-				Task task = storage.getTask(id);
-				String name = task.getName();
-				storage.deleteTaskFromFile(id);
-				ArrayList<Task> taskList = storage.getAllTasks();
-				return createFeedback(taskList, createMessage(DELETE_MESSAGE, name));
-			} else {
-				ArrayList<Task> taskList = storage.getAllTasks();
-				return createFeedback(taskList, INVALID_INDEX_MESSAGE);
-			}
+			Task task = storage.getTask(id);
+			String name = task.getName();
+			storage.deleteTaskFromFile(id);
+			ArrayList<Task> taskList = storage.getAllTasks();
+			return createFeedback(taskList, createMessage(DELETE_MESSAGE, name));
 		} catch (TaskNotFoundException e) {
 			ArrayList<Task> taskList = storage.getAllTasks();
 			return createFeedback(taskList, INVALID_INDEX_MESSAGE);
@@ -131,16 +125,12 @@ public class Logic implements ILogic {
 	private Feedback update(Command command) {
 		try {
 			int id = getIdFromCommand(command);
-			if (isValidId(id)) {
-				Task task = storage.getTask(id);
-				updateTask(command, task);
-				storage.writeTaskToFile(task);
-				String name = task.getName();
-				ArrayList<Task> taskList = storage.getAllTasks();
-				return createFeedback(taskList, createMessage(EDIT_MESSAGE, name));
-			} else {
-				return createFeedback(null, INVALID_INDEX_MESSAGE);
-			}
+			Task task = storage.getTask(id);
+			updateTask(command, task);
+			storage.writeTaskToFile(task);
+			String name = task.getName();
+			ArrayList<Task> taskList = storage.getAllTasks();
+			return createFeedback(taskList, createMessage(EDIT_MESSAGE, name));
 		} catch (TaskNotFoundException e) {
 			ArrayList<Task> taskList = storage.getAllTasks();
 			return createFeedback(taskList, INVALID_INDEX_MESSAGE);
@@ -277,11 +267,6 @@ public class Logic implements ILogic {
 
 	private boolean hasNote(Command command) {
 		return command.getParam().containsKey(ParamEnum.NOTE);
-	}
-
-	private boolean isValidId(int id) {
-		// TODO: Store the largest current id in storage
-		return id > INVALID_ID;
 	}
 
 }
