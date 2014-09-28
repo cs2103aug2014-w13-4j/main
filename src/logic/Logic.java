@@ -224,7 +224,7 @@ public class Logic implements ILogic {
 	}
 
 	private void updateName(Command command, Task task) {
-		if (command.getParam().contains(ParamEnum.NAME)) {
+		if (command.getParam().containsKey(ParamEnum.NAME)) {
 			String taskName = command.getParam().get(ParamEnum.NAME).get(0);
 			task.setName(taskName);
 		}
@@ -248,7 +248,7 @@ public class Logic implements ILogic {
 	}
 
 	private void setLevelFromCommand(Command command, Task task) {
-		if (command.getParam().contains(ParamEnum.TAG)) {
+		if (command.getParam().containsKey(ParamEnum.TAG)) {
 			int level = INVALID_LEVEL;
 			try {
 				level = Integer.parseInt(command.getParam().get(ParamEnum.LEVEL).get(0));
@@ -270,7 +270,7 @@ public class Logic implements ILogic {
 	}
 
 	private void setNoteFromCommand(Command command, Task task) {
-		if (command.getParam().contains(ParamEnum.NOTE)) {
+		if (command.getParam().containsKey(ParamEnum.NOTE)) {
 			String note = command.getParam().get(ParamEnum.NOTE).get(0);
 			task.setNote(note);
 		}
@@ -278,7 +278,7 @@ public class Logic implements ILogic {
 	}
 
 	private void setTagsFromCommand(Command command, Task task) {
-		if (command.getParam().contains(ParamEnum.TAG)) {
+		if (command.getParam().containsKey(ParamEnum.TAG)) {
 			ArrayList<String> tags = command.getParam().get(ParamEnum.TAG);
 			task.setTags(tags);
 		}
