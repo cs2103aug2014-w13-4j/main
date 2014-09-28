@@ -202,10 +202,9 @@ public class Logic implements ILogic {
 		return task;
 	}
 
-	private Task updateTask(Command command, Task task) {
+	private void updateTask(Command command, Task task) {
 		updateName(command, task);
 		updateDueDate(command, task);
-		return task;
 	}
 
 	private static String createMessage(String message, String variableText1) {
@@ -224,9 +223,11 @@ public class Logic implements ILogic {
 		}
 	}
 
-	private void updateName(Command command, Task oldTask) {
-		String taskName = command.getParam().get(ParamEnum.NAME).get(0);
-		oldTask.setName(taskName);
+	private void updateName(Command command, Task task) {
+		if (command.getParam().contains(ParamEnum.NAME)) {
+			String taskName = command.getParam().get(ParamEnum.NAME).get(0);
+			task.setName(taskName);
+		}
 	}
 
 	private void updateDueDate(Command command, Task oldTask) {
