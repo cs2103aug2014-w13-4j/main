@@ -189,7 +189,7 @@ public class Logic implements ILogic {
 		return createFeedback(taskList, createMessage(EDIT_MESSAGE, name));
 	}
 
-	private Task createTaskForAdd(Command command) {
+	public Task createTaskForAdd(Command command) {
 		Task task = new Task();
 		task.setId(-1);
 		setNameFromCommand(command, task);
@@ -247,19 +247,19 @@ public class Logic implements ILogic {
 	}
 
 	private void setLevelFromCommand(Command command, Task task) {
-		int level;
-		try {
-			level = Integer.parseInt(command.getParam()
-					.get(ParamEnum.LEVEL).get(0));
-		} catch (NumberFormatException e) {
-			level = INVALID_LEVEL;
-		}
-		// TODO: Decide on range of priority levels
-		// TODO: Should an error message be thrown if an invalid level is
-		// given?
-		// Should the task be saved in that case?
-		if (level > INVALID_LEVEL) {
-			task.setPriorityLevel(level);
+		if (command.getParam().contains(ParamEnum.TAG)) {
+			int level = INVALID_LEVEL;
+			try {
+				level = Integer.parseInt(command.getParam().get(ParamEnum.LEVEL).get(0));
+			} catch (NumberFormatException | NullPointerException e) {
+			}
+			// TODO: Decide on range of priority levels
+			// TODO: Should an error message be thrown if an invalid level is
+			// given?
+			// Should the task be saved in that case?
+			if (level > INVALID_LEVEL) {
+				task.setPriorityLevel(level);
+			}
 		}
 	}
 
@@ -269,14 +269,18 @@ public class Logic implements ILogic {
 	}
 
 	private void setNoteFromCommand(Command command, Task task) {
-		String note = command.getParam().get(ParamEnum.NOTE).get(0);
-		task.setNote(note);
+		if (command.getParam().contains(ParamEnum.NOTE)) {
+			String note = command.getParam().get(ParamEnum.NOTE).get(0);
+			task.setNote(note);
+		}
 
 	}
 
 	private void setTagsFromCommand(Command command, Task task) {
-		ArrayList<String> tags = command.getParam().get(ParamEnum.TAG);
-		task.setTags(tags);
+		if (command.getParam().contains(ParamEnum.TAG)) {
+			ArrayList<String> tags = command.getParam().get(ParamEnum.TAG);
+			task.setTags(tags);
+		}
 	}
 
 }
