@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Scanner;
 
+import models.PriorityLevelEnum;
 import models.Task;
 import models.exceptions.FileFormatNotSupportedException;
 import models.exceptions.TaskNotFoundException;
@@ -83,7 +84,7 @@ public class TaskStorage {
         String taskDateDue = task.getDateDue().toString() + MESSAGE_SEPARATOR;
         String taskDateStart = task.getDateStart().toString() + MESSAGE_SEPARATOR;
         String taskDateEnd = task.getDateEnd().toString() + MESSAGE_SEPARATOR;
-        String taskPriorityLevel = Integer.toString(task.getPriorityLevel()) + MESSAGE_SEPARATOR;
+        String taskPriorityLevel = Integer.toString(task.getPriorityLevelInteger()) + MESSAGE_SEPARATOR;
         String taskNote = task.getNote() + MESSAGE_SEPARATOR;
         String taskIsDeleted = Boolean.toString(task.isDeleted()) + MESSAGE_SEPARATOR;
         String taskIsConfirmed = Boolean.toString(task.isConfirmed());
@@ -129,7 +130,7 @@ public class TaskStorage {
             taskDateDue.setTime(dateFormat.parse(taskStringArray[DATE_DUE_ATTRIBUTE]));
             taskDateStart.setTime(dateFormat.parse(taskStringArray[DATE_START_ATTRIBUTE]));
             taskDateEnd.setTime(dateFormat.parse(taskStringArray[DATE_END_ATTRIBUTE]));
-            int taskPriorityLevel = Integer.valueOf(taskStringArray[PRIORITY_LEVEL_ATTRIBUTE]);
+            PriorityLevelEnum taskPriorityLevel = PriorityLevelEnum.fromInteger(Integer.valueOf(taskStringArray[PRIORITY_LEVEL_ATTRIBUTE]));
             String taskNote = taskStringArray[NOTE_ATTRIBUTE];
             boolean taskIsDeleted = Boolean.valueOf(taskStringArray[IS_DELETED_ATTRIBUTE]);
             boolean taskIsConfirmed = Boolean.valueOf(taskStringArray[IS_COMFIRMED_ATTRIBUTE]);
