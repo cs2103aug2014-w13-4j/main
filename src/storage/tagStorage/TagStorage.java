@@ -42,6 +42,10 @@ public class TagStorage {
 
     // Update tag list when adding or updating tasks
     public void updateTagToFile(ArrayList<String> tags) throws IOException {
+        // don't need to update if there is no tags
+        if (tags == null) {
+            return ;
+        }
         for (String tag: tags) {
             if (tagBuffer.contains(tag)) {
                 continue;
