@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import storage.Storage;
 import models.Feedback;
+import models.PriorityLevelEnum;
 import models.Task;
 import models.exceptions.FileFormatNotSupportedException;
 import models.exceptions.TaskNotFoundException;
@@ -16,12 +17,12 @@ public class Logic implements ILogic {
 	private static final String ADD_MESSAGE = "%1$s is successfully added.";
 	private static final String INVALID_INDEX_MESSAGE = "Invalid Number Input!";
 	private static final String DELETE_MESSAGE = "%1$s is successfully deleted";
-	private static final int INVALID_LEVEL = -1;
 	private static final String EDIT_MESSAGE = "%1$s is successfully edited.";
 	private static final String COMPLETE_MESSAGE = "%l$s is marked as completed.";
 	private static final String ERROR_STORAGE_MESSAGE = "There is an error loading the storage.";
 	private static final String DISPLAY_MESSAGE = "All tasks are displayed.";
 	private static final String ERROR_IO_MESSAGE = "There is an error in loading the file.";
+	private static final String ERROR_INPUT_MESSAGE = "The input is invalid.";
 	private Storage storage = null;
 	
 
@@ -95,12 +96,14 @@ public class Logic implements ILogic {
 					return display();
 				case DONE:
 					return markAsDone(command);
-				case TAG:
-					return null;
 				case LEVEL:
 					return null;
+					/**
+				case SEARCH:
+					return null; **/
+					//storage search -> (HashMap CommandParam)
 				default:
-					return null;
+					return createFeedback(storage.getAllTasks(), ERROR_INPUT_MESSAGE);
 				}
 			} catch (TaskNotFoundException e) {
 				ArrayList<Task> taskList = storage.getAllTasks();
@@ -194,7 +197,6 @@ public class Logic implements ILogic {
 		task.setId(-1);
 		setNameFromCommand(command, task);
 		setStartDateFromCommand(command, task);
-		setEndDateFromCommand(command, task);
 		setDueDateFromCommand(command, task);
 		setTagsFromCommand(command, task);
 		setLevelFromCommand(command, task);
@@ -239,28 +241,20 @@ public class Logic implements ILogic {
 			// TODO: set task date;
 	}
 
-	private void setEndDateFromCommand(Command command, Task task) {
-		// TODO: set task date;
-	}
-
 	private void setDueDateFromCommand(Command command, Task task) {
 		// TODO: set task date;
 	}
 
 	private void setLevelFromCommand(Command command, Task task) {
-		if (command.getParam().containsKey(ParamEnum.TAG)) {
-			int level = INVALID_LEVEL;
+		PriorityLevelEnum priorityEnum = null;
+		if (command.getParam().containsKey(ParamEnum.LEVEL)) {
 			try {
-				level = Integer.parseInt(command.getParam().get(ParamEnum.LEVEL).get(0));
+				int level = Integer.parseInt(command.getParam().get(ParamEnum.LEVEL).get(0));
+				priorityEnum = PriorityLevelEnum.fromInteger(level);
 			} catch (NumberFormatException | NullPointerException e) {
 			}
-			// TODO: Decide on range of priority levels
-			// TODO: Should an error message be thrown if an invalid level is
-			// given?
-			// Should the task be saved in that case?
-			if (level > INVALID_LEVEL) {
-				task.setPriorityLevel(level);
-			}
+			// TODO: Indicate error when invalid priority level is added
+			task.setPriorityLevel(priorityEnum);
 		}
 	}
 

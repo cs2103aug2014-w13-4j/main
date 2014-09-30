@@ -2,6 +2,7 @@ package models;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import models.PriorityLevelEnum;
 
 //TODO: set dateStart
 public class Task {
@@ -10,7 +11,7 @@ public class Task {
 	private Calendar dateDue;
 	private Calendar dateStart;
 	private Calendar dateEnd;
-	private int priorityLevel;
+	private PriorityLevelEnum priorityLevel;
 	private String note;
 	private ArrayList<String> tags;
 	private ArrayList<Integer> parentTasks;
@@ -18,7 +19,6 @@ public class Task {
 	private ArrayList<Integer> conditionalTasks;
 	private boolean isDeleted = false;
 	private boolean isConfirmed = false;
-	private boolean isCompleted = false;
 	
 	public Task() {
 	}
@@ -35,7 +35,7 @@ public class Task {
 		this.dateStart = dateStart;
 	}
 
-	public void setPriorityLevel(int priorityLevel) {
+	public void setPriorityLevel(PriorityLevelEnum priorityLevel) {
 		this.priorityLevel = priorityLevel;
 	}
 
@@ -99,8 +99,12 @@ public class Task {
 		return id;
 	}
 
-	public int getPriorityLevel() {
+	public PriorityLevelEnum getPriorityLevel() {
 		return priorityLevel;
+	}
+	
+	public int getPriorityLevelInteger() {
+		return priorityLevel.getLevel();
 	}
 
 	public String getNote() {
@@ -129,10 +133,6 @@ public class Task {
 
 	public boolean isConfirmed() {
 		return isConfirmed;
-	}
-
-	public boolean isCompleted() {
-		return isCompleted;
 	}
 	
 	public void addTags(ArrayList<String> newTags) {
