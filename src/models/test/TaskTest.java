@@ -25,7 +25,7 @@ public class TaskTest {
 		finalResult.add("1");
 		finalResult.add("2");
 		finalResult.add("3");
-		assertEquals(finalResult, testTask.getTags(), "2 is not duplicated");
+		assertEquals("2 is not duplicated", testTask.getTags(), finalResult);
 	}
 
 }
