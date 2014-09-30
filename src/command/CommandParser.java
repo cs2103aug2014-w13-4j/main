@@ -11,6 +11,8 @@ public class CommandParser implements ICommandParser {
 	private static final String INDIVIDUAL_PARAM_PATTERN = "%1$s|";
 	private static final String COMPLETE_PATTERN = "(%1$s|%2$s)(.*?)(?=%2$s$)";
 	
+	private static final String INVALID_COMMAND_MESSAGE = "%1$s is not a valid command";
+	
 	private static final Integer ENUM_TYPE = 1;
 	private static final Integer ENUM_ARGUMENT = 2;
 	
@@ -23,7 +25,7 @@ public class CommandParser implements ICommandParser {
 	}
 
 	@Override
-	public Command parseCommand(String commandString) {
+	public Command parseCommand(String commandString) throws Exception {
 		CommandEnum commandType = getCommandType(commandString);
 		
 		Command userCommand = new Command(commandType);
@@ -94,12 +96,12 @@ public class CommandParser implements ICommandParser {
 		return paramsPattern;
 	}
 
-	private CommandEnum getCommandType(String commandString) {
+	private CommandEnum getCommandType(String commandString) throws Exception {
 		String firstWord = getFirstWord(commandString).toLowerCase();
 		if (commandEnumTable.containsKey(firstWord)) {
 			return commandEnumTable.get(firstWord);
 		} else {
-			throw null;
+			throw new Exception(String.format(INVALID_COMMAND_MESSAGE, firstWord));
 		}
 	}
 	
@@ -130,12 +132,17 @@ public class CommandParser implements ICommandParser {
 	public static void main(String[] args) {
 		CommandParser cp = new CommandParser();
 		
-		Command userCommand = cp.parseCommand("Add CS2103T from tuesday to wednesday note MVP +tag +2nd");
-		System.out.println(userCommand.getCommandArgument());
-		CommandEnum commandType = userCommand.getCommand();
-		System.out.println(commandType);
-		Hashtable<ParamEnum, ArrayList<String>> params = userCommand.getParam();
-		System.out.println(params);
+		Command userCommand;
+		try {
+			userCommand = cp.parseCommand("Add CS2103T from tuesday to wednesday note MVP +tag +2nd");
+			System.out.println(userCommand.getCommandArgument());
+			CommandEnum commandType = userCommand.getCommand();
+			System.out.println(commandType);
+			Hashtable<ParamEnum, ArrayList<String>> params = userCommand.getParam();
+			System.out.println(params);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }
