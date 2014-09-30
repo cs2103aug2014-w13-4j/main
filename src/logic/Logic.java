@@ -135,7 +135,8 @@ public class Logic implements ILogic {
 		int id = getIdFromCommand(command);
 		Task task = storage.getTask(id);
 		String name = task.getName();
-		task.setCompleted(true);
+		//TODO: markAsDone
+		//task.setEndDate();
 		storage.writeTaskToFile(task);
 		ArrayList<Task> taskList = storage.getAllTasks();
 		return createFeedback(taskList, createMessage(COMPLETE_MESSAGE, name));
