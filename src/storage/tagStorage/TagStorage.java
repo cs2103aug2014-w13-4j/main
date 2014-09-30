@@ -51,6 +51,12 @@ public class TagStorage {
     }
     
     public void addToFile(String tag) {
-    	
+    	BufferedWriter bufferedWriter = null;
+        try {
+            bufferedWriter = new BufferedWriter(new FileWriter(dataFile, true));
+            bufferedWriter.write(tags);
+            bufferedWriter.close();
+        } finally {            
+        }
     }
 }

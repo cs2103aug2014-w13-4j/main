@@ -232,8 +232,9 @@ public class TaskStorage {
             String taskString = TaskToString(task);
             bufferedWriter = new BufferedWriter(new FileWriter(dataFile, true));
             bufferedWriter.write(taskString);
-        } finally {
             bufferedWriter.close();
+        } finally {
+            
         }
     }
 
@@ -246,8 +247,8 @@ public class TaskStorage {
                 taskString = TaskToString(task);
                 bufferedWriter.write(taskString + "\r\n");
             }
-        } finally {
-        	bufferedWriter.close();
+            bufferedWriter.close();
+        } finally {        	
         }
     }
 
