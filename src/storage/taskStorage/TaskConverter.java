@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import models.DateParser;
 import models.PriorityLevelEnum;
 import models.Task;
 import models.exceptions.FileFormatNotSupportedException;
@@ -64,7 +65,7 @@ class TaskConverter {
         if (calendarProperty == null) {
             return "";
         } else {
-            return calendarProperty.toString();
+            return DateParser.parseCalendar(calendarProperty);
         }
     }
 
@@ -182,12 +183,7 @@ class TaskConverter {
             // System.out.println("null property");
             return null;            
         } else {
-            Calendar date = Calendar.getInstance();
-
-            // ??need to confirm date format
-            DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss");
-            date.setTime(dateFormat.parse(propertyString));
-            return date;
+            return DateParser.parseString(propertyString);
         }
     }
 
