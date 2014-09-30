@@ -9,11 +9,11 @@ public enum CommandEnum {
 	DELETE ("delete"),
 	UPDATE ("update", ParamEnum.DATE, ParamEnum.NAME),
 	UNDO ("undo"),
-	SELECT ("select", ParamEnum.ORDER_BY, ParamEnum.TAG),
+	SELECT ("select", ParamEnum.ORDER_BY, ParamEnum.TAG, ParamEnum.STATUS),
+	SEARCH ("search", ParamEnum.ORDER_BY, ParamEnum.TAG, ParamEnum.STATUS),
 	DISPLAY ("display"),
 	DONE ("done"),
 	TAG ("\\+"),
-	// Is this a param or a command? It seems to be a command in our Proposal
 	LEVEL ("level");
 	
 	private final String regex;
