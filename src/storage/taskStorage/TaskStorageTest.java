@@ -3,6 +3,7 @@ package storage.taskStorage;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import models.PriorityLevelEnum;
 import models.Task;
@@ -27,6 +28,11 @@ public class TaskStorageTest {
 	@Test
 	public void testCanAddAndUpdateTask() {
         try {
+            // clear the file before testing
+            PrintWriter writer = new PrintWriter("taskStorage.data");
+            writer.print("");
+            writer.close();
+
 			TaskStorage taskStorage = new TaskStorage("taskStorage.data");
             Task task = createTaskForTest(ID_FOR_NEW_TASK, "Write Report", 1, "Do eat apple when you are writing report.", false, false);
             taskStorage.writeTaskToFile(task);
