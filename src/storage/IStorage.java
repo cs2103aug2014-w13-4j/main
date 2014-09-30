@@ -1,34 +1,37 @@
 package storage;
 
+import java.io.IOException;
+import java.util.ArrayList;
+
 import models.Task;
 import models.exceptions.TaskNotFoundException;
 
 /**
  *
- * @author chuyu 
+ * @author Chuyu 
  * This interface supports all the storage functionality
  */
-public interface Storage {
+public interface IStorage {
     // Add/Update a task to file
-    void writeTaskToFile(Task task);
+    void writeTaskToFile(Task task) throws TaskNotFoundException, IOException;
 
     // delete a task to file
-    void deleteTaskFromFile(int taskID) throws TaskNotFoundException;
+    void deleteTaskFromFile(int taskID) throws TaskNotFoundException, IOException;
 
     // Get a task by task ID
-    Task getTasks(int taskID) throws TaskNotFoundException;
+    Task getTask(int taskID) throws TaskNotFoundException;
 
     // Get a list of all the Tasks
     ArrayList<Task> getAllTasks();
 
     // Get a list of tasks that are done
-    ArrayList<Task> getDoneTasks();
+    ArrayList<Task> getCompletedTasks();
 
     // Get a list of tasks that are not completed
     ArrayList<Task> getActiveTasks();
 
     // Get a list of tags 
-    ArrayList<String> getTags();
+    ArrayList<String> getAllTags();
 
     // Search a list of tasks with certain tags
     ArrayList<Task> searchTask(ArrayList<String> tag);
