@@ -30,13 +30,13 @@ public class TaskStorage {
     private static final int ID_FOR_FIRST_TASK = 0;
 
     private static final String MESSAGE_SEPARATOR = "\tL@L";
-    private static final String MESSAGE_ID = "Task ID: ";
-    private static final String MESSAGE_NAME = "Name: ";
-    private static final String MESSAGE_DATE_DUE = "Due date: ";
-    private static final String MESSAGE_DATE_START = "Start date: ";
-    private static final String MESSAGE_DATE_END = "End date: ";
-    private static final String MESSAGE_PRIORITY_LEVEL = "Priority level: ";
-    private static final String MESSAGE_NOTE = "Note: ";
+    private static final String MESSAGE_ID = "Task ID: "  + MESSAGE_SEPARATOR;
+    private static final String MESSAGE_NAME = "Name: " + MESSAGE_SEPARATOR;
+    private static final String MESSAGE_DATE_DUE = "Due date: " + MESSAGE_SEPARATOR;
+    private static final String MESSAGE_DATE_START = "Start date: " + MESSAGE_SEPARATOR;
+    private static final String MESSAGE_DATE_END = "End date: " + MESSAGE_SEPARATOR;
+    private static final String MESSAGE_PRIORITY_LEVEL = "Priority level: " + MESSAGE_SEPARATOR;
+    private static final String MESSAGE_NOTE = "Note: " + MESSAGE_SEPARATOR;
     private static final String MESSAGE_TAGS = "Tags: ";
     private static final String MESSAGE_PARENT_TASKS = "Parent tasks: ";
     private static final String MESSAGE_CHILD_TASKS = "Child tasks: ";
