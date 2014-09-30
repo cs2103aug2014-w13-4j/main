@@ -6,7 +6,7 @@ public enum ParamEnum {
 	LEVEL ("level"),
 	TAG ("\\+"),
 	START_DATE ("from"),
-	END_DATE ("to"),
+	DUE_DATE ("to"),
 	ORDER_BY ("order by"),
 	DESCRIPTION ("with"),
 	EITHER ("either"),
