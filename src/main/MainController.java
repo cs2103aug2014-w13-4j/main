@@ -15,11 +15,14 @@ public class MainController {
 	public TextField userInputField;
 
 	public void handleUserInput() {
-		// TODO: handle user command
 		CommandParser commandParser = new CommandParser();
 		String userInput = userInputField.getText();
 		if (validateUserInput(userInput)){
 			Command userCommand = commandParser.parseCommand(userInput);
+			// Logic logic = new Logic();
+			// Feedback userCommandFeedback = logic.executeCommand(userCommand);
+			// TODO: Parse Feedback
+			
 			userInputField.clear();
 		}
 	}
