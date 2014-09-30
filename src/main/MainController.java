@@ -25,6 +25,6 @@ public class MainController {
 	}
 
 	private boolean validateUserInput(String userInput){
-		return (userInput != null && !userInput.isEmpty()) ? true : false;
+		return (userInput != null && !userInput.isEmpty());
 	}
 }
