@@ -11,7 +11,7 @@ import org.junit.Test;
 public class TagStorageTest {
 
 	@Test
-	public void testCanAddTags() {
+	public void testCanAddAndUpdateTags() {
 		try {
             // clear the file before testing
             PrintWriter writer = new PrintWriter("tagStorage.data");
