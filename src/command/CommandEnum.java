@@ -4,16 +4,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public enum CommandEnum {
-	ADD ("add", ParamEnum.DATE, ParamEnum.START_DATE, ParamEnum.END_DATE,
+	ADD ("add", ParamEnum.DATE, ParamEnum.START_DATE, ParamEnum.DUE_DATE,
 			ParamEnum.LEVEL, ParamEnum.NOTE, ParamEnum.TAG),
 	DELETE ("delete"),
 	UPDATE ("update", ParamEnum.DATE, ParamEnum.NAME),
 	UNDO ("undo"),
-	SELECT ("select", ParamEnum.ORDER_BY, ParamEnum.TAG),
+	SELECT ("select", ParamEnum.ORDER_BY, ParamEnum.TAG, ParamEnum.STATUS),
+	SEARCH ("search", ParamEnum.ORDER_BY, ParamEnum.TAG, ParamEnum.STATUS),
 	DISPLAY ("display"),
 	DONE ("done"),
 	TAG ("\\+"),
-	// Is this a param or a command? It seems to be a command in our Proposal
 	LEVEL ("level");
 	
 	private final String regex;
