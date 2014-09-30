@@ -151,7 +151,7 @@ public class TaskStorage {
         ArrayList<Task> completedTaskList = new ArrayList<Task>();
         // check whether there are tasks in storage
         if (taskBuffer == null) {
-            return;
+            return null;
         }
         for (Task task: taskBuffer) {
             if (task.getDateEnd() == null) {
@@ -168,7 +168,7 @@ public class TaskStorage {
         ArrayList<Task> activeTaskList = new ArrayList<Task>();
         // check whether there are tasks in storage
         if (taskBuffer == null) {
-            return;
+            return null;
         }
         for (Task task: taskBuffer) {
             if (task.getDateEnd() == null) {
@@ -186,7 +186,7 @@ public class TaskStorage {
         boolean hasTags;
         // check whether there are tasks in storage
         if (taskBuffer == null) {
-            return;
+            return null;
         }
         for (Task task: taskBuffer) {
             hasTags = true;
