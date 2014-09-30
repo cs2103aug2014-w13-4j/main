@@ -11,7 +11,8 @@ public enum ParamEnum {
 	DESCRIPTION ("with"),
 	EITHER ("either"),
 	OR ("or"),
-	NAME ("name");
+	NAME ("name"),
+	STATUS ("status");
 	
 	private final String regex;
 	
