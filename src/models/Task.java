@@ -71,10 +71,6 @@ public class Task {
 		this.isConfirmed = isConfirmed;
 	}
 
-	public void setCompleted(boolean isCompleted) {
-		this.isCompleted = isCompleted;
-	}
-
 	public void setId(int id) {
 		this.id = id;
 	}

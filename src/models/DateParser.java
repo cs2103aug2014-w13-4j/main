@@ -9,8 +9,8 @@ import java.util.Locale;
 public class DateParser {
 
 	private static final int MONTH_REPRESENTATION = Calendar.SHORT;
-	private static final String[] VALID_DATE_FORMATS = { "dd-MM-yyyy HH:mm a",
-			"dd-MM-yyyy", "dd.MM.yyyy" };
+	private static final String[] VALID_DATE_FORMATS = { "dd.MM.yyyy", "dd-MM-yyyy hh:mm", "dd-MM-yyyy" };
+	private static final String STORE_DATE_FORMAT = "%d-%d-%d %02d:%02d";
 
 	
 	/**
@@ -21,7 +21,7 @@ public class DateParser {
 	 *            : date in string format
 	 * @return the calendar object representing the date
 	 */
-	public static Calendar parseDate(String dateString) {
+	public static Calendar parseString(String dateString) {
 		for (int i = 0; i < VALID_DATE_FORMATS.length; i++) {
 			try {
 				SimpleDateFormat formatter = new SimpleDateFormat(
@@ -37,9 +37,23 @@ public class DateParser {
 		return null;
 	}
 
+	public static String parseCalendar(Calendar date) {
+		int day = date.get(Calendar.DAY_OF_MONTH);
+		int month = date.get(Calendar.MONTH) + 1;
+		int year = date.get(Calendar.YEAR);
+		int hour = date.get(Calendar.HOUR_OF_DAY);
+		int minute = date.get(Calendar.MINUTE);
+		return createString(day, month, year, hour, minute);
+		
+	}
+	private static String createString(int day, int month, int year, int hour,
+			int minute) {
+		return String.format(STORE_DATE_FORMAT, day, month, year, hour, minute);
+	}
+/**
 	private static void testDate(String dateString) {
 		Calendar myCalendar;
-		if ((myCalendar = parseDate(dateString)) == null) {
+		if ((myCalendar = parseString(dateString)) == null) {
 			System.out.println("Invalid Date Format!");
 		} else {
 			int day = myCalendar.get(Calendar.DAY_OF_MONTH);
@@ -50,6 +64,7 @@ public class DateParser {
 			int minute = myCalendar.get(Calendar.MINUTE);
 			String time = String.format("%02d:%02d", hour, minute);
 			System.out.println(day + " " + month + " " + year + " " + time);
+			System.out.println(parseCalendar(myCalendar));
 		}
 	}
 
@@ -62,5 +77,5 @@ public class DateParser {
 		testDate("2-10-2010 23:59"); // Date Format for time not fully
 										// implemented yet
 	}
-
+**/
 }
