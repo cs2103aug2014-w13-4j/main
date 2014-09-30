@@ -2,8 +2,10 @@ package logic;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import storage.Storage;
+import models.DateParser;
 import models.Feedback;
 import models.PriorityLevelEnum;
 import models.Task;
@@ -24,47 +26,46 @@ public class Logic implements ILogic {
 	private static final String ERROR_IO_MESSAGE = "There is an error in loading the file.";
 	private static final String ERROR_INPUT_MESSAGE = "The input is invalid.";
 	private Storage storage = null;
-	
 
 	public Logic() {
 
 	}
 
 	/**
-     * constructor
-     * This constructor follows the singleton pattern
-     * It can only be called with in the current class (Logic.getInstance())
-     * This is to ensure that only there is exactly one instance of Logic class
-     * @throws FileFormatNotSupportedException, IOException
+	 * constructor This constructor follows the singleton pattern It can only be
+	 * called with in the current class (Logic.getInstance()) This is to ensure
+	 * that only there is exactly one instance of Logic class
+	 * 
+	 * @throws FileFormatNotSupportedException
+	 *             , IOException
 	 * @return Logic object
 	 * 
-	 * To be implemented in the future
+	 *         To be implemented in the future
 	 */
 	/**
-	private static Logic instance = null;
-	
-	private Logic() {
-
-	}
-	
-	public static Logic getInstance() {
-		if (instance == null) {
-			instance = new Logic();
-		}
-		return instance;
-	}
-	**/
+	 * private static Logic instance = null;
+	 * 
+	 * private Logic() {
+	 * 
+	 * }
+	 * 
+	 * public static Logic getInstance() { if (instance == null) { instance =
+	 * new Logic(); } return instance; }
+	 **/
 
 	/**
 	 * Initialises the logic object by creating its corresponding storage object
 	 * It also catches the exceptions that can be thrown
-	 * @return the feedback indicating whether the storage has been successfully loaded. 
+	 * 
+	 * @return the feedback indicating whether the storage has been successfully
+	 *         loaded.
 	 */
 	public Feedback initialize() {
 		try {
 			storage = new Storage();
 			return display();
 		} catch (IOException | FileFormatNotSupportedException e) {
+			System.out.println(e);
 			return createFeedback(null, ERROR_STORAGE_MESSAGE);
 		}
 	}
@@ -72,8 +73,10 @@ public class Logic implements ILogic {
 	/**
 	 * Main function to call to execute command
 	 * 
-	 * @param the command created by the commandParser
-	 * @return the feedback (tasklist and message) corresponding to the particular command
+	 * @param the
+	 *            command created by the commandParser
+	 * @return the feedback (tasklist and message) corresponding to the
+	 *         particular command
 	 */
 	public Feedback executeCommand(Command command) {
 		if (storage == null) {
@@ -99,14 +102,15 @@ public class Logic implements ILogic {
 				case LEVEL:
 					return null;
 					/**
-				case SEARCH:
-					return null; **/
-					//storage search -> (HashMap CommandParam)
+					 * case SEARCH: return null;
+					 **/
+					// storage search -> (HashMap CommandParam)
 				default:
-					return createFeedback(storage.getAllTasks(), ERROR_INPUT_MESSAGE);
+					return createFeedback(storage.getActiveTasks(),
+							ERROR_INPUT_MESSAGE);
 				}
 			} catch (TaskNotFoundException e) {
-				ArrayList<Task> taskList = storage.getAllTasks();
+				ArrayList<Task> taskList = storage.getActiveTasks();
 				return createFeedback(taskList, INVALID_INDEX_MESSAGE);
 			} catch (IOException e) {
 				return createFeedback(null, ERROR_IO_MESSAGE);
@@ -116,17 +120,21 @@ public class Logic implements ILogic {
 
 	/**
 	 * Displays all the tasks in the file
+	 * 
 	 * @return feedback containing all the tasks in the file, and the message.
 	 */
 	private Feedback display() {
-		ArrayList<Task> taskList = storage.getAllTasks();
+		ArrayList<Task> taskList = storage.getActiveTasks();
 		return createFeedback(taskList, createMessage(DISPLAY_MESSAGE, null));
 	}
 
 	/**
 	 * Marks a particular task as done
-	 * @param command: the command created by commandParser
-	 * @return feedback containing the updated list of tasks in the file, and the message.
+	 * 
+	 * @param command
+	 *            : the command created by commandParser
+	 * @return feedback containing the updated list of tasks in the file, and
+	 *         the message.
 	 * @throws TaskNotFoundException
 	 * @throws IOException
 	 */
@@ -135,17 +143,20 @@ public class Logic implements ILogic {
 		int id = getIdFromCommand(command);
 		Task task = storage.getTask(id);
 		String name = task.getName();
-		//TODO: markAsDone
-		//task.setEndDate();
+		// to allow them to type in their own date
+		task.setDateEnd(Calendar.getInstance());
 		storage.writeTaskToFile(task);
-		ArrayList<Task> taskList = storage.getAllTasks();
+		ArrayList<Task> taskList = storage.getActiveTasks();
 		return createFeedback(taskList, createMessage(COMPLETE_MESSAGE, name));
 	}
 
 	/**
 	 * Adds a new task to the file
-	 * @param command: the command created by commandParser
-	 * @return feedback containing the updated list of tasks in the file, and the message.
+	 * 
+	 * @param command
+	 *            : the command created by commandParser
+	 * @return feedback containing the updated list of tasks in the file, and
+	 *         the message.
 	 * @throws TaskNotFoundException
 	 * @throws IOException
 	 */
@@ -154,14 +165,17 @@ public class Logic implements ILogic {
 		Task task = createTaskForAdd(command);
 		storage.writeTaskToFile(task);
 		String name = task.getName();
-		ArrayList<Task> taskList = storage.getAllTasks();
+		ArrayList<Task> taskList = storage.getActiveTasks();
 		return createFeedback(taskList, createMessage(ADD_MESSAGE, name));
 	}
 
 	/**
 	 * Deletes a task from the file
-	 * @param command: the command created by commandParser
-	 * @return feedback containing the updated list of tasks in the file, and the message.
+	 * 
+	 * @param command
+	 *            : the command created by commandParser
+	 * @return feedback containing the updated list of tasks in the file, and
+	 *         the message.
 	 * @throws TaskNotFoundException
 	 * @throws IOException
 	 */
@@ -171,14 +185,17 @@ public class Logic implements ILogic {
 		Task task = storage.getTask(id);
 		String name = task.getName();
 		storage.deleteTaskFromFile(id);
-		ArrayList<Task> taskList = storage.getAllTasks();
+		ArrayList<Task> taskList = storage.getActiveTasks();
 		return createFeedback(taskList, createMessage(DELETE_MESSAGE, name));
 	}
 
 	/**
 	 * Updates the task in the file
-	 * @param command: the command created by commandParser
-	 * @return feedback containing the updated list of tasks in the file, and the message.
+	 * 
+	 * @param command
+	 *            : the command created by commandParser
+	 * @return feedback containing the updated list of tasks in the file, and
+	 *         the message.
 	 * @throws TaskNotFoundException
 	 * @throws IOException
 	 */
@@ -189,7 +206,7 @@ public class Logic implements ILogic {
 		updateTask(command, task);
 		storage.writeTaskToFile(task);
 		String name = task.getName();
-		ArrayList<Task> taskList = storage.getAllTasks();
+		ArrayList<Task> taskList = storage.getActiveTasks();
 		return createFeedback(taskList, createMessage(EDIT_MESSAGE, name));
 	}
 
@@ -207,7 +224,7 @@ public class Logic implements ILogic {
 
 	private void updateTask(Command command, Task task) {
 		updateName(command, task);
-		updateDueDate(command, task);
+		setDueDateFromCommand(command, task);
 	}
 
 	private static String createMessage(String message, String variableText1) {
@@ -233,24 +250,28 @@ public class Logic implements ILogic {
 		}
 	}
 
-	private void updateDueDate(Command command, Task oldTask) {
-		// TODO Auto-generated method stub
-
+	void setDueDateFromCommand(Command command, Task task) {
+		if (command.getParam().containsKey(ParamEnum.END_DATE)) {
+			Calendar dueDate = DateParser.parseString(command.getParam()
+					.get(ParamEnum.END_DATE).get(0));
+			task.setDateDue(dueDate);
+		}
 	}
 
 	private void setStartDateFromCommand(Command command, Task task) {
-			// TODO: set task date;
-	}
-
-	private void setDueDateFromCommand(Command command, Task task) {
-		// TODO: set task date;
+		if (command.getParam().containsKey(ParamEnum.START_DATE)) {
+			Calendar startDate = DateParser.parseString(command.getParam()
+					.get(ParamEnum.START_DATE).get(0));
+			task.setDateDue(startDate);
+		}
 	}
 
 	private void setLevelFromCommand(Command command, Task task) {
 		PriorityLevelEnum priorityEnum = null;
 		if (command.getParam().containsKey(ParamEnum.LEVEL)) {
 			try {
-				int level = Integer.parseInt(command.getParam().get(ParamEnum.LEVEL).get(0));
+				int level = Integer.parseInt(command.getParam()
+						.get(ParamEnum.LEVEL).get(0));
 				priorityEnum = PriorityLevelEnum.fromInteger(level);
 			} catch (NumberFormatException | NullPointerException e) {
 			}
