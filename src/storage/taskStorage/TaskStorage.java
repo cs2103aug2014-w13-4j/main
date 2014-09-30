@@ -5,13 +5,11 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Scanner;
-
-import com.sun.xml.internal.ws.util.StringUtils;
 
 import models.Task;
 import models.exceptions.FileFormatNotSupportedException;
@@ -32,13 +30,13 @@ public class TaskStorage {
     private static final int ID_FOR_FIRST_TASK = 0;
 
     private static final String MESSAGE_SEPARATOR = "\tL@L";
-    private static final String MESSAGE_ID = "Task ID: ";
-    private static final String MESSAGE_NAME = "Name: ";
-    private static final String MESSAGE_DATE_DUE = "Due date: ";
-    private static final String MESSAGE_DATE_START = "Start date: ";
-    private static final String MESSAGE_DATE_END = "End date: ";
-    private static final String MESSAGE_PRIORITY_LEVEL = "Priority level: ";
-    private static final String MESSAGE_NOTE = "Note: ";
+    private static final String MESSAGE_ID = "Task ID: "  + MESSAGE_SEPARATOR;
+    private static final String MESSAGE_NAME = "Name: " + MESSAGE_SEPARATOR;
+    private static final String MESSAGE_DATE_DUE = "Due date: " + MESSAGE_SEPARATOR;
+    private static final String MESSAGE_DATE_START = "Start date: " + MESSAGE_SEPARATOR;
+    private static final String MESSAGE_DATE_END = "End date: " + MESSAGE_SEPARATOR;
+    private static final String MESSAGE_PRIORITY_LEVEL = "Priority level: " + MESSAGE_SEPARATOR;
+    private static final String MESSAGE_NOTE = "Note: " + MESSAGE_SEPARATOR;
     private static final String MESSAGE_TAGS = "Tags: ";
     private static final String MESSAGE_PARENT_TASKS = "Parent tasks: ";
     private static final String MESSAGE_CHILD_TASKS = "Child tasks: ";
@@ -80,22 +78,23 @@ public class TaskStorage {
     }
 
     private String TaskToString(Task task) {
-    	String taskID = Integer.toString(task.getId());
-        String taskName = task.getName();
-        String taskDateDue = task.getDateDue().toString();
-        String taskDateStart = task.getDateStart().toString();
-        String taskDateEnd = task.getDateEnd().toString();
-        String taskPriorityLevel = Integer.toString(task.getPriorityLevel());
-        String taskNote = task.getNote();
-        String taskIsDeleted = Boolean.toString(task.isDeleted());
+    	String taskID = Integer.toString(task.getId()) + MESSAGE_SEPARATOR;
+        String taskName = task.getName() + MESSAGE_SEPARATOR;
+        String taskDateDue = task.getDateDue().toString() + MESSAGE_SEPARATOR;
+        String taskDateStart = task.getDateStart().toString() + MESSAGE_SEPARATOR;
+        String taskDateEnd = task.getDateEnd().toString() + MESSAGE_SEPARATOR;
+        String taskPriorityLevel = Integer.toString(task.getPriorityLevel()) + MESSAGE_SEPARATOR;
+        String taskNote = task.getNote() + MESSAGE_SEPARATOR;
+        String taskIsDeleted = Boolean.toString(task.isDeleted()) + MESSAGE_SEPARATOR;
         String taskIsConfirmed = Boolean.toString(task.isConfirmed());
         String[] taskStringArray = new String[]{MESSAGE_ID, taskID, MESSAGE_NAME, taskName,
             MESSAGE_DATE_DUE, taskDateDue, MESSAGE_DATE_START, taskDateStart, MESSAGE_DATE_END,
             taskDateEnd, MESSAGE_PRIORITY_LEVEL, taskPriorityLevel, MESSAGE_NOTE, taskNote, 
             MESSAGE_IS_DELETED, taskIsDeleted, MESSAGE_IS_COMFIRMED, taskIsConfirmed, MESSAGE_TAGS};
-        String taskString = StringUtils.join(taskStringArray, MESSAGE_SEPARATOR);
+        // String taskString = StringUtils.join(taskStringArray, MESSAGE_SEPARATOR);
+        String taskString = Arrays.toString(taskStringArray);
         for (String tag : task.getTags()) {
-            taskString = taskString + MESSAGE_SEPARATOR + parentID;
+            taskString = taskString + MESSAGE_SEPARATOR + tag;
         }
         taskString = taskString + MESSAGE_SEPARATOR + MESSAGE_PARENT_TASKS;
         for (int parentID : task.getParentTasks()) {
@@ -233,8 +232,9 @@ public class TaskStorage {
             String taskString = TaskToString(task);
             bufferedWriter = new BufferedWriter(new FileWriter(dataFile, true));
             bufferedWriter.write(taskString);
-        } finally {
             bufferedWriter.close();
+        } finally {
+            
         }
     }
 
@@ -247,8 +247,8 @@ public class TaskStorage {
                 taskString = TaskToString(task);
                 bufferedWriter.write(taskString + "\r\n");
             }
-        } finally {
-        	bufferedWriter.close();
+            bufferedWriter.close();
+        } finally {        	
         }
     }
 
