@@ -41,6 +41,7 @@ public class CommandParser implements ICommandParser {
 		String patternString = makePatternString(commandType);
 		
 		addParams(userCommand, commandString, patternString);
+		addCommandString(userCommand, commandString);
 	}
 
 	/**
@@ -65,6 +66,15 @@ public class CommandParser implements ICommandParser {
 				userCommand.addParam(paramEnumTable.get(matcher.group(ENUM_TYPE)), matcher.group(ENUM_ARGUMENT).trim());
 			}
 		}
+	}
+	
+	/**
+	 * This operation add the user command string to the command object
+	 * @param userCommand
+	 * @param commandString
+	 */
+	private void addCommandString(Command userCommand, String commandString) {
+		userCommand.addCommandString(commandString);
 	}
 
 	/**
@@ -136,6 +146,8 @@ public class CommandParser implements ICommandParser {
 		System.out.println(commandType);
 		Hashtable<ParamEnum, ArrayList<String>> params = userCommand.getParam();
 		System.out.println(params);
+		String commandString = userCommand.getCommandString();
+		System.out.println(commandString);
 	}
 
 }
