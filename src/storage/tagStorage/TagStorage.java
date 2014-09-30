@@ -1,6 +1,8 @@
 package storage.tagStorage;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -39,7 +41,7 @@ public class TagStorage {
     }
 
     // Update tag list when adding or updating tasks
-    public void updateTagToFile(ArrayList<String> tags) {
+    public void updateTagToFile(ArrayList<String> tags) throws IOException {
         for (String tag: tags) {
             if (tagBuffer.contains(tag)) {
                 continue;
@@ -50,13 +52,13 @@ public class TagStorage {
         }        
     }
     
-    public void addToFile(String tag) {
+    private void addToFile(String tag) throws IOException {
     	BufferedWriter bufferedWriter = null;
         try {
             bufferedWriter = new BufferedWriter(new FileWriter(dataFile, true));
-            bufferedWriter.write(tags);
-            bufferedWriter.close();
-        } finally {            
+            bufferedWriter.write(tag + "\r\n"); 
+        	bufferedWriter.close();            
+        } finally { 
         }
     }
 }
