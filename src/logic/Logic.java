@@ -251,9 +251,9 @@ public class Logic implements ILogic {
 	}
 
 	void setDueDateFromCommand(Command command, Task task) {
-		if (command.getParam().containsKey(ParamEnum.END_DATE)) {
+		if (command.getParam().containsKey(ParamEnum.DUE_DATE)) {
 			Calendar dueDate = DateParser.parseString(command.getParam()
-					.get(ParamEnum.END_DATE).get(0));
+					.get(ParamEnum.DUE_DATE).get(0));
 			task.setDateDue(dueDate);
 		}
 	}
