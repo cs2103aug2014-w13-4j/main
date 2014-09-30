@@ -25,10 +25,13 @@ public class TaskStorageTest {
     }
 
 	@Test
-	public void testCanAddTask() {
+	public void testCanAddAndUpdateTask() {
         try {
 			TaskStorage taskStorage = new TaskStorage("taskStorage.data");
             Task task = createTaskForTest(ID_FOR_NEW_TASK, "Write Report", 1, "Do eat apple when you are writing report.", false, false);
+            taskStorage.writeTaskToFile(task);
+            assertEquals(task, taskStorage.getTask(0));
+            task = createTaskForTest(0, "Read Report", 1, "Do eat apple when you are writing report.", false, false);
             taskStorage.writeTaskToFile(task);
             assertEquals(task, taskStorage.getTask(0));
 		} catch (Exception e) {

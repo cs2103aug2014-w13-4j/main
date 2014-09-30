@@ -323,10 +323,10 @@ public class TaskStorage {
             taskBuffer.add(task);
         } else {
             if (isTaskExist(taskID)) {
-                // Update task to task file
-                updateTask();
                 // Update task to task buffer
                 taskBuffer.set(taskID, task);
+                // Update task to task file
+                updateTask();
             } else {
                 throw new TaskNotFoundException("Cannot update task since the current task doesn't exist");
             }
