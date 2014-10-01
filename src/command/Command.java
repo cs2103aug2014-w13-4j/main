@@ -16,11 +16,11 @@ public class Command implements ICommand {
 	}
 	
 	public void addCommandString(String userCommandString) {
-		addParam(commandType.commandKey(), userCommandString);
+		commandString = userCommandString;
 	}
 	
 	public void addCommandArgument(String arg) {
-		commandArgument = arg;
+		addParam(commandType.commandKey(), arg);
 	}
 	
 	public void addParam(ParamEnum param, String args) {
