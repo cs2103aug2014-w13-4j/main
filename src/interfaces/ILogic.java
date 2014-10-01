@@ -1,4 +1,4 @@
-package logic;
+package interfaces;
 
 import command.Command;
 import models.Feedback;

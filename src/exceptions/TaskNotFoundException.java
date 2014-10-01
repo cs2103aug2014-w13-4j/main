@@ -1,4 +1,4 @@
-package models.exceptions;
+package exceptions;
 
 public class TaskNotFoundException extends Exception {
     public TaskNotFoundException(String message) {

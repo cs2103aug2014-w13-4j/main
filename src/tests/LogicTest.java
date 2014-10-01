@@ -1,7 +1,7 @@
-package logic;
+package tests;
 
 import static org.junit.Assert.*;
-
+import logic.Logic;
 import models.Feedback;
 import models.PriorityLevelEnum;
 import models.Task;

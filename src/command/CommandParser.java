@@ -1,5 +1,7 @@
 package command;
 
+import interfaces.ICommandParser;
+
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.regex.Matcher;

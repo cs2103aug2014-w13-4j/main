@@ -6,10 +6,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import exceptions.FileFormatNotSupportedException;
 import models.DateParser;
 import models.PriorityLevelEnum;
 import models.Task;
-import models.exceptions.FileFormatNotSupportedException;
 
 /**
 *

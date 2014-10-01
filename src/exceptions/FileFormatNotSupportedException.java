@@ -1,4 +1,4 @@
-package models.exceptions;
+package exceptions;
 
 public class FileFormatNotSupportedException extends Exception {
     public FileFormatNotSupportedException(String message) {

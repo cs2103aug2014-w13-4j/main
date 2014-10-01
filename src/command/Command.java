@@ -1,5 +1,7 @@
 package command;
 
+import interfaces.ICommand;
+
 import java.util.ArrayList;
 import java.util.Hashtable;
 

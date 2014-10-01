@@ -1,5 +1,7 @@
 package logic;
 
+import interfaces.ILogic;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -9,9 +11,9 @@ import models.DateParser;
 import models.Feedback;
 import models.PriorityLevelEnum;
 import models.Task;
-import models.exceptions.FileFormatNotSupportedException;
-import models.exceptions.TaskNotFoundException;
 import command.*;
+import exceptions.FileFormatNotSupportedException;
+import exceptions.TaskNotFoundException;
 
 //TODO: Throw exceptions when mandatory fields are missing
 public class Logic implements ILogic {

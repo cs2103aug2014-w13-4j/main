@@ -1,4 +1,4 @@
-package storage.taskStorage;
+package tests;
 
 import static org.junit.Assert.*;
 
@@ -7,9 +7,11 @@ import java.io.PrintWriter;
 
 import models.PriorityLevelEnum;
 import models.Task;
-import models.exceptions.FileFormatNotSupportedException;
 
 import org.junit.Test;
+
+import exceptions.FileFormatNotSupportedException;
+import storage.taskStorage.TaskStorage;
 
 public class TaskStorageTest {
     private static final int ID_FOR_NEW_TASK = -1;
