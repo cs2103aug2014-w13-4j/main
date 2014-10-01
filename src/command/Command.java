@@ -18,7 +18,7 @@ public class Command implements ICommand {
 	}
 	
 	public void addCommandString(String userCommandString) {
-		commandString = userCommandString;
+		addParam(commandType.commandKey(), userCommandString);
 	}
 	
 	public void addCommandArgument(String arg) {

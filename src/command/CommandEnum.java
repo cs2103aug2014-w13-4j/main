@@ -4,19 +4,20 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public enum CommandEnum {
-	ADD ("add", ParamEnum.DATE, ParamEnum.START_DATE, ParamEnum.DUE_DATE,
+	ADD ("add",ParamEnum.NAME, ParamEnum.DATE, ParamEnum.START_DATE, ParamEnum.DUE_DATE,
 			ParamEnum.LEVEL, ParamEnum.NOTE, ParamEnum.TAG),
-	DELETE ("delete"),
-	UPDATE ("update", ParamEnum.DATE, ParamEnum.NAME),
-	UNDO ("undo"),
-	SELECT ("select", ParamEnum.ORDER_BY, ParamEnum.TAG, ParamEnum.STATUS),
-	SEARCH ("search", ParamEnum.ORDER_BY, ParamEnum.TAG, ParamEnum.STATUS),
-	DISPLAY ("display"),
-	DONE ("done"),
-	TAG ("\\+"),
-	LEVEL ("level");
+	DELETE ("delete", ParamEnum.KEYWORD),
+	UPDATE ("update", ParamEnum.KEYWORD, ParamEnum.DATE, ParamEnum.NAME),
+	UNDO ("undo", ParamEnum.KEYWORD),
+	SELECT ("select", ParamEnum.KEYWORD, ParamEnum.ORDER_BY, ParamEnum.TAG, ParamEnum.STATUS),
+	SEARCH ("search", ParamEnum.KEYWORD, ParamEnum.ORDER_BY, ParamEnum.TAG, ParamEnum.STATUS),
+	DISPLAY ("display", ParamEnum.KEYWORD),
+	DONE ("done", ParamEnum.KEYWORD, ParamEnum.DATE),
+	TAG ("\\+", ParamEnum.KEYWORD),
+	LEVEL ("level", ParamEnum.KEYWORD);
 	
 	private final String regex;
+	private final ParamEnum commandKey;
 	private final ParamEnum[] params;
 	
 	/**
@@ -24,15 +25,18 @@ public enum CommandEnum {
 	 * @param regex The regex pattern of the command
 	 * @param associatedParams Additional params associated with the command
 	 */
-	CommandEnum(String regex, ParamEnum... associatedParams)
+	CommandEnum(String regex,ParamEnum commandKey, ParamEnum... associatedParams)
 	{
 		this.regex = regex;
+		this.commandKey = commandKey;
 		this.params = associatedParams;
 	}
 	
 	public String regex() { return regex; }
 	
 	public ParamEnum[] params() { return params; } 
+	
+	public ParamEnum commandKey() { return commandKey; }
 
 	// Test
 	public static void main(String[] args) {
