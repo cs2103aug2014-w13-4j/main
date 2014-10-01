@@ -225,7 +225,7 @@ public class Logic implements ILogic {
 	}
 
 	private void updateTask(Command command, Task task) {
-		updateName(command, task);
+		setNameFromCommand(command, task);
 		setDueDateFromCommand(command, task);
 	}
 
@@ -238,14 +238,16 @@ public class Logic implements ILogic {
 	}
 
 	private int getIdFromCommand(Command command) {
-		try {
-			return Integer.parseInt(command.getCommandArgument());
-		} catch (NumberFormatException e) {
-			return INVALID_ID;
+		if (command.getParam().containsKey(ParamEnum.KEYWORD)) {
+			try {
+				return Integer.parseInt(command.getParam().get(ParamEnum.KEYWORD).get(0));
+			} catch (NumberFormatException e) {
+			}
 		}
+		return INVALID_ID;
 	}
 
-	private void updateName(Command command, Task task) {
+	private void setNameFromCommand(Command command, Task task) {
 		if (command.getParam().containsKey(ParamEnum.NAME)) {
 			String taskName = command.getParam().get(ParamEnum.NAME).get(0);
 			task.setName(taskName);
@@ -280,11 +282,6 @@ public class Logic implements ILogic {
 			// TODO: Indicate error when invalid priority level is added
 			task.setPriorityLevel(priorityEnum);
 		}
-	}
-
-	private void setNameFromCommand(Command command, Task task) {
-		String taskName = command.getCommandArgument();
-		task.setName(taskName);
 	}
 
 	private void setNoteFromCommand(Command command, Task task) {
