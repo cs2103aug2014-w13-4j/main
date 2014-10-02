@@ -10,8 +10,8 @@ import java.util.Calendar;
 
 
 /**
- * This class formats the date in the GUI TableView to a human-readable format using
- * the methods provided by the models.DateParser class.
+ * This class formats the dateEnd in the GUI TableView to a checkmark, depending on
+ * whether the task was completed. If the task was completed, dateEnd would not be null.
  * @author szhlibrary
  */
 public class TaskDoneFactory<Task,Calendar>
