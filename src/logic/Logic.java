@@ -108,11 +108,11 @@ public class Logic implements ILogic {
 					 **/
 					// storage search -> (HashMap CommandParam)
 				default:
-					return createFeedback(storage.getActiveTasks(),
+					return createFeedback(storage.getAllTasks(),
 							INVALID_INPUT_MESSAGE);
 				}
 			} catch (TaskNotFoundException | InvalidDateFormatException e) {
-				ArrayList<Task> taskList = storage.getActiveTasks();
+				ArrayList<Task> taskList = storage.getAllTasks();
 				return createFeedback(taskList, e.getMessage());
 			} catch (IOException e) {
 				return createFeedback(null, ERROR_IO_MESSAGE);
@@ -126,7 +126,7 @@ public class Logic implements ILogic {
 	 * @return feedback containing all the tasks in the file, and the message.
 	 */
 	private Feedback display() {
-		ArrayList<Task> taskList = storage.getActiveTasks();
+		ArrayList<Task> taskList = storage.getAllTasks();
 		return createFeedback(taskList, createMessage(DISPLAY_MESSAGE, null));
 	}
 
@@ -154,7 +154,7 @@ public class Logic implements ILogic {
 			task.setDateEnd(Calendar.getInstance());
 		}
 		storage.writeTaskToFile(task);
-		ArrayList<Task> taskList = storage.getActiveTasks();
+		ArrayList<Task> taskList = storage.getAllTasks();
 		return createFeedback(taskList, createMessage(COMPLETE_MESSAGE, name));
 	}
 
@@ -174,7 +174,7 @@ public class Logic implements ILogic {
 		Task task = createTaskForAdd(command);
 		storage.writeTaskToFile(task);
 		String name = task.getName();
-		ArrayList<Task> taskList = storage.getActiveTasks();
+		ArrayList<Task> taskList = storage.getAllTasks();
 		return createFeedback(taskList, createMessage(ADD_MESSAGE, name));
 	}
 
@@ -195,7 +195,7 @@ public class Logic implements ILogic {
 		String name = task.getName();
 		task.setDeleted(true); 
 		storage.writeTaskToFile(task);
-		ArrayList<Task> taskList = storage.getActiveTasks();
+		ArrayList<Task> taskList = storage.getAllTasks();
 		return createFeedback(taskList, createMessage(DELETE_MESSAGE, name));
 	}
 
@@ -217,7 +217,7 @@ public class Logic implements ILogic {
 		updateTask(command, task);
 		storage.writeTaskToFile(task);
 		String name = task.getName();
-		ArrayList<Task> taskList = storage.getActiveTasks();
+		ArrayList<Task> taskList = storage.getAllTasks();
 		return createFeedback(taskList, createMessage(EDIT_MESSAGE, name));
 	}
 
