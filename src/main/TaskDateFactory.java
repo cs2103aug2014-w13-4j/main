@@ -14,7 +14,7 @@ import java.util.Calendar;
  * the methods provided by the models.DateParser class.
  * @author szhlibrary
  */
-public class DateFactory<Task,Calendar>
+public class TaskDateFactory<Task,Calendar>
 		implements Callback<TableColumn<Task, Calendar>, TableCell<Task,java.util.Calendar>> {
 
 	@Override
