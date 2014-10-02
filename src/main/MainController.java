@@ -24,6 +24,21 @@ public class MainController {
 	public Label dueDateLabel;
 	public TextField userInputField;
 	public TableView<Task> taskTableView;
+	Logic logic;
+
+	public void initialize(){
+		System.out.println("Initializing...");
+		CommandParser commandParser = new CommandParser();
+		try {
+			logic = new Logic();
+			Feedback displayAll = logic.initialize();
+			ArrayList<Task> taskList = displayAll.getTaskList();
+			ObservableList<Task> observableList = FXCollections.observableArrayList(taskList);
+			taskTableView.getItems().addAll(observableList);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	public void handleUserInput() {
 		CommandParser commandParser = new CommandParser();
@@ -31,8 +46,6 @@ public class MainController {
 		if (validateUserInput(userInput)){
 			try {
 				Command userCommand = commandParser.parseCommand(userInput);
-				Logic logic = new Logic();
-				logic.initialize();
 				Feedback userCommandFeedback = logic.executeCommand(userCommand);
 				String feedbackMessage = userCommandFeedback.getFeedbackMessage();
 				//System.out.println(feedbackMessage);
