@@ -18,7 +18,6 @@ import exceptions.TaskNotFoundException;
 
 //TODO: Throw exceptions when mandatory fields are missing
 public class Logic implements ILogic {
-	private static final int INVALID_ID = -1;
 	private static final String ADD_MESSAGE = "%1$s is successfully added.";
 	private static final String DELETE_MESSAGE = "%1$s is successfully deleted";
 	private static final String EDIT_MESSAGE = "%1$s is successfully edited.";
@@ -27,6 +26,7 @@ public class Logic implements ILogic {
 	private static final String DISPLAY_MESSAGE = "All tasks are displayed.";
 	private static final String ERROR_IO_MESSAGE = "There is an error in loading the file.";
 	private static final String INVALID_INPUT_MESSAGE = "The input is invalid.";
+	private static final String INVALID_INDEX_MESSAGE = "The index is invalid.";
 	private Storage storage = null;
 
 	public Logic() {
@@ -111,7 +111,7 @@ public class Logic implements ILogic {
 					return createFeedback(storage.getAllTasks(),
 							INVALID_INPUT_MESSAGE);
 				}
-			} catch (TaskNotFoundException | InvalidDateFormatException e) {
+			} catch (TaskNotFoundException | InvalidDateFormatException | NumberFormatException e) {
 				ArrayList<Task> taskList = storage.getAllTasks();
 				return createFeedback(taskList, e.getMessage());
 			} catch (IOException e) {
@@ -250,13 +250,11 @@ public class Logic implements ILogic {
 
 	private int getIdFromCommand(Command command) {
 		if (command.getParam().containsKey(ParamEnum.KEYWORD)) {
-			try {
-				return Integer.parseInt(command.getParam()
-						.get(ParamEnum.KEYWORD).get(0));
-			} catch (NumberFormatException e) {
-			}
+			return Integer.parseInt(command.getParam()
+					.get(ParamEnum.KEYWORD).get(0));
+		} else {
+			throw new NumberFormatException(INVALID_INDEX_MESSAGE);
 		}
-		return INVALID_ID;
 	}
 
 	private void setNameFromCommand(Command command, Task task) {
