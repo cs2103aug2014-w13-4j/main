@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import exceptions.FileFormatNotSupportedException;
+import exceptions.InvalidDateFormatException;
 import models.DateParser;
 import models.PriorityLevelEnum;
 import models.Task;
@@ -178,7 +179,7 @@ class TaskConverter {
         */
     }
 
-    protected static Calendar stringtoTaskProperty(String propertyString) throws ParseException {
+    protected static Calendar stringtoTaskProperty(String propertyString) throws ParseException, InvalidDateFormatException {
         if (propertyString.equals("")) {
             // System.out.println("null property");
             return null;            

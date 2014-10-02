@@ -1,6 +1,7 @@
 package command;
 
 public enum ParamEnum {
+	KEYWORD (""),
 	DATE ("date"),
 	NOTE ("note"),
 	LEVEL ("level"),

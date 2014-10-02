@@ -8,10 +8,12 @@ import models.DateParser;
 
 import org.junit.Test;
 
+import exceptions.InvalidDateFormatException;
+
 public class DateParserTest {
 
 	@Test
-	public final void test() {
+	public final void test() throws InvalidDateFormatException {
 		Calendar date = DateParser.parseString("20-10-1999 23:00");
 		//System.out.println(date.get(Calendar.HOUR));
 		//Calendar expectedDate = Calendar.getInstance();
