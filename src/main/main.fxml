@@ -16,18 +16,18 @@
             <items>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                     <children>
-                        <SplitPane dividerPositions="0.7" prefHeight="365.0" prefWidth="598.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <SplitPane dividerPositions="0.7" prefHeight="365.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             <items>
-                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="300.0">
                                     <children>
                                         <TableView fx:id="taskTableView" layoutX="122.0" layoutY="62.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                             <columns>
-                                                <TableColumn prefWidth="20.0" minWidth="20.0" text="ID">
+                                                <TableColumn prefWidth="20.0" minWidth="20.0" maxWidth="20.0" text="ID">
                                                     <cellValueFactory>
                                                         <PropertyValueFactory property="id"/>
                                                     </cellValueFactory>
                                                 </TableColumn>
-                                                <TableColumn prefWidth="100.0" minWidth="100.0" text="Due" >
+                                                <TableColumn prefWidth="100.0" minWidth="100.0" maxWidth="100.0" text="Due" >
                                                     <cellValueFactory>
                                                         <PropertyValueFactory property="dateDue"/>
                                                     </cellValueFactory>
@@ -47,7 +47,7 @@
                                         </TableView>
                                     </children>
                                 </AnchorPane>
-                                <AnchorPane minHeight="160.0" minWidth="100.0" prefHeight="160.0" prefWidth="100.0">
+                                <AnchorPane minHeight="160.0" minWidth="100.0" prefHeight="160.0" prefWidth="300.0">
                                     <children>
                                         <Label layoutX="14.0" layoutY="14.0" text="Task Details:" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
                                         <GridPane layoutX="10.0" layoutY="27.0">
@@ -74,7 +74,7 @@
                         </SplitPane>
                     </children>
                 </AnchorPane>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" SplitPane.resizableWithParent="false">
+                <AnchorPane minHeight="40.0" maxHeight="40.0" minWidth="0.0" prefHeight="40.0" prefWidth="160.0" SplitPane.resizableWithParent="false">
                     <children>
                       <TextField fx:id="userInputField" onAction="#handleUserInput" promptText="enter command here..." layoutX="21.0" layoutY="6.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                     </children>
