@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import main.TaskDateFactory?>
+<?import main.TaskDoneFactory?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
@@ -26,6 +27,14 @@
                                                     <cellValueFactory>
                                                         <PropertyValueFactory property="id"/>
                                                     </cellValueFactory>
+                                                </TableColumn>
+                                                <TableColumn prefWidth="20.0" minWidth="20.0" maxWidth="20.0" text="✓">
+                                                    <cellValueFactory>
+                                                        <PropertyValueFactory property="dateEnd"/>
+                                                    </cellValueFactory>
+                                                    <cellFactory>
+                                                        <TaskDoneFactory/>
+                                                    </cellFactory>
                                                 </TableColumn>
                                                 <TableColumn prefWidth="100.0" minWidth="100.0" maxWidth="100.0" text="Due" >
                                                     <cellValueFactory>
