@@ -42,7 +42,7 @@ public class MainController {
 				taskTableView.getItems().clear();
 				ArrayList<Task> taskList = userCommandFeedback.getTaskList();
 				ObservableList<Task> observableList = FXCollections.observableArrayList(taskList);
-				System.out.println(observableList.size());
+				//System.out.println(observableList.size());
 				taskTableView.getItems().addAll(observableList);
 			} catch (Exception e){
 				e.printStackTrace();
