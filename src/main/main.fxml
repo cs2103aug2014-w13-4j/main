@@ -22,6 +22,11 @@
                                     <children>
                                         <TableView fx:id="taskTableView" layoutX="122.0" layoutY="62.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                             <columns>
+                                                <TableColumn prefWidth="10.0" minWidth="20.0" text="ID">
+                                                    <cellValueFactory>
+                                                        <PropertyValueFactory property="id"/>
+                                                    </cellValueFactory>
+                                                </TableColumn>
                                                 <TableColumn prefWidth="75.0" text="Due" >
                                                     <cellValueFactory>
                                                         <PropertyValueFactory property="dateDue"/>
