@@ -31,8 +31,8 @@ public class MainController {
 		CommandParser commandParser = new CommandParser();
 		try {
 			logic = new Logic();
-			Feedback displayAll = logic.initialize();
-			ArrayList<Task> taskList = displayAll.getTaskList();
+			Feedback displayAllActiveTasks = logic.initialize();
+			ArrayList<Task> taskList = displayAllActiveTasks.getTaskList();
 			ObservableList<Task> observableList = FXCollections.observableArrayList(taskList);
 			taskTableView.getItems().addAll(observableList);
 		} catch (Exception e) {
