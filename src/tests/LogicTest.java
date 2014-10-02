@@ -29,6 +29,10 @@ public class LogicTest {
 	@Before
 	public void setFunctionsAccessible() {
 		createTaskForAdd.setAccessible(true);
+	}
+	
+	@Before
+	public void setFieldsAccessible() {
 		storage.setAccessible(true);
 	}
 
