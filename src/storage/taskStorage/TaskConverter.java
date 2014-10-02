@@ -200,8 +200,11 @@ class TaskConverter {
             String taskName = taskStringArray[NAME_ATTRIBUTE];
             Calendar taskDateDue = stringtoTaskProperty(taskStringArray[DATE_DUE_ATTRIBUTE]);
             Calendar taskDateStart = stringtoTaskProperty(taskStringArray[DATE_START_ATTRIBUTE]);
-            Calendar taskDateEnd = stringtoTaskProperty(taskStringArray[DATE_END_ATTRIBUTE]);  
-            PriorityLevelEnum taskPriorityLevel = PriorityLevelEnum.fromInteger(Integer.valueOf(taskStringArray[PRIORITY_LEVEL_ATTRIBUTE]));
+            Calendar taskDateEnd = stringtoTaskProperty(taskStringArray[DATE_END_ATTRIBUTE]);
+            PriorityLevelEnum taskPriorityLevel = null;
+            if (!taskStringArray[PRIORITY_LEVEL_ATTRIBUTE].isEmpty()) {
+                taskPriorityLevel = PriorityLevelEnum.fromInteger(Integer.valueOf(taskStringArray[PRIORITY_LEVEL_ATTRIBUTE]));
+            }
             String taskNote = taskStringArray[NOTE_ATTRIBUTE];
             boolean taskIsDeleted = Boolean.valueOf(taskStringArray[IS_DELETED_ATTRIBUTE]);
             boolean taskIsConfirmed = Boolean.valueOf(taskStringArray[IS_COMFIRMED_ATTRIBUTE]);
