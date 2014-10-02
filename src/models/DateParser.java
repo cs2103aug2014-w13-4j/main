@@ -5,6 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import exceptions.InvalidDateFormatException;
+
 public class DateParser {
 
 	private static final String[] VALID_DATE_FORMATS = { "dd.MM.yyyy",
@@ -18,21 +20,21 @@ public class DateParser {
 	 * @param dateString
 	 *            : date in string format
 	 * @return the calendar object representing the date
+	 * @throws InvalidDateFormatException 
 	 */
-	public static Calendar parseString(String dateString) {
+	public static Calendar parseString(String dateString) throws InvalidDateFormatException {
 		for (int i = 0; i < VALID_DATE_FORMATS.length; i++) {
-			try {
 				SimpleDateFormat formatter = new SimpleDateFormat(
 						VALID_DATE_FORMATS[i]);
-				Date date = formatter.parse(dateString);
-				Calendar calendar = Calendar.getInstance();
-				calendar.setTime(date);
-				return calendar;
-			} catch (ParseException e) {
-
-			}
+				try {
+					Date date = formatter.parse(dateString);
+					Calendar calendar = Calendar.getInstance();
+					calendar.setTime(date);
+					return calendar;
+				} catch (ParseException e) {
+				}
 		}
-		return null;
+		throw new InvalidDateFormatException("Date format is invalid!");
 	}
 
 	public static String parseCalendar(Calendar date) {
