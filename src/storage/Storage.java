@@ -1,6 +1,5 @@
 package storage;
 
-import interfaces.IStorage;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,7 +16,7 @@ import models.Task;
  * This class reads/writes task to file.
  * It also supports power search.
  */
-public class Storage implements IStorage {
+public class Storage {
     private TaskStorage taskFile;
     private TagStorage tagFile;    
 

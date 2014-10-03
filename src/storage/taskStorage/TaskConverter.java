@@ -149,7 +149,7 @@ class TaskConverter {
             // System.out.println("null property");
             return null;            
         } else {
-            return DateParser.parseString(AttributeString);
+            return DateParser.parseString(propertyString);
         }
     }
 

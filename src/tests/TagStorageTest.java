@@ -48,7 +48,7 @@ public class TagStorageTest {
         try {
             TagStorage tagStorage = new TagStorage("tagStorage.data");
             int tagsBufferSize = tagStorage.getAllTags().size();
-            assertNotEquals(0, tagStorage.getAllTags().size());
+            assertNotEquals(0, tagsBufferSize);
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
