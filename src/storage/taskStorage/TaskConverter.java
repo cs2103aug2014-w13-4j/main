@@ -6,10 +6,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import exceptions.FileFormatNotSupportedException;
+import exceptions.InvalidDateFormatException;
 import models.DateParser;
 import models.PriorityLevelEnum;
 import models.Task;
-import models.exceptions.FileFormatNotSupportedException;
 
 /**
 *
@@ -142,8 +143,10 @@ class TaskConverter {
         return taskString;
     }
 
-    protected static Calendar stringtoTaskAttribute(String AttributeString) throws ParseException {
-        if (AttributeString.equals("")) {
+
+    protected static Calendar stringtoTaskProperty(String propertyString) throws ParseException, InvalidDateFormatException {
+        if (propertyString.equals("")) {
+            // System.out.println("null property");
             return null;            
         } else {
             return DateParser.parseString(AttributeString);
@@ -160,10 +163,13 @@ class TaskConverter {
             String[] taskStringArray = taskString.split(MESSAGE_SEPARATOR, RESULT_THRESHOLD);
             int taskID = Integer.valueOf(taskStringArray[ID_ATTRIBUTE]);
             String taskName = taskStringArray[NAME_ATTRIBUTE];
-            Calendar taskDateDue = stringtoTaskAttribute(taskStringArray[DATE_DUE_ATTRIBUTE]);
-            Calendar taskDateStart = stringtoTaskAttribute(taskStringArray[DATE_START_ATTRIBUTE]);
-            Calendar taskDateEnd = stringtoTaskAttribute(taskStringArray[DATE_END_ATTRIBUTE]);  
-            PriorityLevelEnum taskPriorityLevel = PriorityLevelEnum.fromInteger(Integer.valueOf(taskStringArray[PRIORITY_LEVEL_ATTRIBUTE]));
+            Calendar taskDateDue = stringtoTaskProperty(taskStringArray[DATE_DUE_ATTRIBUTE]);
+            Calendar taskDateStart = stringtoTaskProperty(taskStringArray[DATE_START_ATTRIBUTE]);
+            Calendar taskDateEnd = stringtoTaskProperty(taskStringArray[DATE_END_ATTRIBUTE]);
+            PriorityLevelEnum taskPriorityLevel = null;
+            if (!taskStringArray[PRIORITY_LEVEL_ATTRIBUTE].isEmpty()) {
+                taskPriorityLevel = PriorityLevelEnum.fromInteger(Integer.valueOf(taskStringArray[PRIORITY_LEVEL_ATTRIBUTE]));
+            }
             String taskNote = taskStringArray[NOTE_ATTRIBUTE];
             boolean taskIsDeleted = Boolean.valueOf(taskStringArray[IS_DELETED_ATTRIBUTE]);
             boolean taskIsConfirmed = Boolean.valueOf(taskStringArray[IS_COMFIRMED_ATTRIBUTE]);

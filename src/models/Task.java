@@ -99,8 +99,12 @@ public class Task {
 		return priorityLevel;
 	}
 	
-	public int getPriorityLevelInteger() {
-		return priorityLevel.getLevel();
+	public Integer getPriorityLevelInteger() {
+		if (priorityLevel == null) {
+			return null;
+		} else {
+			return priorityLevel.getLevel();
+		}
 	}
 
 	public String getNote() {

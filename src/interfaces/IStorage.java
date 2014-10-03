@@ -1,10 +1,10 @@
-package storage;
+package interfaces;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
+import exceptions.TaskNotFoundException;
 import models.Task;
-import models.exceptions.TaskNotFoundException;
 
 /**
  *

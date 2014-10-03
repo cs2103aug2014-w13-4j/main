@@ -1,7 +1,10 @@
-package command;
+package interfaces;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+
+import command.CommandEnum;
+import command.ParamEnum;
 
 public interface ICommand {
 	/**

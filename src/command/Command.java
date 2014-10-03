@@ -1,5 +1,7 @@
 package command;
 
+import interfaces.ICommand;
+
 import java.util.ArrayList;
 import java.util.Hashtable;
 
@@ -20,7 +22,7 @@ public class Command implements ICommand {
 	}
 	
 	public void addCommandArgument(String arg) {
-		commandArgument = arg;
+		addParam(commandType.commandKey(), arg);
 	}
 	
 	public void addParam(ParamEnum param, String args) {

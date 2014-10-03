@@ -1,4 +1,4 @@
-package storage.tagStorage;
+package tests;
 
 import static org.junit.Assert.*;
 
@@ -7,6 +7,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import org.junit.Test;
+
+import storage.tagStorage.TagStorage;
 
 public class TagStorageTest {
 
