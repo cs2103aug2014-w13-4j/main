@@ -4,12 +4,8 @@ import interfaces.ILogic;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
-
 import storage.Storage;
-import models.DateParser;
 import models.Feedback;
-import models.PriorityLevelEnum;
 import models.Task;
 import command.*;
 import exceptions.FileFormatNotSupportedException;
@@ -26,7 +22,6 @@ public class Logic implements ILogic {
 	private static final String COMPLETE_MESSAGE = "%1$s is marked as completed.";
 	private static final String ERROR_STORAGE_MESSAGE = "There is an error loading the storage.";
 	private static final String DISPLAY_MESSAGE = "All tasks are displayed.";
-	private static final String ERROR_IO_MESSAGE = "There is an error in loading the file.";
 	private static final String INVALID_COMMAND_MESSAGE = "The command is invalid.";
 	private static final String INVALID_INDEX_MESSAGE = "The index is invalid.";
 	Storage storage = null;
