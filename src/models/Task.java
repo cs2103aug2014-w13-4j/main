@@ -58,8 +58,12 @@ public class Task {
 		this.childTasks = childTasks;
 	}
 
-	public void setConditionalTasks(ArrayList<StartEndDatePair> conditionalDates) {
+	public void setConditionalDates(ArrayList<StartEndDatePair> conditionalDates) {
 		this.conditionalDates = conditionalDates;
+	}
+	
+	public void appendConditionalDates(ArrayList<StartEndDatePair> conditionalDates) {
+		this.conditionalDates.addAll(conditionalDates);
 	}
 
 	public void setDeleted(boolean isDeleted) {
