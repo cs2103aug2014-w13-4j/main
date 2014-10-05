@@ -31,14 +31,16 @@ public class TaskStorageTest {
 	public void testCanAddAndUpdateTask() {
         try {
             // clear the file before testing
+        	/*
             PrintWriter writer = new PrintWriter("taskStorage.data");
             writer.print("");
             writer.close();
+            */
 
 			TaskStorage taskStorage = new TaskStorage("taskStorage.data");
             Task task = createTaskForTest(ID_FOR_NEW_TASK, "Write Report", 1, "Do eat apple when you are writing report.", false, false);
             taskStorage.writeTaskToFile(task);
-            assertEquals(task, taskStorage.getTask(0));
+            assertEquals(task, taskStorage.getTask(taskStorage.getAllTasks().size()-1));
             task = createTaskForTest(0, "Read Report", 1, "Do eat apple when you are writing report.", false, false);
             taskStorage.writeTaskToFile(task);
             assertEquals(task, taskStorage.getTask(0));

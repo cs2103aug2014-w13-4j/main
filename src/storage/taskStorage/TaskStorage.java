@@ -45,7 +45,7 @@ public class TaskStorage {
 
         Scanner fileScanner = new Scanner(dataFile);
         taskBuffer =  new ArrayList<Task>();
-        int nextTaskIndex = ID_FOR_FIRST_TASK;
+        nextTaskIndex = ID_FOR_FIRST_TASK;
         while (fileScanner.hasNextLine()) {
             task = TaskConverter.stringToTask(fileScanner.nextLine());
             taskBuffer.add(task);
@@ -92,6 +92,7 @@ public class TaskStorage {
 
     // Check whether the current task exists or not
     private boolean isTaskExist(int taskID) {
+    	// System.out.print(nextTaskIndex);
         if (taskID >= nextTaskIndex) {
             return false;
         } else {

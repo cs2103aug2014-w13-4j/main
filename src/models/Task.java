@@ -1,13 +1,17 @@
 package models;
 
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.TreeMap;
 
+import exceptions.FileFormatNotSupportedException;
+import exceptions.InvalidDateFormatException;
 import models.PriorityLevelEnum;
 
 public class Task {
-	private static final String MESSAGE_SEPARATOR = "\tL@L";
+	private static final String MESSAGE_SEPARATOR = "\tT@T";
 	
 	private int id;
 	private String name;
@@ -27,7 +31,7 @@ public class Task {
 	public Task() {
 		taskAttributes = new TreeMap<TaskAttributeEnum, String>();
 		for (TaskAttributeEnum taskAttribute : TaskAttributeEnum.values()) {
-			taskAttributes.put(taskAttribute, null);
+			taskAttributes.put(taskAttribute, "");
 		}
 		setDeleted(false);
 		setConfirmed(false);
@@ -36,7 +40,26 @@ public class Task {
 	public TreeMap<TaskAttributeEnum, String> getTaskAttributes() {
 		return taskAttributes;
 	}
-	
+
+	public void setTaskAttributes(TreeMap<TaskAttributeEnum, String> taskAttributes) throws ParseException, InvalidDateFormatException{
+		// check length of tree map first
+		setId(Integer.valueOf(taskAttributes.get(TaskAttributeEnum.ID)));
+		setName(taskAttributes.get(TaskAttributeEnum.NAME));
+		setDateDue(stringToTaskProperty(taskAttributes.get(TaskAttributeEnum.DATE_DUE)));
+		setDateStart(stringToTaskProperty(taskAttributes.get(TaskAttributeEnum.DATE_START)));
+		setDateEnd(stringToTaskProperty(taskAttributes.get(TaskAttributeEnum.DATE_END)));
+		if (!taskAttributes.get(TaskAttributeEnum.PRIORITY_LEVEL).isEmpty()) {
+			setPriorityLevel(PriorityLevelEnum.fromInteger(Integer.valueOf(taskAttributes.get(TaskAttributeEnum.PRIORITY_LEVEL))));
+		}
+		setNote(taskAttributes.get(TaskAttributeEnum.NOTE));
+		setDeleted(Boolean.valueOf(taskAttributes.get(TaskAttributeEnum.IS_DELETED)));
+		setConfirmed(Boolean.valueOf(taskAttributes.get(TaskAttributeEnum.IS_CONFIRMED)));
+		setTags(stringToStringArrayList(taskAttributes.get(TaskAttributeEnum.TAGS)));
+		setParentTasks(stringToIntegerArrayList(taskAttributes.get(TaskAttributeEnum.PARENT_TASKS)));
+		setChildTasks(stringToIntegerArrayList(taskAttributes.get(TaskAttributeEnum.CHILD_TASKS)));
+		setConditionalTasks(stringToDatePairArrayList(taskAttributes.get(TaskAttributeEnum.CONDITIONAL_DATES)));
+	}
+
 	public void setName(String name) {
 		this.name = name;
 		this.taskAttributes.put(TaskAttributeEnum.NAME, name);
@@ -229,7 +252,54 @@ public class Task {
             stringBuilder.append(str + MESSAGE_SEPARATOR);
         }
         return stringBuilder.toString();
-    }
+    }  
 
-    
+    private static Calendar stringToTaskProperty(String propertyString) throws ParseException, InvalidDateFormatException {
+    	if (propertyString.equals("")) {
+            return null;            
+        } else {
+            return DateParser.parseString(propertyString);
+        }
+    }  
+
+	private ArrayList<String> stringToStringArrayList(String stringProperty) {
+		if (stringProperty.equals("")) {
+			return null;
+		}
+		String[] stringArray = stringProperty.split(MESSAGE_SEPARATOR);
+		return (ArrayList<String>) Arrays.asList(stringArray);
+	}
+
+	private ArrayList<Integer> stringToIntegerArrayList(String stringProperty) {
+		if (stringProperty.equals("")) {
+			return null;
+		}
+		String[] stringArray = stringProperty.split(MESSAGE_SEPARATOR);
+		ArrayList<Integer> integerArrayList = new ArrayList<Integer>();
+		for (String stringElement : stringArray) {
+			integerArrayList.add(Integer.valueOf(stringElement));
+		}
+		return integerArrayList;
+	}
+
+	private ArrayList<StartEndDatePair> stringToDatePairArrayList(String stringProperty) throws ParseException, InvalidDateFormatException {
+		if (stringProperty.equals("")) {
+			return null;
+		}
+		String[] stringArray = stringProperty.split(MESSAGE_SEPARATOR);
+		ArrayList<StartEndDatePair> datePairArrayList = new ArrayList<StartEndDatePair>();
+		Calendar startDate = null;
+		Calendar endDate;
+		for (String stringElement : stringArray) {
+			if (startDate == null) {
+				startDate = stringToTaskProperty(stringElement);
+			} else {
+				endDate = stringToTaskProperty(stringElement);
+				StartEndDatePair datePair = new StartEndDatePair(startDate, endDate);
+				datePairArrayList.add(datePair);
+				startDate = null;
+			}
+		}
+		return datePairArrayList;
+	}
 }

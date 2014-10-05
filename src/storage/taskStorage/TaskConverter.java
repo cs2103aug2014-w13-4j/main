@@ -23,6 +23,7 @@ import models.TaskAttributeEnum;
 */
 class TaskConverter {
     private static final String MESSAGE_SEPARATOR = "\tL@L";
+    private static final String MESSAGE_SEPARATOR_FOR_ATTRIBUTE = "\tT@T";
 
     private static final String MESSAGE_ID = "Task ID: ";
     private static final String MESSAGE_NAME = "Name: ";
@@ -55,22 +56,40 @@ class TaskConverter {
         StringBuilder taskString = new StringBuilder();
         TreeMap<TaskAttributeEnum, String> taskAttributes = task.getTaskAttributes();
         for (Map.Entry<TaskAttributeEnum, String> entry: taskAttributes.entrySet()) {
-            String attributeType = entry.getKey().attributeType();
+            String attributeType = entry.getKey().toString();
             String attributeValue = entry.getValue();
             taskString.append(attributeType + MESSAGE_SEPARATOR + attributeValue + MESSAGE_SEPARATOR);
         }
         return taskString.toString();
     }
 
-
-    protected static Calendar stringtoTaskProperty(String propertyString) throws ParseException, InvalidDateFormatException {
-        if (propertyString.equals("")) {
-            // System.out.println("null property");
-            return null;            
-        } else {
-            return DateParser.parseString(propertyString);
+    static Task stringToTask(String taskString) throws FileFormatNotSupportedException {
+        try{
+            String[] taskStringArray = taskString.split(MESSAGE_SEPARATOR);
+            TaskAttributeEnum attributeType = null;
+            String attributeValue;
+            Task task = new Task();
+            TreeMap<TaskAttributeEnum, String> taskAttributes = new TreeMap<TaskAttributeEnum, String>();
+            for (String taskStringElement : taskStringArray) {
+                if (attributeType == null) {
+                    attributeType = TaskAttributeEnum.valueOf(taskStringElement);
+                } else {
+                    attributeValue = taskStringElement;
+                    taskAttributes.put(attributeType, attributeValue);
+                    attributeType = null;
+                }
+            }
+            task.setTaskAttributes(taskAttributes);
+            return task;
+        } catch (Exception e) {
+            throw new FileFormatNotSupportedException("File format is not supported.");
         }
     }
+/*
+
+
+
+    
 
     protected static Task stringToTask(String taskString) throws FileFormatNotSupportedException {
         int arrayIndex;
@@ -156,5 +175,5 @@ class TaskConverter {
         } catch (Exception e) {
             throw new FileFormatNotSupportedException("File format is not supported.");
         }
-    }
+    }*/
 }
