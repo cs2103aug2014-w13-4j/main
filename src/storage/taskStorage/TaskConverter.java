@@ -5,12 +5,15 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Map;
+import java.util.TreeMap;
 
 import exceptions.FileFormatNotSupportedException;
 import exceptions.InvalidDateFormatException;
 import models.DateParser;
 import models.PriorityLevelEnum;
 import models.Task;
+import models.TaskAttributeEnum;
 
 /**
 *
@@ -20,6 +23,7 @@ import models.Task;
 */
 class TaskConverter {
     private static final String MESSAGE_SEPARATOR = "\tL@L";
+
     private static final String MESSAGE_ID = "Task ID: ";
     private static final String MESSAGE_NAME = "Name: ";
     private static final String MESSAGE_DATE_DUE = "Due date: ";
@@ -47,100 +51,15 @@ class TaskConverter {
 
     private static final int RESULT_THRESHOLD = -1;
 
-    // convert int task attribute to string
-    private static String taskAttributeToString(Integer intAttribute) {
-        if (intAttribute == null) {
-            return "";
-        } else {
-            return intAttribute.toString();
-        }
-    }
-
-    // convert string task attribute to string
-    private static String taskAttributeToString(String strAttribute) {
-        return strAttribute;
-    }
-
-    // convert calendar task attribute to string
-    private static String taskAttributeToString(Calendar calendarAttribute) {
-        if (calendarAttribute == null) {
-            return "";
-        } else {
-            return DateParser.parseCalendar(calendarAttribute);
-        }
-    }
-
-    // convert boolean task attribute to string
-    private static String taskAttributeToString(Boolean booleanAttribute) {
-        if (booleanAttribute == null) {
-            return "";
-        } else {
-            return booleanAttribute.toString();
-        }
-    }
-
-    // convert string array list task attribute to string
-    private static String taskAttributeToString(ArrayList<String> stringArrayListAttribute) {
-        if (stringArrayListAttribute == null) {
-            return "";
-        } else {
-            return arrayListToString(stringArrayListAttribute);
-        }
-    }
-
-    // convert integer array list task attribute to string
-    private static String taskIntAttributeToString(ArrayList<Integer> intArrayListAttribute) {
-        if (intArrayListAttribute == null) {
-            return "";
-        } else {
-            ArrayList<String> stringArrayAttribute = new ArrayList<String>();
-            for (int intAttribute : intArrayListAttribute) {
-                stringArrayAttribute.add(taskAttributeToString(intAttribute));
-            }
-            return taskAttributeToString(stringArrayAttribute);
-        }
-    }
-
-    private static String arrayListToString(ArrayList<String> stringArray) {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (String str : stringArray) {
-            // System.out.println(str + "LOL");
-            stringBuilder.append(str + MESSAGE_SEPARATOR);
-        }
-        return stringBuilder.toString();
-    }
-
     static String taskToString(Task task) {
-        ArrayList<String> taskStringArrayList = new ArrayList<String>();
-        taskStringArrayList.add(MESSAGE_ID);
-        taskStringArrayList.add(taskAttributeToString(task.getId()));
-        taskStringArrayList.add(MESSAGE_NAME);
-        taskStringArrayList.add(taskAttributeToString(task.getName()));
-        taskStringArrayList.add(MESSAGE_DATE_DUE);
-        taskStringArrayList.add(taskAttributeToString(task.getDateDue()));
-        taskStringArrayList.add(MESSAGE_DATE_START);
-        taskStringArrayList.add(taskAttributeToString(task.getDateStart()));
-        taskStringArrayList.add(MESSAGE_DATE_END);
-        taskStringArrayList.add(taskAttributeToString(task.getDateEnd()));
-        taskStringArrayList.add(MESSAGE_PRIORITY_LEVEL);
-        taskStringArrayList.add(taskAttributeToString(task.getPriorityLevelInteger()));
-        taskStringArrayList.add(MESSAGE_NOTE);
-        taskStringArrayList.add(taskAttributeToString(task.getNote()));
-        taskStringArrayList.add(MESSAGE_IS_DELETED);
-        taskStringArrayList.add(taskAttributeToString(task.isDeleted()));
-        taskStringArrayList.add(MESSAGE_IS_COMFIRMED);
-        taskStringArrayList.add(taskAttributeToString(task.isConfirmed()));
-        taskStringArrayList.add(MESSAGE_TAGS);
-        taskStringArrayList.add(taskAttributeToString(task.getTags()));
-        taskStringArrayList.add(MESSAGE_PARENT_TASKS);
-        taskStringArrayList.add(taskIntAttributeToString(task.getParentTasks()));
-        taskStringArrayList.add(MESSAGE_CHILD_TASKS);
-        taskStringArrayList.add(taskIntAttributeToString(task.getChildTasks()));
-        taskStringArrayList.add(MESSAGE_CONDITIONAL_TASKS);
-        taskStringArrayList.add(taskIntAttributeToString(task.getConditionalTasks()));
-
-        String taskString = arrayListToString(taskStringArrayList);
-        return taskString;
+        StringBuilder taskString = new StringBuilder();
+        TreeMap<TaskAttributeEnum, String> taskAttributes = task.getTaskAttributes();
+        for (Map.Entry<TaskAttributeEnum, String> entry: taskAttributes.entrySet()) {
+            String attributeType = entry.getKey().attributeType();
+            String attributeValue = entry.getValue();
+            taskString.append(attributeType + MESSAGE_SEPARATOR + attributeValue + MESSAGE_SEPARATOR);
+        }
+        return taskString.toString();
     }
 
 
@@ -232,7 +151,7 @@ class TaskConverter {
             task.setTags(taskTags);
             task.setParentTasks(taskParentTasks);
             task.setChildTasks(taskChildTasks);
-            task.setConditionalTasks(taskConditionalTasks);
+            //task.setConditionalTasks(taskConditionalTasks);
             return task;
         } catch (Exception e) {
             throw new FileFormatNotSupportedException("File format is not supported.");
