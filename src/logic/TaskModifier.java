@@ -32,10 +32,10 @@ public class TaskModifier {
 	}
 	
 	static void completeTask(Command command, Task task) throws InvalidDateFormatException {
-		if (command.getParam().contains(ParamEnum.DATE)) {
+		if (command.getParam().containsKey(ParamEnum.DATE)) {
 			Calendar completedDate = DateParser.parseString(command.getParam()
 					.get(ParamEnum.DATE).get(0));
-		task.setDateEnd(completedDate);
+			task.setDateEnd(completedDate);
 		} else {
 			task.setDateEnd(Calendar.getInstance());
 	}
