@@ -118,7 +118,7 @@ public class Logic implements ILogic {
 
 	private Feedback search(Command command) {
 		Hashtable<ParamEnum, ArrayList<String>> params = command.getParam();
-		// TODO: actual method name for tasks
+		// TODO: actual method name for search
 		// ArrayList<Task> tasks = storage.search(params);
 		ArrayList<Task> taskList = storage.getAllTasks();
 		return createFeedback(taskList,
