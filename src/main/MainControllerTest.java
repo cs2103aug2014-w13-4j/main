@@ -1,10 +1,25 @@
 package main;
 
+import org.junit.Before;
 import org.junit.Test;
+
+import java.lang.reflect.Method;
 
 import static org.junit.Assert.*;
 
 public class MainControllerTest {
+
+	Class<MainController> MainControllerClass = MainController.class;
+	Method validateUserInput = MainControllerClass.
+			getDeclaredMethod("validateUserInput", String.class);
+
+	public MainControllerTest() throws NoSuchMethodException {
+	}
+
+	@Before
+	public void setFunctionsAccessible(){
+		validateUserInput.setAccessible(true);
+	}
 
 	@Test
 	public void testHandleUserInput() throws Exception {
@@ -18,10 +33,9 @@ public class MainControllerTest {
 	public void testValidateUserInput() throws Exception {
 		MainController controller = new MainController();
 		assertEquals("Empty input did not validate to false!", false,
-				controller.validateUserInput(""));
-		assertEquals("Null input did not validate to false!", false,
-				controller.validateUserInput(null));
+				validateUserInput.invoke(controller, ""));
 		assertEquals("Valid input did not validate to true!", true,
-				controller.validateUserInput("test command"));
+				validateUserInput.invoke(controller, "test command"));
+	}
 	}
 }

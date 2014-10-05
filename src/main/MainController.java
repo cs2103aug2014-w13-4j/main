@@ -68,7 +68,7 @@ public class MainController {
 		}
 	}
 
-	public boolean validateUserInput(String userInput){
+	private boolean validateUserInput(String userInput){
 		return (userInput != null && !userInput.isEmpty());
 	}
 
