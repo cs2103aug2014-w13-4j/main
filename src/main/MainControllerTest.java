@@ -10,6 +10,7 @@ import static org.junit.Assert.*;
 public class MainControllerTest {
 
 	Class<MainController> MainControllerClass = MainController.class;
+	//Method setFocusToUserInputField = MainControllerClass.getDeclaredMethod("setFocusToUserInputField");
 	Method validateUserInput = MainControllerClass.
 			getDeclaredMethod("validateUserInput", String.class);
 
@@ -18,6 +19,7 @@ public class MainControllerTest {
 
 	@Before
 	public void setFunctionsAccessible(){
+		//setFocusToUserInputField.setAccessible(true);
 		validateUserInput.setAccessible(true);
 	}
 
@@ -37,5 +39,16 @@ public class MainControllerTest {
 		assertEquals("Valid input did not validate to true!", true,
 				validateUserInput.invoke(controller, "test command"));
 	}
+
+	@Test
+	public void testSetFocusToUserInputField() throws Exception {
+		// TODO: Figure out how to test
+		// http://stackoverflow.com/questions/11385604/how-do-you-unit-test-a-javafx-controller-with-junit
+		// http://blog.buildpath.de/javafx-testrunner/
+		// http://awhite.blogspot.de/2013/04/javafx-junit-testing.html
+
+		//final MainController controller = new MainController();
+		//setFocusToUserInputField.invoke(controller);
+		//assertEquals("asd", true, controller.userInputField.isFocused());
 	}
 }
