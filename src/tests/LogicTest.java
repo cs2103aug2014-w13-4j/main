@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Calendar;
 
 import logic.Logic;
 import logic.TaskModifier;
@@ -52,7 +53,7 @@ public class LogicTest {
 	}
 	
 	@Test
-	public final void testExecuteMarkAsDoneCommand() throws Exception {
+	public final void testCompleteTask() throws Exception {
 		Logic logic = new Logic();
 		logic.initialize();
 		CommandParser parser = new CommandParser(); 
@@ -64,6 +65,23 @@ public class LogicTest {
 		logic.executeCommand(completeCommand);
 		Task completedTask = ((Storage) storage.get(logic)).getTask(0);
 		assertTrue(completedTask.getDateEnd() != null);
+	}
+	
+	@Test
+	public final void testCompleteTaskWithDate() throws Exception {
+		Logic logic = new Logic();
+		logic.initialize();
+		CommandParser parser = new CommandParser(); 
+		Command addCommand = parser.parseCommand("add eat my pet dog");
+		logic.executeCommand(addCommand);
+		Task uncompletedTask = ((Storage) storage.get(logic)).getTask(0);
+		assertTrue(uncompletedTask.getDateEnd() == null);
+		Command completeCommand = parser.parseCommand("done 0 date 30-1-1992");
+		logic.executeCommand(completeCommand);
+		Task completedTask = ((Storage) storage.get(logic)).getTask(0);
+		assertTrue(completedTask.getDateEnd().get(Calendar.DAY_OF_MONTH) == 30);
+		assertTrue(completedTask.getDateEnd().get(Calendar.MONTH) + 1 == 1);
+		assertTrue(completedTask.getDateEnd().get(Calendar.YEAR) == 1992);
 	}
 
 }
