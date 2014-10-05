@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import logic.Logic;
+import logic.TaskModifier;
 import models.PriorityLevelEnum;
 import models.Task;
 
@@ -18,9 +19,9 @@ import command.CommandParser;
 
 public class LogicTest {
 	Class<Logic> LogicClass = Logic.class;
+	Class<TaskModifier> TaskModifierClass = TaskModifier.class;
 	Field storage = LogicClass.getDeclaredField("storage");
-	Method createTaskForAdd = LogicClass.getDeclaredMethod("createTaskForAdd",
-			Command.class);
+	Method modifyTask = TaskModifierClass.getDeclaredMethod("modifyTask", Command.class, Task.class);
 	
 	public LogicTest() throws NoSuchMethodException, NoSuchFieldException {
 		
@@ -28,7 +29,7 @@ public class LogicTest {
 
 	@Before
 	public void setFunctionsAccessible() {
-		createTaskForAdd.setAccessible(true);
+		modifyTask.setAccessible(true);
 	}
 	
 	@Before
@@ -42,10 +43,12 @@ public class LogicTest {
 		logic.initialize();
 		CommandParser parser = new CommandParser(); 
 		Command addCommand = parser.parseCommand("add eat my pet dog from 20-02-1999 note I don't know why I want that? level 2");
-		Task test = (Task) createTaskForAdd.invoke(logic, addCommand);
-		assertEquals("eat my pet dog", test.getName());
-		assertEquals("I don't know why I want that?", test.getNote());
-		assertEquals(PriorityLevelEnum.RED, test.getPriorityLevel());
+		Task newTask = new Task();
+		newTask.setId(-1);
+		modifyTask.invoke(TaskModifierClass, addCommand, newTask);
+		assertEquals("eat my pet dog", newTask.getName());
+		assertEquals("I don't know why I want that?", newTask.getNote());
+		assertEquals(PriorityLevelEnum.RED, newTask.getPriorityLevel());
 	}
 	
 	@Test

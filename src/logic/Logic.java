@@ -18,6 +18,7 @@ import exceptions.TaskNotFoundException;
 
 //TODO: Throw exceptions when mandatory fields are missing
 public class Logic implements ILogic {
+	private static final int NEW_ID = -1;
 	private static final String ADD_MESSAGE = "%1$s is successfully added.";
 	private static final String DELETE_MESSAGE = "%1$s is successfully deleted";
 	private static final String EDIT_MESSAGE = "%1$s is successfully edited.";
@@ -79,12 +80,14 @@ public class Logic implements ILogic {
 	 *            command created by the commandParser
 	 * @return the feedback (tasklist and message) corresponding to the
 	 *         particular command
+	 * @throws InvalidDateFormatException 
+	 * @throws IOException 
+	 * @throws TaskNotFoundException 
 	 */
-	public Feedback executeCommand(Command command) {
+	public Feedback executeCommand(Command command) throws TaskNotFoundException, IOException, InvalidDateFormatException {
 		if (storage == null) {
 			return createFeedback(null, ERROR_STORAGE_MESSAGE);
 		} else {
-			try {
 				CommandEnum commandType = command.getCommand();
 				switch (commandType) {
 				case ADD:
@@ -100,7 +103,7 @@ public class Logic implements ILogic {
 				case DISPLAY:
 					return display();
 				case DONE:
-					return markAsDone(command);
+					return complete(command);
 				case LEVEL:
 					return null;
 					/**
@@ -111,12 +114,6 @@ public class Logic implements ILogic {
 					return createFeedback(storage.getAllTasks(),
 							INVALID_INPUT_MESSAGE);
 				}
-			} catch (TaskNotFoundException | InvalidDateFormatException | NumberFormatException e) {
-				ArrayList<Task> taskList = storage.getAllTasks();
-				return createFeedback(taskList, e.getMessage());
-			} catch (IOException e) {
-				return createFeedback(null, ERROR_IO_MESSAGE);
-			} 
 		}
 	}
 
@@ -141,18 +138,12 @@ public class Logic implements ILogic {
 	 * @throws IOException
 	 * @throws InvalidDateFormatException 
 	 */
-	private Feedback markAsDone(Command command) throws TaskNotFoundException,
+	private Feedback complete(Command command) throws TaskNotFoundException,
 			IOException, InvalidDateFormatException {
-		int id = getIdFromCommand(command);
+		int id = getTaskId(command);
 		Task task = storage.getTask(id);
+		TaskModifier.completeTask(command, task);
 		String name = task.getName();
-		if (command.getParam().contains(ParamEnum.DATE)) {
-				Calendar completedDate = DateParser.parseString(command.getParam()
-						.get(ParamEnum.DATE).get(0));
-			task.setDateEnd(completedDate);
-		} else {
-			task.setDateEnd(Calendar.getInstance());
-		}
 		storage.writeTaskToFile(task);
 		ArrayList<Task> taskList = storage.getAllTasks();
 		return createFeedback(taskList, createMessage(COMPLETE_MESSAGE, name));
@@ -171,9 +162,11 @@ public class Logic implements ILogic {
 	 */
 	private Feedback add(Command command) throws TaskNotFoundException,
 			IOException, InvalidDateFormatException {
-		Task task = createTaskForAdd(command);
-		storage.writeTaskToFile(task);
-		String name = task.getName();
+		Task newTask = new Task();
+		newTask.setId(NEW_ID);
+		TaskModifier.modifyTask(command, newTask);
+		storage.writeTaskToFile(newTask);
+		String name = newTask.getName();
 		ArrayList<Task> taskList = storage.getAllTasks();
 		return createFeedback(taskList, createMessage(ADD_MESSAGE, name));
 	}
@@ -190,17 +183,17 @@ public class Logic implements ILogic {
 	 */
 	private Feedback delete(Command command) throws TaskNotFoundException,
 			IOException {
-		int id = getIdFromCommand(command);
+		int id = getTaskId(command);
 		Task task = storage.getTask(id);
 		String name = task.getName();
-		task.setDeleted(true); 
+		TaskModifier.deleteTask(task); 
 		storage.writeTaskToFile(task);
 		ArrayList<Task> taskList = storage.getAllTasks();
 		return createFeedback(taskList, createMessage(DELETE_MESSAGE, name));
 	}
 
 	/**
-	 * Updates the task in the file
+	 * Updates the task in the file. It can currently only update due date and name. 
 	 * 
 	 * @param command
 	 *            : the command created by commandParser
@@ -212,33 +205,16 @@ public class Logic implements ILogic {
 	 */
 	private Feedback update(Command command) throws TaskNotFoundException,
 			IOException, InvalidDateFormatException {
-		int id = getIdFromCommand(command);
+		int id = getTaskId(command);
 		Task task = storage.getTask(id);
-		updateTask(command, task);
+		TaskModifier.modifyTask(command, task);
 		storage.writeTaskToFile(task);
 		String name = task.getName();
 		ArrayList<Task> taskList = storage.getAllTasks();
 		return createFeedback(taskList, createMessage(EDIT_MESSAGE, name));
 	}
 
-	private Task createTaskForAdd(Command command)
-			throws InvalidDateFormatException {
-		Task task = new Task();
-		task.setId(-1);
-		setNameFromCommand(command, task);
-		setStartDateFromCommand(command, task);
-		setDueDateFromCommand(command, task);
-		setTagsFromCommand(command, task);
-		setLevelFromCommand(command, task);
-		setNoteFromCommand(command, task);
-		return task;
-	}
-
-	private void updateTask(Command command, Task task)
-			throws InvalidDateFormatException {
-		setNameFromCommand(command, task);
-		setDueDateFromCommand(command, task);
-	}
+	
 
 	private static String createMessage(String message, String variableText1) {
 		return String.format(message, variableText1);
@@ -248,7 +224,7 @@ public class Logic implements ILogic {
 		return new Feedback(message, taskList);
 	}
 
-	private int getIdFromCommand(Command command) {
+	private int getTaskId(Command command) {
 		if (command.getParam().containsKey(ParamEnum.KEYWORD)) {
 			return Integer.parseInt(command.getParam()
 					.get(ParamEnum.KEYWORD).get(0));
@@ -257,57 +233,6 @@ public class Logic implements ILogic {
 		}
 	}
 
-	private void setNameFromCommand(Command command, Task task) {
-		if (command.getParam().containsKey(ParamEnum.NAME)) {
-			String taskName = command.getParam().get(ParamEnum.NAME).get(0);
-			task.setName(taskName);
-		}
-	}
-
-	void setDueDateFromCommand(Command command, Task task)
-			throws InvalidDateFormatException {
-		if (command.getParam().containsKey(ParamEnum.DUE_DATE)) {
-			Calendar dueDate = DateParser.parseString(command.getParam()
-					.get(ParamEnum.DUE_DATE).get(0));
-			task.setDateDue(dueDate);
-		}
-	}
-
-	private void setStartDateFromCommand(Command command, Task task)
-			throws InvalidDateFormatException {
-		if (command.getParam().containsKey(ParamEnum.START_DATE)) {
-			Calendar startDate = DateParser.parseString(command.getParam()
-					.get(ParamEnum.START_DATE).get(0));
-			task.setDateDue(startDate);
-		}
-	}
-
-	private void setLevelFromCommand(Command command, Task task) {
-		PriorityLevelEnum priorityEnum = null;
-		if (command.getParam().containsKey(ParamEnum.LEVEL)) {
-			try {
-				int level = Integer.parseInt(command.getParam()
-						.get(ParamEnum.LEVEL).get(0));
-				priorityEnum = PriorityLevelEnum.fromInteger(level);
-			} catch (NumberFormatException | NullPointerException e) {
-			}
-			// TODO: Indicate error when invalid priority level is added
-			task.setPriorityLevel(priorityEnum);
-		}
-	}
-
-	private void setNoteFromCommand(Command command, Task task) {
-		if (command.getParam().containsKey(ParamEnum.NOTE)) {
-			String note = command.getParam().get(ParamEnum.NOTE).get(0);
-			task.setNote(note);
-		}
-	}
-
-	private void setTagsFromCommand(Command command, Task task) {
-		if (command.getParam().containsKey(ParamEnum.TAG)) {
-			ArrayList<String> tags = command.getParam().get(ParamEnum.TAG);
-			task.setTags(tags);
-		}
-	}
+	
 
 }
