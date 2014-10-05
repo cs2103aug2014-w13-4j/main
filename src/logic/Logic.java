@@ -4,6 +4,8 @@ import interfaces.ILogic;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Hashtable;
+
 import storage.Storage;
 import models.Feedback;
 import models.Task;
@@ -20,6 +22,7 @@ public class Logic implements ILogic {
 	private static final String DELETE_MESSAGE = "%1$s is successfully deleted";
 	private static final String EDIT_MESSAGE = "%1$s is successfully edited.";
 	private static final String COMPLETE_MESSAGE = "%1$s is marked as completed.";
+	private static final String SEARCH_MESSAGE = "%1$s results are found.";
 	private static final String ERROR_STORAGE_MESSAGE = "There is an error loading the storage.";
 	private static final String DISPLAY_MESSAGE = "All tasks are displayed.";
 	private static final String INVALID_COMMAND_MESSAGE = "The command is invalid.";
@@ -97,7 +100,7 @@ public class Logic implements ILogic {
 				return update(command);
 			case UNDO:
 				return null;
-			case SELECT:
+			case FILTER:
 				return null;
 			case DISPLAY:
 				return display();
@@ -105,14 +108,21 @@ public class Logic implements ILogic {
 				return complete(command);
 			case LEVEL:
 				return null;
-				/**
-				 * case SEARCH: return null;
-				 **/
-				// storage search -> (HashMap CommandParam)
+			case SEARCH:
+				return search(command);
 			default:
 				throw new InvalidInputException(INVALID_COMMAND_MESSAGE);
 			}
 		}
+	}
+
+	private Feedback search(Command command) {
+		Hashtable<ParamEnum, ArrayList<String>> params = command.getParam();
+		// TODO: actual method name for tasks
+		// ArrayList<Task> tasks = storage.search(params);
+		ArrayList<Task> taskList = storage.getAllTasks();
+		return createFeedback(taskList,
+				createMessage(SEARCH_MESSAGE, String.valueOf(taskList.size())));
 	}
 
 	/**
