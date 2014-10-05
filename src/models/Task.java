@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import models.PriorityLevelEnum;
 
-//TODO: set dateStart
 public class Task {
 	private int id;
 	private String name;
@@ -16,7 +15,7 @@ public class Task {
 	private ArrayList<String> tags;
 	private ArrayList<Integer> parentTasks;
 	private ArrayList<Integer> childTasks;
-	private ArrayList<Integer> conditionalTasks;
+	private ArrayList<StartEndDatePair> conditionalDates;
 	private boolean isDeleted = false;
 	private boolean isConfirmed = false;
 	
@@ -59,8 +58,8 @@ public class Task {
 		this.childTasks = childTasks;
 	}
 
-	public void setConditionalTasks(ArrayList<Integer> conditionalTasks) {
-		this.conditionalTasks = conditionalTasks;
+	public void setConditionalTasks(ArrayList<StartEndDatePair> conditionalDates) {
+		this.conditionalDates = conditionalDates;
 	}
 
 	public void setDeleted(boolean isDeleted) {
@@ -123,8 +122,8 @@ public class Task {
 		return childTasks;
 	}
 
-	public ArrayList<Integer> getConditionalTasks() {
-		return conditionalTasks;
+	public ArrayList<StartEndDatePair> getConditionalDates() {
+		return conditionalDates;
 	}
 
 	public boolean isDeleted() {
