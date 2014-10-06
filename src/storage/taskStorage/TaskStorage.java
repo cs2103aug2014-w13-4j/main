@@ -252,17 +252,13 @@ public class TaskStorage {
         }
 
         for (Task task : taskBuffer) {
-            if (name != null) {
-                if (!task.getName().contains(name)) {
-                    continue;
-                }
-            }
-            if (note != null) {
-                if (!task.getNote().contains(note)) {
-                    continue;
-                }
-            }
-            taskList.add(task);
+			if (!task.isDeleted()){
+				if (name != null && !task.getName().contains(name)
+						|| note != null && !task.getNote().contains(note)) {
+					continue;
+				}
+				taskList.add(task);
+			}
         }
         return taskList;
     }
