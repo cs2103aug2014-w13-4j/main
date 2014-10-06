@@ -23,10 +23,9 @@ public class Task {
 	private ArrayList<String> tags;
 	private ArrayList<Integer> parentTasks;
 	private ArrayList<Integer> childTasks;
-	private ArrayList<StartEndDatePair> conditionalDates;
-	private boolean isDeleted;
-	private boolean isConfirmed;
 	public TreeMap<TaskAttributeEnum, String> taskAttributes;
+	private ArrayList<StartDueDatePair> conditionalDates;
+	private boolean isDeleted;
 	
 	public Task() {
 		taskAttributes = new TreeMap<TaskAttributeEnum, String>();
@@ -34,7 +33,6 @@ public class Task {
 			taskAttributes.put(taskAttribute, "");
 		}
 		setDeleted(false);
-		setConfirmed(false);
 	}
 
 	public TreeMap<TaskAttributeEnum, String> getTaskAttributes() {
@@ -53,11 +51,10 @@ public class Task {
 		}
 		setNote(taskAttributes.get(TaskAttributeEnum.NOTE));
 		setDeleted(Boolean.valueOf(taskAttributes.get(TaskAttributeEnum.IS_DELETED)));
-		setConfirmed(Boolean.valueOf(taskAttributes.get(TaskAttributeEnum.IS_CONFIRMED)));
 		setTags(stringToStringArrayList(taskAttributes.get(TaskAttributeEnum.TAGS)));
 		setParentTasks(stringToIntegerArrayList(taskAttributes.get(TaskAttributeEnum.PARENT_TASKS)));
 		setChildTasks(stringToIntegerArrayList(taskAttributes.get(TaskAttributeEnum.CHILD_TASKS)));
-		setConditionalTasks(stringToDatePairArrayList(taskAttributes.get(TaskAttributeEnum.CONDITIONAL_DATES)));
+		setConditionalDates(stringToDatePairArrayList(taskAttributes.get(TaskAttributeEnum.CONDITIONAL_DATES)));
 	}
 
 	public void setName(String name) {
@@ -105,19 +102,18 @@ public class Task {
 		this.taskAttributes.put(TaskAttributeEnum.CHILD_TASKS, integerArrayListToString(childTasks));
 	}
 
-	public void setConditionalTasks(ArrayList<StartEndDatePair> conditionalDates) {
+	public void setConditionalDates(ArrayList<StartDueDatePair> conditionalDates) {
 		this.conditionalDates = conditionalDates;
 		this.taskAttributes.put(TaskAttributeEnum.CONDITIONAL_DATES, datePairArrayListToString(conditionalDates));
+	}
+	
+	public void appendConditionalDates(ArrayList<StartDueDatePair> conditionalDates) {
+		this.conditionalDates.addAll(conditionalDates);
 	}
 
 	public void setDeleted(boolean isDeleted) {
 		this.isDeleted = isDeleted;
 		this.taskAttributes.put(TaskAttributeEnum.IS_DELETED, taskAttributeToString(isDeleted));
-	}
-
-	public void setConfirmed(boolean isConfirmed) {
-		this.isConfirmed = isConfirmed;
-		this.taskAttributes.put(TaskAttributeEnum.IS_CONFIRMED, taskAttributeToString(isConfirmed));
 	}
 
 	public void setId(int id) {
@@ -173,7 +169,7 @@ public class Task {
 		return childTasks;
 	}
 
-	public ArrayList<StartEndDatePair> getConditionalDates() {
+	public ArrayList<StartDueDatePair> getConditionalDates() {
 		return conditionalDates;
 	}
 
@@ -182,7 +178,19 @@ public class Task {
 	}
 
 	public boolean isConfirmed() {
-		return isConfirmed;
+		if (conditionalDates != null) {
+			return (dateStart != null || dateEnd != null);
+		} else {
+			return true;
+		}
+	}
+	
+	public void setStartDueDateFromConditional(int id) {
+		//conditional dates must be present to set start and due date
+		//assume id starts counting from 1
+		assert (conditionalDates != null && id >= conditionalDates.size());
+		dateStart = conditionalDates.get(id - 1).getStartDate();
+		dateEnd = conditionalDates.get(id - 1).getDueDate();
 	}
 	
 	public void addTags(ArrayList<String> newTags) {
@@ -232,12 +240,12 @@ public class Task {
     }
 
     // convert start end date pair array list task attribute to string
-    private static String datePairArrayListToString(ArrayList<StartEndDatePair> datePairAttribute) {
+    private static String datePairArrayListToString(ArrayList<StartDueDatePair> datePairAttribute) {
         if (datePairAttribute == null) {
             return "";
         } else {
             ArrayList<String> stringArrayAttribute = new ArrayList<String>();
-            for (StartEndDatePair datePair : datePairAttribute) {
+            for (StartDueDatePair datePair : datePairAttribute) {
                 stringArrayAttribute.add(taskAttributeToString(datePair.getStartDate()));
                 stringArrayAttribute.add(taskAttributeToString(datePair.getDueDate()));
             }
@@ -248,7 +256,6 @@ public class Task {
     private static String arrayListToString(ArrayList<String> stringArray) {
         StringBuilder stringBuilder = new StringBuilder();
         for (String str : stringArray) {
-            // System.out.println(str + "LOL");
             stringBuilder.append(str + MESSAGE_SEPARATOR);
         }
         return stringBuilder.toString();
@@ -282,12 +289,12 @@ public class Task {
 		return integerArrayList;
 	}
 
-	private ArrayList<StartEndDatePair> stringToDatePairArrayList(String stringProperty) throws ParseException, InvalidDateFormatException {
+	private ArrayList<StartDueDatePair> stringToDatePairArrayList(String stringProperty) throws ParseException, InvalidDateFormatException {
 		if (stringProperty.equals("")) {
 			return null;
 		}
 		String[] stringArray = stringProperty.split(MESSAGE_SEPARATOR);
-		ArrayList<StartEndDatePair> datePairArrayList = new ArrayList<StartEndDatePair>();
+		ArrayList<StartDueDatePair> datePairArrayList = new ArrayList<StartDueDatePair>();
 		Calendar startDate = null;
 		Calendar endDate;
 		for (String stringElement : stringArray) {
@@ -295,7 +302,7 @@ public class Task {
 				startDate = stringToTaskProperty(stringElement);
 			} else {
 				endDate = stringToTaskProperty(stringElement);
-				StartEndDatePair datePair = new StartEndDatePair(startDate, endDate);
+				StartDueDatePair datePair = new StartDueDatePair(startDate, endDate);
 				datePairArrayList.add(datePair);
 				startDate = null;
 			}
