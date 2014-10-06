@@ -23,16 +23,16 @@ public class LogicTest {
 	Class<TaskModifier> TaskModifierClass = TaskModifier.class;
 	Field storage = LogicClass.getDeclaredField("storage");
 	Method modifyTask = TaskModifierClass.getDeclaredMethod("modifyTask", Command.class, Task.class);
-	
+
 	public LogicTest() throws NoSuchMethodException, NoSuchFieldException {
-		
+
 	}
 
 	@Before
 	public void setFunctionsAccessible() {
 		modifyTask.setAccessible(true);
 	}
-	
+
 	@Before
 	public void setFieldsAccessible() {
 		storage.setAccessible(true);
@@ -42,7 +42,7 @@ public class LogicTest {
 	public final void testExecuteAddCommand() throws Exception {
 		Logic logic = new Logic();
 		logic.initialize();
-		CommandParser parser = new CommandParser(); 
+		CommandParser parser = new CommandParser();
 		Command addCommand = parser.parseCommand("add eat my pet dog from 20-02-1999 note I don't know why I want that? level 2");
 		Task newTask = new Task();
 		newTask.setId(-1);
@@ -51,12 +51,12 @@ public class LogicTest {
 		assertEquals("I don't know why I want that?", newTask.getNote());
 		assertEquals(PriorityLevelEnum.RED, newTask.getPriorityLevel());
 	}
-	
+
 	@Test
 	public final void testCompleteTask() throws Exception {
 		Logic logic = new Logic();
 		logic.initialize();
-		CommandParser parser = new CommandParser(); 
+		CommandParser parser = new CommandParser();
 		Command addCommand = parser.parseCommand("add eat my pet dog from 20-02-1999 note I don't know why I want that? level 2");
 		logic.executeCommand(addCommand);
 		Task uncompletedTask = ((Storage) storage.get(logic)).getTask(0);
@@ -66,12 +66,12 @@ public class LogicTest {
 		Task completedTask = ((Storage) storage.get(logic)).getTask(0);
 		assertTrue(completedTask.getDateEnd() != null);
 	}
-	
+
 	@Test
 	public final void testCompleteTaskWithDate() throws Exception {
 		Logic logic = new Logic();
 		logic.initialize();
-		CommandParser parser = new CommandParser(); 
+		CommandParser parser = new CommandParser();
 		Command addCommand = parser.parseCommand("add eat my pet dog");
 		logic.executeCommand(addCommand);
 		Task uncompletedTask = ((Storage) storage.get(logic)).getTask(0);

@@ -12,7 +12,7 @@ import models.PriorityLevelEnum;
 
 public class Task {
 	private static final String MESSAGE_SEPARATOR = "\tT@T";
-	
+
 	private int id;
 	private String name;
 	private Calendar dateDue;
@@ -26,7 +26,7 @@ public class Task {
 	public TreeMap<TaskAttributeEnum, String> taskAttributes;
 	private ArrayList<StartDueDatePair> conditionalDates;
 	private boolean isDeleted;
-	
+
 	public Task() {
 		taskAttributes = new TreeMap<TaskAttributeEnum, String>();
 		for (TaskAttributeEnum taskAttribute : TaskAttributeEnum.values()) {
@@ -61,12 +61,12 @@ public class Task {
 		this.name = name;
 		this.taskAttributes.put(TaskAttributeEnum.NAME, name);
 	}
-	
+
 	public void setDateDue(Calendar dateDue) {
 		this.dateDue = dateDue;
 		this.taskAttributes.put(TaskAttributeEnum.DATE_DUE, taskAttributeToString(dateDue));
 	}
-	
+
 	public void setDateStart(Calendar dateStart) {
 		this.dateStart = dateStart;
 		this.taskAttributes.put(TaskAttributeEnum.DATE_START, taskAttributeToString(dateStart));
@@ -106,7 +106,7 @@ public class Task {
 		this.conditionalDates = conditionalDates;
 		this.taskAttributes.put(TaskAttributeEnum.CONDITIONAL_DATES, datePairArrayListToString(conditionalDates));
 	}
-	
+
 	public void appendConditionalDates(ArrayList<StartDueDatePair> conditionalDates) {
 		this.conditionalDates.addAll(conditionalDates);
 	}
@@ -124,7 +124,7 @@ public class Task {
 	public String getName() {
 		return name;
 	}
-	
+
 	public Calendar getDateDue() {
 		return dateDue;
 	}
@@ -144,7 +144,7 @@ public class Task {
 	public PriorityLevelEnum getPriorityLevel() {
 		return priorityLevel;
 	}
-	
+
 	public Integer getPriorityLevelInteger() {
 		if (priorityLevel == null) {
 			return null;
@@ -184,7 +184,7 @@ public class Task {
 			return true;
 		}
 	}
-	
+
 	public void setStartDueDateFromConditional(int id) {
 		//conditional dates must be present to set start and due date
 		//assume id starts counting from 1
@@ -192,82 +192,82 @@ public class Task {
 		dateStart = conditionalDates.get(id - 1).getStartDate();
 		dateEnd = conditionalDates.get(id - 1).getDueDate();
 	}
-	
+
 	public void addTags(ArrayList<String> newTags) {
 		newTags.removeAll(this.tags);
 		this.tags.addAll(newTags);
 	}
 
-    // convert int task attribute to string
-    private static String taskAttributeToString(Integer intAttribute) {
-        return intAttribute.toString();
-    }
+	// convert int task attribute to string
+	private static String taskAttributeToString(Integer intAttribute) {
+		return intAttribute.toString();
+	}
 
-    // convert boolean task attribute to string
-    private static String taskAttributeToString(Boolean booleanAttribute) {
-        return booleanAttribute.toString();
-    }
+	// convert boolean task attribute to string
+	private static String taskAttributeToString(Boolean booleanAttribute) {
+		return booleanAttribute.toString();
+	}
 
-    // convert calendar task attribute to string
-    private static String taskAttributeToString(Calendar calendarAttribute) {
-        if (calendarAttribute == null) {
-            return "";
-        } else {
-            return DateParser.parseCalendar(calendarAttribute);
-        }
-    }
+	// convert calendar task attribute to string
+	private static String taskAttributeToString(Calendar calendarAttribute) {
+		if (calendarAttribute == null) {
+			return "";
+		} else {
+			return DateParser.parseCalendar(calendarAttribute);
+		}
+	}
 
-    // convert string array list task attribute to string
-    private static String stringArrayListToString(ArrayList<String> stringArrayListAttribute) {
-        if (stringArrayListAttribute == null) {
-            return "";
-        } else {
-            return arrayListToString(stringArrayListAttribute);
-        }
-    }
+	// convert string array list task attribute to string
+	private static String stringArrayListToString(ArrayList<String> stringArrayListAttribute) {
+		if (stringArrayListAttribute == null) {
+			return "";
+		} else {
+			return arrayListToString(stringArrayListAttribute);
+		}
+	}
 
-    // convert integer array list task attribute to string
-    private static String integerArrayListToString(ArrayList<Integer> intArrayListAttribute) {
-        if (intArrayListAttribute == null) {
-            return "";
-        } else {
-            ArrayList<String> stringArrayAttribute = new ArrayList<String>();
-            for (int intAttribute : intArrayListAttribute) {
-                stringArrayAttribute.add(taskAttributeToString(intAttribute));
-            }
-            return stringArrayListToString(stringArrayAttribute);
-        }
-    }
+	// convert integer array list task attribute to string
+	private static String integerArrayListToString(ArrayList<Integer> intArrayListAttribute) {
+		if (intArrayListAttribute == null) {
+			return "";
+		} else {
+			ArrayList<String> stringArrayAttribute = new ArrayList<String>();
+			for (int intAttribute : intArrayListAttribute) {
+				stringArrayAttribute.add(taskAttributeToString(intAttribute));
+			}
+			return stringArrayListToString(stringArrayAttribute);
+		}
+	}
 
-    // convert start end date pair array list task attribute to string
-    private static String datePairArrayListToString(ArrayList<StartDueDatePair> datePairAttribute) {
-        if (datePairAttribute == null) {
-            return "";
-        } else {
-            ArrayList<String> stringArrayAttribute = new ArrayList<String>();
-            for (StartDueDatePair datePair : datePairAttribute) {
-                stringArrayAttribute.add(taskAttributeToString(datePair.getStartDate()));
-                stringArrayAttribute.add(taskAttributeToString(datePair.getDueDate()));
-            }
-            return stringArrayListToString(stringArrayAttribute);
-        }
-    }
+	// convert start end date pair array list task attribute to string
+	private static String datePairArrayListToString(ArrayList<StartDueDatePair> datePairAttribute) {
+		if (datePairAttribute == null) {
+			return "";
+		} else {
+			ArrayList<String> stringArrayAttribute = new ArrayList<String>();
+			for (StartDueDatePair datePair : datePairAttribute) {
+				stringArrayAttribute.add(taskAttributeToString(datePair.getStartDate()));
+				stringArrayAttribute.add(taskAttributeToString(datePair.getDueDate()));
+			}
+			return stringArrayListToString(stringArrayAttribute);
+		}
+	}
 
-    private static String arrayListToString(ArrayList<String> stringArray) {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (String str : stringArray) {
-            stringBuilder.append(str + MESSAGE_SEPARATOR);
-        }
-        return stringBuilder.toString();
-    }  
+	private static String arrayListToString(ArrayList<String> stringArray) {
+		StringBuilder stringBuilder = new StringBuilder();
+		for (String str : stringArray) {
+			stringBuilder.append(str + MESSAGE_SEPARATOR);
+		}
+		return stringBuilder.toString();
+	}
 
-    private static Calendar stringToTaskProperty(String propertyString) throws ParseException, InvalidDateFormatException {
-    	if (propertyString.equals("")) {
-            return null;            
-        } else {
-            return DateParser.parseString(propertyString);
-        }
-    }  
+	private static Calendar stringToTaskProperty(String propertyString) throws ParseException, InvalidDateFormatException {
+		if (propertyString.equals("")) {
+			return null;
+		} else {
+			return DateParser.parseString(propertyString);
+		}
+	}
 
 	private ArrayList<String> stringToStringArrayList(String stringProperty) {
 		if (stringProperty.equals("")) {
