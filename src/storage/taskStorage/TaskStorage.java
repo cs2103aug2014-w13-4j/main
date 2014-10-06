@@ -147,13 +147,12 @@ public class TaskStorage {
 
     // Get all tasks that are not deleted
     public ArrayList<Task> getAllTasks() {
-        return taskBuffer;
         ArrayList<Task> allTaskList = new ArrayList<Task>();
         if (taskBuffer == null) {
-            return nll;
+            return null;
         }
         for (Task task: taskBuffer) {
-            if (task.delete()) {
+            if (task.isDeleted()) {
                 continue;
             } else {
                 allTaskList.add(task);
@@ -170,7 +169,7 @@ public class TaskStorage {
             return null;
         }
         for (Task task: taskBuffer) {
-            if (task.getDateEnd() == null || task.deleted()) {
+            if (task.getDateEnd() == null || task.isDeleted()) {
                 continue;
             } else {
                 completedTaskList.add(task);
@@ -187,7 +186,7 @@ public class TaskStorage {
             return null;
         }
         for (Task task: taskBuffer) {
-            if (task.getDateEnd() == null && !task.deleted()) {
+            if (task.getDateEnd() == null && !task.isDeleted()) {
                 activeTaskList.add(task);
             } else {
                 continue;
