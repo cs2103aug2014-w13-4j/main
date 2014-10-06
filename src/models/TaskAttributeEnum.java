@@ -12,8 +12,7 @@ public enum TaskAttributeEnum {
     PARENT_TASKS ,
     CHILD_TASKS ,
     CONDITIONAL_DATES ,
-    IS_DELETED ,
-    IS_CONFIRMED ;
+    IS_DELETED;
     
     
     TaskAttributeEnum() {

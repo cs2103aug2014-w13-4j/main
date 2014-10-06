@@ -2,11 +2,11 @@ package models;
 
 import java.util.Calendar;
 
-public class StartEndDatePair {
+public class StartDueDatePair {
 	private Calendar startDate;
 	private Calendar dueDate;
 	
-	public StartEndDatePair(Calendar startDate, Calendar dueDate) {
+	public StartDueDatePair(Calendar startDate, Calendar dueDate) {
 		this.startDate = startDate;
 		this.dueDate = dueDate;
 	}
