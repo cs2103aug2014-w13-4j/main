@@ -4,9 +4,12 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Hashtable;
 
 import models.PriorityLevelEnum;
 import models.Task;
+import command.ParamEnum;
 
 import org.junit.Test;
 
@@ -49,5 +52,21 @@ public class TaskStorageTest {
 			e.printStackTrace();
 		}
 	}
+
+    @Test
+    public void testCanSearchTask() {
+        try {
+            TaskStorage taskStorage = new TaskStorage("taskStorage.data");
+            Hashtable<ParamEnum, ArrayList<String>> keyWordTable = new Hashtable<ParamEnum, ArrayList<String>>();
+            ArrayList<String> taskName = new ArrayList<String>();
+            taskName.add("Report");
+            keyWordTable.put(ParamEnum.NAME, taskName);
+            ArrayList<Task> searchResult = taskStorage.searchTask(keyWordTable, taskStorage.getAllTasks());
+            assertEquals(searchResult.size(), taskStorage.getAllTasks().size());
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 
 }
