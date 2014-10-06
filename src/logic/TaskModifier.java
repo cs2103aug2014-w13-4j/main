@@ -63,7 +63,7 @@ public class TaskModifier {
 		if (command.getParam().containsKey(ParamEnum.START_DATE)) {
 			Calendar startDate = DateParser.parseString(command.getParam()
 					.get(ParamEnum.START_DATE).get(0));
-			task.setDateDue(startDate);
+			task.setDateStart(startDate);
 		}
 	}
 
