@@ -26,7 +26,6 @@ public class TaskStorageTest {
         task.setPriorityLevel(PriorityLevelEnum.fromInteger(priorityLevel));
         task.setNote(note);
         task.setDeleted(isDeleted);
-        task.setConfirmed(isConfirmed);
         return task;
     }
 
