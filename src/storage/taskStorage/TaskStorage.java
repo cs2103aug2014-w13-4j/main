@@ -10,7 +10,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Hashtable;
 import java.util.Scanner;
+
+import command.ParamEnum;
 
 import exceptions.FileFormatNotSupportedException;
 import exceptions.TaskNotFoundException;
@@ -45,7 +48,7 @@ public class TaskStorage {
 
         Scanner fileScanner = new Scanner(dataFile);
         taskBuffer =  new ArrayList<Task>();
-        int nextTaskIndex = ID_FOR_FIRST_TASK;
+        nextTaskIndex = ID_FOR_FIRST_TASK;
         while (fileScanner.hasNextLine()) {
             task = TaskConverter.stringToTask(fileScanner.nextLine());
             taskBuffer.add(task);
@@ -92,6 +95,7 @@ public class TaskStorage {
 
     // Check whether the current task exists or not
     private boolean isTaskExist(int taskID) {
+    	// System.out.print(nextTaskIndex);
         if (taskID >= nextTaskIndex) {
             return false;
         } else {
@@ -149,6 +153,10 @@ public class TaskStorage {
     // Get a list of tasks that are done
     public ArrayList<Task> getCompletedTasks() {
         ArrayList<Task> completedTaskList = new ArrayList<Task>();
+        // check whether there are tasks in storage
+        if (taskBuffer == null) {
+            return null;
+        }
         for (Task task: taskBuffer) {
             if (task.getDateEnd() == null) {
                 continue;
@@ -162,6 +170,10 @@ public class TaskStorage {
     // Get a list of tasks that are not completed
     public ArrayList<Task> getActiveTasks() {
         ArrayList<Task> activeTaskList = new ArrayList<Task>();
+        // check whether there are tasks in storage
+        if (taskBuffer == null) {
+            return null;
+        }
         for (Task task: taskBuffer) {
             if (task.getDateEnd() == null) {
                 activeTaskList.add(task);
@@ -173,10 +185,19 @@ public class TaskStorage {
     }
 
     // Search a list of tasks with certain tags
-    public ArrayList<Task> searchTask(ArrayList<String> tags) {
+    public ArrayList<Task> searchTask(ArrayList<String> tags, ArrayList<Task> searchRange) {
         ArrayList<Task> taskList = new ArrayList<Task>();
         boolean hasTags;
-        for (Task task: taskBuffer) {
+        // check whether there are tasks in storage
+        if (searchRange == null) {
+            return null;
+        }
+        // check whether the keyword is null
+        if (tags == null) {
+            return searchRange;
+        }
+
+        for (Task task: searchRange) {
             hasTags = true;
             for (String tag: tags) {
                 if (task.getTags().contains(tag)) {
@@ -189,6 +210,48 @@ public class TaskStorage {
             if (hasTags) {
                 taskList.add(task);
             }
+        }
+        return taskList;
+    }
+
+    // Search a list of tasks with certain key words
+    // String operations
+    public ArrayList<Task> searchTask(Hashtable<ParamEnum, ArrayList<String>> keyWordTable, ArrayList<Task> searchRange) {
+        ArrayList<Task> taskList = new ArrayList<Task>();
+        boolean isTarget;
+
+        String name = null;
+        if (keyWordTable.get(ParamEnum.NAME) != null) {
+            name = keyWordTable.get(ParamEnum.NAME).get(0);
+        }
+
+        String note = null;
+        if (keyWordTable.get(ParamEnum.NOTE) != null) {
+            note = keyWordTable.get(ParamEnum.NOTE).get(0);
+        }
+
+        ArrayList<String> tags;
+        if (keyWordTable.get(ParamEnum.TAG) != null) {
+        	tags = keyWordTable.get(ParamEnum.TAG);
+            searchRange = searchTask(tags, searchRange);
+        }
+
+        if (searchRange == null) {
+            return null;
+        }
+
+        for (Task task : taskBuffer) {
+            if (name != null) {
+                if (!task.getName().contains(name)) {
+                    continue;
+                }
+            }
+            if (note != null) {
+                if (!task.getNote().contains(note)) {
+                    continue;
+                }
+            }
+            taskList.add(task);
         }
         return taskList;
     }

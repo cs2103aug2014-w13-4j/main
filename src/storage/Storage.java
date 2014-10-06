@@ -1,9 +1,11 @@
 package storage;
 
-import interfaces.IStorage;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Hashtable;
+
+import command.ParamEnum;
 
 import exceptions.FileFormatNotSupportedException;
 import exceptions.TaskNotFoundException;
@@ -17,7 +19,7 @@ import models.Task;
  * This class reads/writes task to file.
  * It also supports power search.
  */
-public class Storage implements IStorage {
+public class Storage {
     private TaskStorage taskFile;
     private TagStorage tagFile;    
 
@@ -71,6 +73,12 @@ public class Storage implements IStorage {
 
     // Search a list of tasks with certain tags
     public ArrayList<Task> searchTask(ArrayList<String> tags) {
-        return taskFile.searchTask(tags);
+        return taskFile.searchTask(tags, getAllTasks());
+    }
+
+    // Search a list of tasks with certain key words
+    // Assume keywords of name and note is only one string 
+    public ArrayList<Task> searchTask(Hashtable<ParamEnum, ArrayList<String>> keyWordTable) {
+        return taskFile.searchTask(keyWordTable, getAllTasks());
     }
 }
