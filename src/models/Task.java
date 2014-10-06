@@ -15,9 +15,8 @@ public class Task {
 	private ArrayList<String> tags;
 	private ArrayList<Integer> parentTasks;
 	private ArrayList<Integer> childTasks;
-	private ArrayList<StartEndDatePair> conditionalDates;
+	private ArrayList<StartDueDatePair> conditionalDates;
 	private boolean isDeleted = false;
-	private boolean isConfirmed = false;
 	
 	public Task() {
 	}
@@ -58,20 +57,16 @@ public class Task {
 		this.childTasks = childTasks;
 	}
 
-	public void setConditionalDates(ArrayList<StartEndDatePair> conditionalDates) {
+	public void setConditionalDates(ArrayList<StartDueDatePair> conditionalDates) {
 		this.conditionalDates = conditionalDates;
 	}
 	
-	public void appendConditionalDates(ArrayList<StartEndDatePair> conditionalDates) {
+	public void appendConditionalDates(ArrayList<StartDueDatePair> conditionalDates) {
 		this.conditionalDates.addAll(conditionalDates);
 	}
 
 	public void setDeleted(boolean isDeleted) {
 		this.isDeleted = isDeleted;
-	}
-
-	public void setConfirmed(boolean isConfirmed) {
-		this.isConfirmed = isConfirmed;
 	}
 
 	public void setId(int id) {
@@ -126,7 +121,7 @@ public class Task {
 		return childTasks;
 	}
 
-	public ArrayList<StartEndDatePair> getConditionalDates() {
+	public ArrayList<StartDueDatePair> getConditionalDates() {
 		return conditionalDates;
 	}
 
@@ -135,11 +130,24 @@ public class Task {
 	}
 
 	public boolean isConfirmed() {
-		return isConfirmed;
+		if (conditionalDates != null) {
+			return (dateStart != null || dateEnd != null);
+		} else {
+			return true;
+		}
+	}
+	
+	public void setStartDueDateFromConditional(int id) {
+		//conditional dates must be present to set start and due date
+		//assume id starts counting from 1
+		assert (conditionalDates != null && id >= conditionalDates.size());
+		dateStart = conditionalDates.get(id - 1).getStartDate();
+		dateEnd = conditionalDates.get(id - 1).getDueDate();
 	}
 	
 	public void addTags(ArrayList<String> newTags) {
 		newTags.removeAll(this.tags);
 		this.tags.addAll(newTags);
 	}
+	
 }
