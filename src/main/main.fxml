@@ -44,9 +44,30 @@
                                                         <TaskDateFactory/>
                                                     </cellFactory>
                                                 </TableColumn>
-                                                <TableColumn prefWidth="120.0" minWidth="120.0" text="Task Name" >
+                                                <TableColumn prefWidth="100.0" minWidth="100.0" maxWidth="100.0" text="Start" >
+                                                    <cellValueFactory>
+                                                        <PropertyValueFactory property="dateStart"/>
+                                                    </cellValueFactory>
+                                                    <cellFactory>
+                                                        <TaskDateFactory/>
+                                                    </cellFactory>
+                                                </TableColumn>
+                                                <TableColumn prefWidth="100.0" minWidth="100.0" maxWidth="100.0" text="End" >
+                                                    <cellValueFactory>
+                                                        <PropertyValueFactory property="dateEnd"/>
+                                                    </cellValueFactory>
+                                                    <cellFactory>
+                                                        <TaskDateFactory/>
+                                                    </cellFactory>
+                                                </TableColumn>
+                                                <TableColumn prefWidth="100.0" minWidth="100.0" text="Task Name" >
                                                     <cellValueFactory>
                                                         <PropertyValueFactory property="name"/>
+                                                    </cellValueFactory>
+                                                </TableColumn>
+                                                <TableColumn prefWidth="60.0" minWidth="60.0" maxWidth="60.0" text="Priority" >
+                                                    <cellValueFactory>
+                                                        <PropertyValueFactory property="priorityLevel"/>
                                                     </cellValueFactory>
                                                 </TableColumn>
                                             </columns>

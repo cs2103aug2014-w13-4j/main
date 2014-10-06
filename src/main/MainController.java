@@ -2,6 +2,7 @@ package main;
 
 import command.Command;
 import command.CommandParser;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
@@ -35,6 +36,7 @@ public class MainController {
 			ArrayList<Task> taskList = displayAllActiveTasks.getTaskList();
 			ObservableList<Task> observableList = FXCollections.observableArrayList(taskList);
 			taskTableView.getItems().addAll(observableList);
+			setFocusToUserInputField();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -66,7 +68,16 @@ public class MainController {
 		}
 	}
 
-	public boolean validateUserInput(String userInput){
+	private boolean validateUserInput(String userInput){
 		return (userInput != null && !userInput.isEmpty());
+	}
+
+	private void setFocusToUserInputField(){
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				userInputField.requestFocus();
+			}
+		});
 	}
 }
