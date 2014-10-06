@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 public enum CommandEnum {
 	ADD ("add",ParamEnum.NAME, ParamEnum.DATE, ParamEnum.START_DATE, ParamEnum.DUE_DATE,
-			ParamEnum.LEVEL, ParamEnum.NOTE, ParamEnum.TAG),
+			ParamEnum.LEVEL, ParamEnum.NOTE, ParamEnum.TAG, ParamEnum.EITHER, ParamEnum.OR),
 	DELETE ("delete", ParamEnum.KEYWORD),
 	UPDATE ("update", ParamEnum.KEYWORD, ParamEnum.DATE, ParamEnum.NAME, ParamEnum.NOTE, ParamEnum.DUE_DATE,
 			ParamEnum.START_DATE, ParamEnum.DATE),
