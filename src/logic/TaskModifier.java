@@ -22,11 +22,18 @@ public class TaskModifier {
 		setNameFromCommand(command, task);
 		setStartDateFromCommand(command, task);
 		setDueDateFromCommand(command, task);
+		setConditionalDatesFromCommand(command, task);
 		setTagsFromCommand(command, task);
 		setLevelFromCommand(command, task);
 		setNoteFromCommand(command, task);
 	}
 	
+	private static void setConditionalDatesFromCommand(Command command,
+			Task task2) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	static void deleteTask(Task task) {
 		task.setDeleted(true);
 	}
