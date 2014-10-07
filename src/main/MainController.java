@@ -50,13 +50,12 @@ public class MainController {
 				Command userCommand = commandParser.parseCommand(userInput);
 				Feedback userCommandFeedback = logic.executeCommand(userCommand);
 				String feedbackMessage = userCommandFeedback.getFeedbackMessage();
-				//System.out.println(feedbackMessage);
 
 				// Updating UI
 				userInputField.clear();
+				System.out.println(feedbackMessage);
 
 				ArrayList<Task> taskList = userCommandFeedback.getTaskList();
-
 				if (taskList != null){
 					taskTableView.getItems().clear();
 					ObservableList<Task> observableList = FXCollections.observableArrayList(taskList);
