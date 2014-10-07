@@ -39,13 +39,16 @@ public class DateParser {
 	}
 
 	public static String parseCalendar(Calendar date) {
-		int day = date.get(Calendar.DAY_OF_MONTH);
-		int month = date.get(Calendar.MONTH) + 1;
-		int year = date.get(Calendar.YEAR);
-		int hour = date.get(Calendar.HOUR_OF_DAY);
-		int minute = date.get(Calendar.MINUTE);
-		return createString(day, month, year, hour, minute);
-
+		if (date != null){
+			int day = date.get(Calendar.DAY_OF_MONTH);
+			int month = date.get(Calendar.MONTH) + 1;
+			int year = date.get(Calendar.YEAR);
+			int hour = date.get(Calendar.HOUR_OF_DAY);
+			int minute = date.get(Calendar.MINUTE);
+			return createString(day, month, year, hour, minute);
+		} else {
+			return null;
+		}
 	}
 
 	private static String createString(int day, int month, int year, int hour,

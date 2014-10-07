@@ -11,6 +11,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import logic.Logic;
+import models.DateParser;
 import models.Feedback;
 import models.Task;
 
@@ -23,12 +24,27 @@ import java.util.Observable;
  * @author szhlibrary
  */
 public class MainController {
-	public Label taskNameLabel;
-	public Label dueDateLabel;
+	Logic logic;
+
 	public TextField userInputField;
 	public TableView<Task> taskTableView;
+
+	public Label idLabel;
+	public Label taskNameLabel;
+	public Label dueDateLabel;
+	public Label startDateLabel;
+	public Label endDateLabel;
+	public Label priorityLevelLabel;
+	public Label noteLabel;
+
+	final StringProperty idLabelValue = new SimpleStringProperty("-");
 	final StringProperty taskNameLabelValue = new SimpleStringProperty("-");
-	Logic logic;
+	final StringProperty dueDateLabelValue = new SimpleStringProperty("-");
+	final StringProperty startDateLabelValue = new SimpleStringProperty("-");
+	final StringProperty endDateLabelValue = new SimpleStringProperty("-");
+	final StringProperty priorityLevelLabelValue = new SimpleStringProperty("-");
+	final StringProperty noteLabelValue = new SimpleStringProperty("-");
+
 
 	public void initialize(){
 		System.out.println("Initializing...");
@@ -36,10 +52,19 @@ public class MainController {
 		try {
 			logic = new Logic();
 			Feedback displayAllActiveTasks = logic.initialize();
+
 			ArrayList<Task> taskList = displayAllActiveTasks.getTaskList();
 			ObservableList<Task> observableList = FXCollections.observableArrayList(taskList);
 			taskTableView.getItems().addAll(observableList);
+
+			idLabel.textProperty().bind(idLabelValue);
 			taskNameLabel.textProperty().bind(taskNameLabelValue);
+			dueDateLabel.textProperty().bind(dueDateLabelValue);
+			startDateLabel.textProperty().bind(startDateLabelValue);
+			endDateLabel.textProperty().bind(endDateLabelValue);
+			priorityLevelLabel.textProperty().bind(priorityLevelLabelValue);
+			noteLabel.textProperty().bind(noteLabelValue);
+
 			setFocusToUserInputField();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -62,10 +87,16 @@ public class MainController {
 					ObservableList<Task> observableList = FXCollections.observableArrayList(taskList);
 					taskTableView.getItems().addAll(observableList);
 				}
-				
+
 				Task taskToDisplay = userCommandFeedback.getTaskDisplay();
 				if (taskToDisplay != null){
-					taskNameLabelValue.setValue(taskToDisplay.getName());
+					setLabelValueInGui(idLabelValue, Integer.toString(taskToDisplay.getId()));
+					setLabelValueInGui(taskNameLabelValue, taskToDisplay.getName());
+					setLabelValueInGui(dueDateLabelValue, DateParser.parseCalendar(taskToDisplay.getDateDue()));
+					setLabelValueInGui(startDateLabelValue, DateParser.parseCalendar(taskToDisplay.getDateStart()));
+					setLabelValueInGui(endDateLabelValue, DateParser.parseCalendar(taskToDisplay.getDateEnd()));
+					setLabelValueInGui(priorityLevelLabelValue, (taskToDisplay.getPriorityLevel() == null ? null : taskToDisplay.getPriorityLevel().name()));
+					setLabelValueInGui(noteLabelValue, taskToDisplay.getNote());
 				}
 				userInputField.clear();
 			} catch (Exception e){
@@ -88,5 +119,9 @@ public class MainController {
 				userInputField.requestFocus();
 			}
 		});
+	}
+
+	private void setLabelValueInGui(StringProperty labelValue, String value){
+		labelValue.setValue(value != null && !value.isEmpty() ? value : "-");
 	}
 }
