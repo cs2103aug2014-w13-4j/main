@@ -24,13 +24,12 @@ public class Command {
 	}
 	
 	public void addParam(ParamEnum param, String args) {
-		if (params.containsKey(param)) {
-			params.get(param).add(args);
-		} else {
+		if (!params.containsKey(param)) {
 			ArrayList<String> newArgsList = new ArrayList<String>();
-			newArgsList.add(args);
-			params.put(param, newArgsList);
+			params.put(param,  newArgsList);
 		}
+		
+		params.get(param).add(args);
 	}
 	
 	public Hashtable<ParamEnum, ArrayList<String>> getParam() {
