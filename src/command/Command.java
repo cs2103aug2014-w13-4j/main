@@ -1,11 +1,9 @@
 package command;
 
-import interfaces.ICommand;
-
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-public class Command implements ICommand {
+public class Command {
 	
 	private String commandString;
 	private CommandEnum commandType;

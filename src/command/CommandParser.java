@@ -1,13 +1,12 @@
 package command;
 
-import interfaces.ICommandParser;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class CommandParser implements ICommandParser {
+public class CommandParser {
 
 	private static final String FIRST_WORD_PATTERN = "^([\\w]+)";
 	private static final String INDIVIDUAL_PARAM_PATTERN = "%1$s|";
