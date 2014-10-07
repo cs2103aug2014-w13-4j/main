@@ -91,13 +91,14 @@ public class Logic implements ILogic {
 			return createFeedback(null, ERROR_STORAGE_MESSAGE);
 		} else {
 			CommandEnum commandType = command.getCommand();
+			Hashtable<ParamEnum, ArrayList<String>> param = command.getParam();
 			switch (commandType) {
 			case ADD:
-				return add(command);
+				return add(param);
 			case DELETE:
-				return delete(command);
+				return delete(param);
 			case UPDATE:
-				return update(command);
+				return update(param);
 			case UNDO:
 				return null;
 			case FILTER:
@@ -105,22 +106,28 @@ public class Logic implements ILogic {
 			case DISPLAY:
 				return display();
 			case DONE:
-				return complete(command);
+				return complete(param);
 			case LEVEL:
 				return null;
 			case SEARCH:
-				return search(command);
+				return search(param);
+				/**
+				 * case CONFIRM: return confirm(command);
+				 **/
 			default:
 				throw new InvalidInputException(INVALID_COMMAND_MESSAGE);
 			}
 		}
 	}
 
-	private Feedback search(Command command) {
-		Hashtable<ParamEnum, ArrayList<String>> params = command.getParam();
-		ArrayList<Task> taskList = storage.searchTask(params);
+	private Feedback search(Hashtable<ParamEnum, ArrayList<String>> param) {
+		ArrayList<Task> taskList = storage.searchTask(param);
 		return createFeedback(taskList,
 				createMessage(SEARCH_MESSAGE, String.valueOf(taskList.size())));
+	}
+
+	private Feedback confirm(Command command) {
+		return null;
 	}
 
 	/**
@@ -136,7 +143,7 @@ public class Logic implements ILogic {
 	/**
 	 * Marks a particular task as done
 	 * 
-	 * @param command
+	 * @param param
 	 *            : the command created by commandParser
 	 * @return feedback containing the updated list of tasks in the file, and
 	 *         the message.
@@ -144,11 +151,12 @@ public class Logic implements ILogic {
 	 * @throws IOException
 	 * @throws InvalidDateFormatException
 	 */
-	private Feedback complete(Command command) throws TaskNotFoundException,
-			IOException, InvalidDateFormatException {
-		int id = getTaskId(command);
+	private Feedback complete(Hashtable<ParamEnum, ArrayList<String>> param)
+			throws TaskNotFoundException, IOException,
+			InvalidDateFormatException {
+		int id = getTaskId(param);
 		Task task = storage.getTask(id);
-		TaskModifier.completeTask(command, task);
+		TaskModifier.completeTask(param, task);
 		String name = task.getName();
 		storage.writeTaskToFile(task);
 		ArrayList<Task> taskList = storage.getAllTasks();
@@ -158,7 +166,7 @@ public class Logic implements ILogic {
 	/**
 	 * Adds a new task to the file
 	 * 
-	 * @param command
+	 * @param param
 	 *            : the command created by commandParser
 	 * @return feedback containing the updated list of tasks in the file, and
 	 *         the message.
@@ -166,11 +174,12 @@ public class Logic implements ILogic {
 	 * @throws IOException
 	 * @throws InvalidDateFormatException
 	 */
-	private Feedback add(Command command) throws TaskNotFoundException,
-			IOException, InvalidDateFormatException {
+	private Feedback add(Hashtable<ParamEnum, ArrayList<String>> param)
+			throws TaskNotFoundException, IOException,
+			InvalidDateFormatException {
 		Task newTask = new Task();
 		newTask.setId(NEW_ID);
-		TaskModifier.modifyTask(command, newTask);
+		TaskModifier.modifyTask(param, newTask);
 		storage.writeTaskToFile(newTask);
 		String name = newTask.getName();
 		ArrayList<Task> taskList = storage.getAllTasks();
@@ -180,16 +189,16 @@ public class Logic implements ILogic {
 	/**
 	 * Deletes a task from the file
 	 * 
-	 * @param command
+	 * @param param
 	 *            : the command created by commandParser
 	 * @return feedback containing the updated list of tasks in the file, and
 	 *         the message.
 	 * @throws TaskNotFoundException
 	 * @throws IOException
 	 */
-	private Feedback delete(Command command) throws TaskNotFoundException,
-			IOException {
-		int id = getTaskId(command);
+	private Feedback delete(Hashtable<ParamEnum, ArrayList<String>> param)
+			throws TaskNotFoundException, IOException {
+		int id = getTaskId(param);
 		Task task = storage.getTask(id);
 		String name = task.getName();
 		TaskModifier.deleteTask(task);
@@ -202,7 +211,7 @@ public class Logic implements ILogic {
 	 * Updates the task in the file. It can currently only update due date and
 	 * name.
 	 * 
-	 * @param command
+	 * @param param
 	 *            : the command created by commandParser
 	 * @return feedback containing the updated list of tasks in the file, and
 	 *         the message.
@@ -210,11 +219,12 @@ public class Logic implements ILogic {
 	 * @throws IOException
 	 * @throws InvalidDateFormatException
 	 */
-	private Feedback update(Command command) throws TaskNotFoundException,
-			IOException, InvalidDateFormatException {
-		int id = getTaskId(command);
+	private Feedback update(Hashtable<ParamEnum, ArrayList<String>> param)
+			throws TaskNotFoundException, IOException,
+			InvalidDateFormatException {
+		int id = getTaskId(param);
 		Task task = storage.getTask(id);
-		TaskModifier.modifyTask(command, task);
+		TaskModifier.modifyTask(param, task);
 		storage.writeTaskToFile(task);
 		String name = task.getName();
 		ArrayList<Task> taskList = storage.getAllTasks();
@@ -229,10 +239,9 @@ public class Logic implements ILogic {
 		return new Feedback(message, taskList);
 	}
 
-	private int getTaskId(Command command) {
-		if (command.getParam().containsKey(ParamEnum.KEYWORD)) {
-			return Integer.parseInt(command.getParam().get(ParamEnum.KEYWORD)
-					.get(0));
+	private int getTaskId(Hashtable<ParamEnum, ArrayList<String>> param) {
+		if (param.containsKey(ParamEnum.KEYWORD)) {
+			return Integer.parseInt(param.get(ParamEnum.KEYWORD).get(0));
 		} else {
 			throw new NumberFormatException(INVALID_INDEX_MESSAGE);
 		}
