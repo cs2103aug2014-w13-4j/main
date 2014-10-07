@@ -50,9 +50,6 @@ public class MainController {
 				Command userCommand = commandParser.parseCommand(userInput);
 				Feedback userCommandFeedback = logic.executeCommand(userCommand);
 				String feedbackMessage = userCommandFeedback.getFeedbackMessage();
-
-				// Updating UI
-				userInputField.clear();
 				System.out.println(feedbackMessage);
 
 				ArrayList<Task> taskList = userCommandFeedback.getTaskList();
@@ -61,6 +58,7 @@ public class MainController {
 					ObservableList<Task> observableList = FXCollections.observableArrayList(taskList);
 					taskTableView.getItems().addAll(observableList);
 				}
+				userInputField.clear();
 			} catch (Exception e){
 				e.printStackTrace();
 				System.out.println("failed");
