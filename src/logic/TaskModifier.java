@@ -8,7 +8,6 @@ import models.DateParser;
 import models.PriorityLevelEnum;
 import models.StartDueDatePair;
 import models.Task;
-import command.Command;
 import command.ParamEnum;
 import exceptions.InvalidDateFormatException;
 
@@ -17,12 +16,22 @@ public class TaskModifier {
 	static void modifyTask(Hashtable<ParamEnum, ArrayList<String>> param,
 			Task task) throws InvalidDateFormatException {
 		setNameFromCommand(param, task);
-		setStartDateFromCommand(param, task);
-		setDueDateFromCommand(param, task);
-		setConditionalDatesFromCommand(param, task);
 		setTagsFromCommand(param, task);
 		setLevelFromCommand(param, task);
 		setNoteFromCommand(param, task);
+		if (hasMultipleStartDates(param)) {
+			assert hasSameNumberOfDueDates(param);
+			setConditionalDatesFromCommand(param, task);
+		} else {
+			if (param.containsKey(ParamEnum.START_DATE)) {
+				assert hasSingleStartDate(param);
+				setStartDateFromCommand(param, task);
+			}
+			if (param.containsKey(ParamEnum.DUE_DATE)) {
+				assert hasSingleDueDate(param);
+				setDueDateFromCommand(param, task);
+			}
+		}
 	}
 
 	static void deleteTask(Task task) {
@@ -44,25 +53,17 @@ public class TaskModifier {
 	private static void setConditionalDatesFromCommand(
 			Hashtable<ParamEnum, ArrayList<String>> param, Task task)
 			throws InvalidDateFormatException {
-		/**
-		 * if (command.getParam().containsKey(ParamEnum.ConditionalDates) {
-		 * command.getParam().get(ParamEnum.ConditionalDates); }
-		 **/
-		String startDateFirst = "23.01.2014";
-		String dueDateFirst = "23.10.2014";
-		String startDateSecond = "23.02.2014";
-		String dueDateSecond = "23.09.2014";
-
-		StartDueDatePair firstPair = new StartDueDatePair(
-				DateParser.parseString(startDateFirst),
-				DateParser.parseString(dueDateFirst));
-		StartDueDatePair secondPair = new StartDueDatePair(
-				DateParser.parseString(startDateSecond),
-				DateParser.parseString(dueDateSecond));
-
+		ArrayList<String> startDates = param.get(ParamEnum.START_DATE);
+		ArrayList<String> dueDates = param.get(ParamEnum.DUE_DATE);
 		ArrayList<StartDueDatePair> conditionalDates = new ArrayList<StartDueDatePair>();
-		conditionalDates.add(firstPair);
-		conditionalDates.add(secondPair);
+		for (int i = 0; i < startDates.size(); i++) {
+			String startDate = startDates.get(i);
+			String dueDate = dueDates.get(i);
+			StartDueDatePair datePair = new StartDueDatePair(
+					DateParser.parseString(startDate),
+					DateParser.parseString(dueDate));
+			conditionalDates.add(datePair);
+		}
 		task.setConditionalDates(conditionalDates);
 	}
 
@@ -77,21 +78,17 @@ public class TaskModifier {
 	private static void setDueDateFromCommand(
 			Hashtable<ParamEnum, ArrayList<String>> param, Task task)
 			throws InvalidDateFormatException {
-		if (param.containsKey(ParamEnum.DUE_DATE)) {
-			Calendar dueDate = DateParser.parseString(param.get(
-					ParamEnum.DUE_DATE).get(0));
-			task.setDateDue(dueDate);
-		}
+		Calendar dueDate = DateParser.parseString(param.get(ParamEnum.DUE_DATE)
+				.get(0));
+		task.setDateDue(dueDate);
 	}
 
 	private static void setStartDateFromCommand(
 			Hashtable<ParamEnum, ArrayList<String>> param, Task task)
 			throws InvalidDateFormatException {
-		if (param.containsKey(ParamEnum.START_DATE)) {
-			Calendar startDate = DateParser.parseString(param.get(
-					ParamEnum.START_DATE).get(0));
-			task.setDateStart(startDate);
-		}
+		Calendar startDate = DateParser.parseString(param.get(
+				ParamEnum.START_DATE).get(0));
+		task.setDateStart(startDate);
 	}
 
 	private static void setLevelFromCommand(
@@ -122,6 +119,29 @@ public class TaskModifier {
 			ArrayList<String> tags = param.get(ParamEnum.TAG);
 			task.setTags(tags);
 		}
+	}
+
+	private static boolean hasSameNumberOfDueDates(
+			Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.containsKey(ParamEnum.DUE_DATE)
+				&& param.get(ParamEnum.DUE_DATE).size() == param.get(
+						ParamEnum.START_DATE).size();
+	}
+
+	private static boolean hasMultipleStartDates(
+			Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.containsKey(ParamEnum.START_DATE)
+				&& param.get(ParamEnum.START_DATE).size() > 1;
+	}
+
+	private static boolean hasSingleDueDate(
+			Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.get(ParamEnum.DUE_DATE).size() == 1;
+	}
+
+	private static boolean hasSingleStartDate(
+			Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.get(ParamEnum.START_DATE).size() == 1;
 	}
 
 }

@@ -12,6 +12,7 @@ import java.util.Hashtable;
 
 import logic.Logic;
 import logic.TaskModifier;
+import models.DateParser;
 import models.Feedback;
 import models.PriorityLevelEnum;
 import models.Task;
@@ -29,7 +30,8 @@ public class LogicTest {
 	Class<Logic> LogicClass = Logic.class;
 	Class<TaskModifier> TaskModifierClass = TaskModifier.class;
 	Field storage = LogicClass.getDeclaredField("storage");
-	Method modifyTask = TaskModifierClass.getDeclaredMethod("modifyTask", Hashtable.class, Task.class);
+	Method modifyTask = TaskModifierClass.getDeclaredMethod("modifyTask",
+			Hashtable.class, Task.class);
 	Method display = LogicClass.getDeclaredMethod("display", Hashtable.class);
 
 	public LogicTest() throws NoSuchMethodException, NoSuchFieldException {
@@ -110,14 +112,15 @@ public class LogicTest {
 		Command addCommand = parser.parseCommand("add eat my pet dog");
 		logic.executeCommand(addCommand);
 		Command displayCommand = parser.parseCommand("display 0");
-		Feedback feedback = (Feedback) display.invoke(logic, displayCommand.getParam());
+		Feedback feedback = (Feedback) display.invoke(logic,
+				displayCommand.getParam());
 		assertEquals("ID is the same", 0, feedback.getTaskDisplay().getId());
 		assertEquals("Name is correct", "eat my pet dog", feedback
 				.getTaskDisplay().getName());
 		assertNull("Task list is empty", feedback.getTaskList());
 	}
-	
-	@Test (expected=TaskNotFoundException.class)
+
+	@Test(expected = TaskNotFoundException.class)
 	public final void testDisplayException() throws Exception {
 		Logic logic = new Logic();
 		logic.initialize();
@@ -127,8 +130,8 @@ public class LogicTest {
 		Command displayCommand = parser.parseCommand("display -1");
 		logic.executeCommand(displayCommand);
 	}
-	
-	@Test 
+
+	@Test
 	public final void testDisplayAll() throws Exception {
 		Logic logic = new Logic();
 		logic.initialize();
@@ -138,11 +141,32 @@ public class LogicTest {
 		addCommand = parser.parseCommand("add second thing");
 		logic.executeCommand(addCommand);
 		Command displayCommand = parser.parseCommand("display");
-		Feedback feedback = (Feedback) display.invoke(logic, displayCommand.getParam());
+		Feedback feedback = (Feedback) display.invoke(logic,
+				displayCommand.getParam());
 		assertEquals("Task length is correct", 2, feedback.getTaskList().size());
-		assertEquals("Task 1 is correct", "first", feedback.getTaskList().get(0).getName());
-		assertEquals("Task 2 is correct", "second thing", feedback.getTaskList().get(1).getName());
+		assertEquals("Task 1 is correct", "first", feedback.getTaskList()
+				.get(0).getName());
+		assertEquals("Task 2 is correct", "second thing", feedback
+				.getTaskList().get(1).getName());
 		assertNull("Task Display is empty", feedback.getTaskDisplay());
+	}
+
+	@Test
+	public final void testConditionalTasks() throws Exception {
+		Logic logic = new Logic();
+		logic.initialize();
+		CommandParser parser = new CommandParser();
+		Command addCommand = parser
+				.parseCommand("Add CS2103T from 23.12.1992 due 23.12.2002 or due 8.10.2014");
+		Feedback feedback = logic.executeCommand(addCommand);
+		Task task = feedback.getTaskList().get(0);
+		assertEquals("Task name is correct", "CS2103T", task.getName());
+		assertTrue("Conditional dates are present", task.getConditionalDates()
+				.size() == 2);
+		assertEquals("First start date is correct", "23-12-1992 00:00", DateParser.parseCalendar(task.getConditionalDates().get(0).getStartDate()));
+		assertEquals("Second start date is correct", null, task.getConditionalDates().get(1).getStartDate());
+		assertEquals("First due date is correct", "23-12-2002 00:00", DateParser.parseCalendar(task.getConditionalDates().get(0).getDueDate()));
+		assertEquals("Second due date is correct", "8-10-2014 00:00", DateParser.parseCalendar(task.getConditionalDates().get(1).getDueDate()));
 	}
 
 }

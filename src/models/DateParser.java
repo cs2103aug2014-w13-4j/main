@@ -24,6 +24,10 @@ public class DateParser {
 	 */
 	public static Calendar parseString(String dateString)
 			throws InvalidDateFormatException {
+		//TODO: Change this! 
+		if (dateString.isEmpty()) {
+			return null;
+		}
 		for (int i = 0; i < VALID_DATE_FORMATS.length; i++) {
 			SimpleDateFormat formatter = new SimpleDateFormat(
 					VALID_DATE_FORMATS[i]);
@@ -35,7 +39,7 @@ public class DateParser {
 			} catch (ParseException e) {
 			}
 		}
-		throw new InvalidDateFormatException("Date format is invalid!");
+		throw new InvalidDateFormatException("'" + dateString + "'" + " is invalid!");
 	}
 
 	public static String parseCalendar(Calendar date) {
