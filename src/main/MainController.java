@@ -13,6 +13,7 @@ import javafx.scene.control.TextField;
 import logic.Logic;
 import models.DateParser;
 import models.Feedback;
+import models.StartDueDatePair;
 import models.Task;
 
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ public class MainController {
 	public Label endDateLabel;
 	public Label priorityLevelLabel;
 	public Label noteLabel;
+	public Label conditionalDateLabel;
 
 	final StringProperty idLabelValue = new SimpleStringProperty("-");
 	final StringProperty taskNameLabelValue = new SimpleStringProperty("-");
@@ -44,7 +46,7 @@ public class MainController {
 	final StringProperty endDateLabelValue = new SimpleStringProperty("-");
 	final StringProperty priorityLevelLabelValue = new SimpleStringProperty("-");
 	final StringProperty noteLabelValue = new SimpleStringProperty("-");
-
+	final StringProperty conditionalDateLabelValue = new SimpleStringProperty("-");
 
 	public void initialize(){
 		System.out.println("Initializing...");
@@ -78,6 +80,7 @@ public class MainController {
 		endDateLabel.textProperty().bind(endDateLabelValue);
 		priorityLevelLabel.textProperty().bind(priorityLevelLabelValue);
 		noteLabel.textProperty().bind(noteLabelValue);
+		conditionalDateLabel.textProperty().bind(conditionalDateLabelValue);
 	}
 
 	private void setFocusToUserInputField(){
@@ -136,6 +139,17 @@ public class MainController {
 		setLabelValueInGui(endDateLabelValue, DateParser.parseCalendar(taskToDisplay.getDateEnd()));
 		setLabelValueInGui(priorityLevelLabelValue, (taskToDisplay.getPriorityLevel() == null ? null : taskToDisplay.getPriorityLevel().name()));
 		setLabelValueInGui(noteLabelValue, taskToDisplay.getNote());
+
+		// TODO: Fix and refactor
+		ArrayList<StartDueDatePair> cd = taskToDisplay.getConditionalDates();
+		String listcd = "";
+		if (cd != null){
+			for (StartDueDatePair sddp : cd){
+				listcd += DateParser.parseCalendar(sddp.getStartDate())+" - "+DateParser.parseCalendar(sddp.getDueDate())+"\n";
+			}
+			setLabelValueInGui(conditionalDateLabelValue, listcd);
+		}
+
 	}
 
 	private void setLabelValueInGui(StringProperty labelValue, String value){
