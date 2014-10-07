@@ -3,6 +3,8 @@ package main;
 import command.Command;
 import command.CommandParser;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
@@ -25,6 +27,7 @@ public class MainController {
 	public Label dueDateLabel;
 	public TextField userInputField;
 	public TableView<Task> taskTableView;
+	final StringProperty taskNameLabelValue = new SimpleStringProperty("-");
 	Logic logic;
 
 	public void initialize(){
@@ -36,6 +39,7 @@ public class MainController {
 			ArrayList<Task> taskList = displayAllActiveTasks.getTaskList();
 			ObservableList<Task> observableList = FXCollections.observableArrayList(taskList);
 			taskTableView.getItems().addAll(observableList);
+			taskNameLabel.textProperty().bind(taskNameLabelValue);
 			setFocusToUserInputField();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -57,6 +61,11 @@ public class MainController {
 					taskTableView.getItems().clear();
 					ObservableList<Task> observableList = FXCollections.observableArrayList(taskList);
 					taskTableView.getItems().addAll(observableList);
+				}
+				
+				Task taskToDisplay = userCommandFeedback.getTaskDisplay();
+				if (taskToDisplay != null){
+					taskNameLabelValue.setValue(taskToDisplay.getName());
 				}
 				userInputField.clear();
 			} catch (Exception e){
