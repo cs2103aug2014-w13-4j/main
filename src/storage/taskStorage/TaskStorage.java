@@ -27,6 +27,7 @@ import models.Task;
  * It also supports power search.
  */
 public class TaskStorage {
+	private static final int MIN_INDEX = 0;
 	private ArrayList<Task> taskBuffer;
 	private int nextTaskIndex;
 	private File dataFile;
@@ -96,11 +97,7 @@ public class TaskStorage {
 	// Check whether the current task exists or not
 	private boolean isTaskExist(int taskID) {
 		// System.out.print(nextTaskIndex);
-		if (taskID >= nextTaskIndex) {
-			return false;
-		} else {
-			return true;
-		}
+		return taskID >= MIN_INDEX && taskID < nextTaskIndex;
 	}
 
 	// append task string to the end of the file
