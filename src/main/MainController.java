@@ -54,11 +54,14 @@ public class MainController {
 
 				// Updating UI
 				userInputField.clear();
-				taskTableView.getItems().clear();
+
 				ArrayList<Task> taskList = userCommandFeedback.getTaskList();
-				ObservableList<Task> observableList = FXCollections.observableArrayList(taskList);
-				//System.out.println(observableList.size());
-				taskTableView.getItems().addAll(observableList);
+
+				if (taskList != null){
+					taskTableView.getItems().clear();
+					ObservableList<Task> observableList = FXCollections.observableArrayList(taskList);
+					taskTableView.getItems().addAll(observableList);
+				}
 			} catch (Exception e){
 				e.printStackTrace();
 				System.out.println("failed");
