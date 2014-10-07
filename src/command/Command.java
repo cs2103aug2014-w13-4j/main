@@ -1,11 +1,9 @@
 package command;
 
-import interfaces.ICommand;
-
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-public class Command implements ICommand {
+public class Command {
 	
 	private String commandString;
 	private CommandEnum commandType;
@@ -26,13 +24,12 @@ public class Command implements ICommand {
 	}
 	
 	public void addParam(ParamEnum param, String args) {
-		if (params.containsKey(param)) {
-			params.get(param).add(args);
-		} else {
+		if (!params.containsKey(param)) {
 			ArrayList<String> newArgsList = new ArrayList<String>();
-			newArgsList.add(args);
-			params.put(param, newArgsList);
+			params.put(param,  newArgsList);
 		}
+		
+		params.get(param).add(args);
 	}
 	
 	public Hashtable<ParamEnum, ArrayList<String>> getParam() {

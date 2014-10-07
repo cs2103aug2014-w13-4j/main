@@ -2,77 +2,101 @@ package logic;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Hashtable;
 
 import models.DateParser;
 import models.PriorityLevelEnum;
+import models.StartDueDatePair;
 import models.Task;
-import command.Command;
 import command.ParamEnum;
 import exceptions.InvalidDateFormatException;
 
 public class TaskModifier {
-	Task task;
-	
-	public TaskModifier(Task task){
-		this.task = task;
+
+	static void modifyTask(Hashtable<ParamEnum, ArrayList<String>> param,
+			Task task) throws InvalidDateFormatException {
+		setNameFromCommand(param, task);
+		setTagsFromCommand(param, task);
+		setLevelFromCommand(param, task);
+		setNoteFromCommand(param, task);
+		if (hasMultipleStartDates(param)) {
+			assert hasSameNumberOfDueDates(param);
+			setConditionalDatesFromCommand(param, task);
+		} else {
+			if (param.containsKey(ParamEnum.START_DATE)) {
+				assert hasSingleStartDate(param);
+				setStartDateFromCommand(param, task);
+			}
+			if (param.containsKey(ParamEnum.DUE_DATE)) {
+				assert hasSingleDueDate(param);
+				setDueDateFromCommand(param, task);
+			}
+		}
 	}
-	
-	static void modifyTask(Command command, Task task)
-			throws InvalidDateFormatException {
-		setNameFromCommand(command, task);
-		setStartDateFromCommand(command, task);
-		setDueDateFromCommand(command, task);
-		setTagsFromCommand(command, task);
-		setLevelFromCommand(command, task);
-		setNoteFromCommand(command, task);
-	}
-	
+
 	static void deleteTask(Task task) {
 		task.setDeleted(true);
 	}
-	
-	static void completeTask(Command command, Task task) throws InvalidDateFormatException {
-		if (command.getParam().containsKey(ParamEnum.DATE)) {
-			Calendar completedDate = DateParser.parseString(command.getParam()
-					.get(ParamEnum.DATE).get(0));
+
+	static void completeTask(Hashtable<ParamEnum, ArrayList<String>> param,
+			Task task) throws InvalidDateFormatException {
+		if (param.containsKey(ParamEnum.DATE)) {
+			Calendar completedDate = DateParser.parseString(param.get(
+					ParamEnum.DATE).get(0));
 			task.setDateEnd(completedDate);
 		} else {
 			task.setDateEnd(Calendar.getInstance());
-	}
-		
+		}
+
 	}
 
-	private static void setNameFromCommand(Command command, Task task) {
-		if (command.getParam().containsKey(ParamEnum.NAME)) {
-			String taskName = command.getParam().get(ParamEnum.NAME).get(0);
+	private static void setConditionalDatesFromCommand(
+			Hashtable<ParamEnum, ArrayList<String>> param, Task task)
+			throws InvalidDateFormatException {
+		ArrayList<String> startDates = param.get(ParamEnum.START_DATE);
+		ArrayList<String> dueDates = param.get(ParamEnum.DUE_DATE);
+		ArrayList<StartDueDatePair> conditionalDates = new ArrayList<StartDueDatePair>();
+		for (int i = 0; i < startDates.size(); i++) {
+			String startDate = startDates.get(i);
+			String dueDate = dueDates.get(i);
+			StartDueDatePair datePair = new StartDueDatePair(
+					DateParser.parseString(startDate),
+					DateParser.parseString(dueDate));
+			conditionalDates.add(datePair);
+		}
+		task.setConditionalDates(conditionalDates);
+	}
+
+	private static void setNameFromCommand(
+			Hashtable<ParamEnum, ArrayList<String>> param, Task task) {
+		if (param.containsKey(ParamEnum.NAME)) {
+			String taskName = param.get(ParamEnum.NAME).get(0);
 			task.setName(taskName);
 		}
 	}
 
-	private static void setDueDateFromCommand(Command command, Task task)
+	private static void setDueDateFromCommand(
+			Hashtable<ParamEnum, ArrayList<String>> param, Task task)
 			throws InvalidDateFormatException {
-		if (command.getParam().containsKey(ParamEnum.DUE_DATE)) {
-			Calendar dueDate = DateParser.parseString(command.getParam()
-					.get(ParamEnum.DUE_DATE).get(0));
-			task.setDateDue(dueDate);
-		}
+		Calendar dueDate = DateParser.parseString(param.get(ParamEnum.DUE_DATE)
+				.get(0));
+		task.setDateDue(dueDate);
 	}
 
-	private static void setStartDateFromCommand(Command command, Task task)
+	private static void setStartDateFromCommand(
+			Hashtable<ParamEnum, ArrayList<String>> param, Task task)
 			throws InvalidDateFormatException {
-		if (command.getParam().containsKey(ParamEnum.START_DATE)) {
-			Calendar startDate = DateParser.parseString(command.getParam()
-					.get(ParamEnum.START_DATE).get(0));
-			task.setDateStart(startDate);
-		}
+		Calendar startDate = DateParser.parseString(param.get(
+				ParamEnum.START_DATE).get(0));
+		task.setDateStart(startDate);
 	}
 
-	private static void setLevelFromCommand(Command command, Task task) {
+	private static void setLevelFromCommand(
+			Hashtable<ParamEnum, ArrayList<String>> param, Task task) {
 		PriorityLevelEnum priorityEnum = null;
-		if (command.getParam().containsKey(ParamEnum.LEVEL)) {
+		if (param.containsKey(ParamEnum.LEVEL)) {
 			try {
-				int level = Integer.parseInt(command.getParam()
-						.get(ParamEnum.LEVEL).get(0));
+				int level = Integer.parseInt(param.get(ParamEnum.LEVEL).get(0));
 				priorityEnum = PriorityLevelEnum.fromInteger(level);
 			} catch (NumberFormatException | NullPointerException e) {
 			}
@@ -81,18 +105,43 @@ public class TaskModifier {
 		}
 	}
 
-	private static void setNoteFromCommand(Command command, Task task) {
-		if (command.getParam().containsKey(ParamEnum.NOTE)) {
-			String note = command.getParam().get(ParamEnum.NOTE).get(0);
+	private static void setNoteFromCommand(
+			Hashtable<ParamEnum, ArrayList<String>> param, Task task) {
+		if (param.containsKey(ParamEnum.NOTE)) {
+			String note = param.get(ParamEnum.NOTE).get(0);
 			task.setNote(note);
 		}
 	}
 
-	private static void setTagsFromCommand(Command command, Task task) {
-		if (command.getParam().containsKey(ParamEnum.TAG)) {
-			ArrayList<String> tags = command.getParam().get(ParamEnum.TAG);
+	private static void setTagsFromCommand(
+			Hashtable<ParamEnum, ArrayList<String>> param, Task task) {
+		if (param.containsKey(ParamEnum.TAG)) {
+			ArrayList<String> tags = param.get(ParamEnum.TAG);
 			task.setTags(tags);
 		}
+	}
+
+	private static boolean hasSameNumberOfDueDates(
+			Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.containsKey(ParamEnum.DUE_DATE)
+				&& param.get(ParamEnum.DUE_DATE).size() == param.get(
+						ParamEnum.START_DATE).size();
+	}
+
+	private static boolean hasMultipleStartDates(
+			Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.containsKey(ParamEnum.START_DATE)
+				&& param.get(ParamEnum.START_DATE).size() > 1;
+	}
+
+	private static boolean hasSingleDueDate(
+			Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.get(ParamEnum.DUE_DATE).size() == 1;
+	}
+
+	private static boolean hasSingleStartDate(
+			Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.get(ParamEnum.START_DATE).size() == 1;
 	}
 
 }
