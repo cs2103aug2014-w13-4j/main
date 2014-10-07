@@ -17,7 +17,7 @@
             <items>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                     <children>
-                        <SplitPane dividerPositions="0.7" prefHeight="365.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <SplitPane dividerPositions="0.675" prefHeight="365.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             <items>
                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="300.0">
                                     <children>
@@ -93,6 +93,7 @@
                                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
                                             </rowConstraints>
                                             <children>
                                                 <Label text="ID:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
@@ -109,6 +110,8 @@
                                                 <Label fx:id="priorityLevelLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                                                 <Label text="Description:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
                                                 <Label fx:id="noteLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                                                <Label text="Conditional Dates:" GridPane.columnIndex="0" GridPane.rowIndex="7" />
+                                                <Label fx:id="conditionalDateLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="7" minHeight="60" minWidth="200"/>
                                             </children>
                                         </GridPane>
                                     </children>
