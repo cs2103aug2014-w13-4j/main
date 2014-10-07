@@ -25,7 +25,6 @@ public class CommandParser {
 		initializeParamTable();
 	}
 
-	@Override
 	public Command parseCommand(String commandString) throws Exception {
 		CommandEnum commandType = getCommandType(commandString);
 
