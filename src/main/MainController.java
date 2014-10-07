@@ -50,25 +50,43 @@ public class MainController {
 		System.out.println("Initializing...");
 		CommandParser commandParser = new CommandParser();
 		try {
-			logic = new Logic();
-			Feedback displayAllActiveTasks = logic.initialize();
-
-			ArrayList<Task> taskList = displayAllActiveTasks.getTaskList();
-			ObservableList<Task> observableList = FXCollections.observableArrayList(taskList);
-			taskTableView.getItems().addAll(observableList);
-
-			idLabel.textProperty().bind(idLabelValue);
-			taskNameLabel.textProperty().bind(taskNameLabelValue);
-			dueDateLabel.textProperty().bind(dueDateLabelValue);
-			startDateLabel.textProperty().bind(startDateLabelValue);
-			endDateLabel.textProperty().bind(endDateLabelValue);
-			priorityLevelLabel.textProperty().bind(priorityLevelLabelValue);
-			noteLabel.textProperty().bind(noteLabelValue);
-
+			Feedback displayAllActiveTasks = initializeLogic();
+			initializeGuiTaskList(displayAllActiveTasks);
+			initializeGuiLabelBindings();
 			setFocusToUserInputField();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private Feedback initializeLogic() {
+		logic = new Logic();
+		return logic.initialize();
+	}
+
+	private void initializeGuiTaskList(Feedback displayAllActiveTasks) {
+		ArrayList<Task> taskList = displayAllActiveTasks.getTaskList();
+		ObservableList<Task> observableList = FXCollections.observableArrayList(taskList);
+		taskTableView.getItems().addAll(observableList);
+	}
+
+	private void initializeGuiLabelBindings() {
+		idLabel.textProperty().bind(idLabelValue);
+		taskNameLabel.textProperty().bind(taskNameLabelValue);
+		dueDateLabel.textProperty().bind(dueDateLabelValue);
+		startDateLabel.textProperty().bind(startDateLabelValue);
+		endDateLabel.textProperty().bind(endDateLabelValue);
+		priorityLevelLabel.textProperty().bind(priorityLevelLabelValue);
+		noteLabel.textProperty().bind(noteLabelValue);
+	}
+
+	private void setFocusToUserInputField(){
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				userInputField.requestFocus();
+			}
+		});
 	}
 
 	public void handleUserInput() {
@@ -83,20 +101,12 @@ public class MainController {
 
 				ArrayList<Task> taskList = userCommandFeedback.getTaskList();
 				if (taskList != null){
-					taskTableView.getItems().clear();
-					ObservableList<Task> observableList = FXCollections.observableArrayList(taskList);
-					taskTableView.getItems().addAll(observableList);
+					updateTaskList(taskList);
 				}
 
 				Task taskToDisplay = userCommandFeedback.getTaskDisplay();
 				if (taskToDisplay != null){
-					setLabelValueInGui(idLabelValue, Integer.toString(taskToDisplay.getId()));
-					setLabelValueInGui(taskNameLabelValue, taskToDisplay.getName());
-					setLabelValueInGui(dueDateLabelValue, DateParser.parseCalendar(taskToDisplay.getDateDue()));
-					setLabelValueInGui(startDateLabelValue, DateParser.parseCalendar(taskToDisplay.getDateStart()));
-					setLabelValueInGui(endDateLabelValue, DateParser.parseCalendar(taskToDisplay.getDateEnd()));
-					setLabelValueInGui(priorityLevelLabelValue, (taskToDisplay.getPriorityLevel() == null ? null : taskToDisplay.getPriorityLevel().name()));
-					setLabelValueInGui(noteLabelValue, taskToDisplay.getNote());
+					updateTaskPanel(taskToDisplay);
 				}
 				userInputField.clear();
 			} catch (Exception e){
@@ -112,13 +122,20 @@ public class MainController {
 		return (userInput != null && !userInput.isEmpty());
 	}
 
-	private void setFocusToUserInputField(){
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				userInputField.requestFocus();
-			}
-		});
+	private void updateTaskList(ArrayList<Task> taskList) {
+		taskTableView.getItems().clear();
+		ObservableList<Task> observableList = FXCollections.observableArrayList(taskList);
+		taskTableView.getItems().addAll(observableList);
+	}
+
+	private void updateTaskPanel(Task taskToDisplay) {
+		setLabelValueInGui(idLabelValue, Integer.toString(taskToDisplay.getId()));
+		setLabelValueInGui(taskNameLabelValue, taskToDisplay.getName());
+		setLabelValueInGui(dueDateLabelValue, DateParser.parseCalendar(taskToDisplay.getDateDue()));
+		setLabelValueInGui(startDateLabelValue, DateParser.parseCalendar(taskToDisplay.getDateStart()));
+		setLabelValueInGui(endDateLabelValue, DateParser.parseCalendar(taskToDisplay.getDateEnd()));
+		setLabelValueInGui(priorityLevelLabelValue, (taskToDisplay.getPriorityLevel() == null ? null : taskToDisplay.getPriorityLevel().name()));
+		setLabelValueInGui(noteLabelValue, taskToDisplay.getNote());
 	}
 
 	private void setLabelValueInGui(StringProperty labelValue, String value){
