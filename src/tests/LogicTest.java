@@ -69,6 +69,9 @@ public class LogicTest {
 		assertEquals("eat my pet dog", newTask.getName());
 		assertEquals("I don't know why I want that?", newTask.getNote());
 		assertEquals(PriorityLevelEnum.RED, newTask.getPriorityLevel());
+		assertEquals(20, newTask.getDateStart().get(Calendar.DAY_OF_MONTH));
+		assertEquals(2, newTask.getDateStart().get(Calendar.MONTH) + 1);
+		assertEquals(1999, newTask.getDateStart().get(Calendar.YEAR));
 	}
 
 	@Test
@@ -95,13 +98,13 @@ public class LogicTest {
 		Command addCommand = parser.parseCommand("add eat my pet dog");
 		logic.executeCommand(addCommand);
 		Task uncompletedTask = ((Storage) storage.get(logic)).getTask(0);
-		assertTrue(uncompletedTask.getDateEnd() == null);
+		assertNull(uncompletedTask.getDateEnd());
 		Command completeCommand = parser.parseCommand("done 0 date 30-1-1992");
 		logic.executeCommand(completeCommand);
 		Task completedTask = ((Storage) storage.get(logic)).getTask(0);
-		assertTrue(completedTask.getDateEnd().get(Calendar.DAY_OF_MONTH) == 30);
-		assertTrue(completedTask.getDateEnd().get(Calendar.MONTH) + 1 == 1);
-		assertTrue(completedTask.getDateEnd().get(Calendar.YEAR) == 1992);
+		assertEquals(30, completedTask.getDateEnd().get(Calendar.DAY_OF_MONTH));
+		assertEquals(1, completedTask.getDateEnd().get(Calendar.MONTH) + 1);
+		assertEquals(1992, completedTask.getDateEnd().get(Calendar.YEAR));
 	}
 
 	@Test
