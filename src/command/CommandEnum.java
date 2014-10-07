@@ -4,21 +4,22 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public enum CommandEnum {
-	ADD ("add",ParamEnum.NAME, ParamEnum.DATE, ParamEnum.START_DATE, ParamEnum.DUE_DATE,
-			ParamEnum.LEVEL, ParamEnum.NOTE, ParamEnum.TAG, ParamEnum.EITHER, ParamEnum.OR),
-	DELETE ("delete", ParamEnum.KEYWORD),
-	UPDATE ("update", ParamEnum.KEYWORD, ParamEnum.DATE, ParamEnum.NAME, ParamEnum.NOTE, ParamEnum.DUE_DATE,
-			ParamEnum.START_DATE, ParamEnum.DATE),
-	UNDO ("undo", ParamEnum.KEYWORD),
-	FILTER ("filter", ParamEnum.KEYWORD, ParamEnum.STATUS),
-	SEARCH ("search", ParamEnum.KEYWORD, ParamEnum.NAME, ParamEnum.NOTE, ParamEnum.TAG),
-	DISPLAY ("display", ParamEnum.KEYWORD),
-	DONE ("done", ParamEnum.KEYWORD, ParamEnum.DATE),
-	TAG ("\\+", ParamEnum.KEYWORD),
-	LEVEL ("level", ParamEnum.KEYWORD);
+	ADD ("add", ParamEnum.NAME, ParamEnum.DUE_DATE, ParamEnum.OR_DUE, ParamEnum.OR_FROM, ParamEnum.DATE, ParamEnum.START_DATE,
+			ParamEnum.LEVEL, ParamEnum.NOTE, ParamEnum.TAG),
+	DELETE ("delete", ParamEnum.KEYWORD, null),
+	UPDATE ("update", ParamEnum.KEYWORD, ParamEnum.DUE_DATE, ParamEnum.DATE, ParamEnum.START_DATE,
+			ParamEnum.LEVEL, ParamEnum.NOTE, ParamEnum.TAG),
+	UNDO ("undo", ParamEnum.KEYWORD, null),
+	FILTER ("filter", ParamEnum.KEYWORD, null, ParamEnum.STATUS),
+	SEARCH ("search", ParamEnum.KEYWORD, null, ParamEnum.NAME, ParamEnum.NOTE, ParamEnum.TAG),
+	DISPLAY ("display", ParamEnum.KEYWORD, null),
+	DONE ("done", ParamEnum.KEYWORD, null, ParamEnum.DATE),
+	TAG ("\\+", ParamEnum.KEYWORD, null),
+	LEVEL ("level", ParamEnum.KEYWORD, null);
 	
 	private final String regex;
 	private final ParamEnum commandKey;
+	private final ParamEnum startParam;
 	private final ParamEnum[] params;
 	
 	/**
@@ -26,10 +27,11 @@ public enum CommandEnum {
 	 * @param regex The regex pattern of the command
 	 * @param associatedParams Additional params associated with the command
 	 */
-	CommandEnum(String regex,ParamEnum commandKey, ParamEnum... associatedParams)
+	CommandEnum(String regex,ParamEnum commandKey, ParamEnum startParam, ParamEnum... associatedParams)
 	{
 		this.regex = regex;
 		this.commandKey = commandKey;
+		this.startParam = startParam;
 		this.params = associatedParams;
 	}
 	
@@ -38,6 +40,8 @@ public enum CommandEnum {
 	public ParamEnum[] params() { return params; } 
 	
 	public ParamEnum commandKey() { return commandKey; }
+	
+	public ParamEnum startParam() { return startParam; }
 
 	// Test
 	public static void main(String[] args) {
