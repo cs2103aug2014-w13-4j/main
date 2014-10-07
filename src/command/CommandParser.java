@@ -61,8 +61,6 @@ public class CommandParser {
 		// commandString without the initial command and its argument
 		String commandSubString = null;
 		
-		System.out.println(commandPatternString);
-		
 		Pattern commandPattern = Pattern.compile(commandPatternString, Pattern.CASE_INSENSITIVE);
 		Matcher commandMatcher = commandPattern.matcher(commandString);
 		
@@ -73,7 +71,6 @@ public class CommandParser {
 
 		Pattern pattern = Pattern.compile(patternString, Pattern.CASE_INSENSITIVE);
 		Matcher matcher = pattern.matcher(commandSubString);
-		System.out.println(commandSubString);
 
 		ParamEnum paramEnum;
 		while (matcher.find()) {
@@ -83,7 +80,6 @@ public class CommandParser {
 					userCommand.addParam(paramEnum, matcher.group(ENUM_ARGUMENT).trim());
 				} else {
 					Pattern paramPattern = Pattern.compile(paramEnum.deepRegex());
-					System.out.println(paramEnum.deepRegex());
 					Matcher paramMatcher = paramPattern.matcher(matcher.group(ENUM_ARGUMENT).trim());
 					
 					if (paramMatcher.find()) {
@@ -149,10 +145,8 @@ public class CommandParser {
 		}
 		
 		if (commandType.startParam() != null) {
-			System.out.println(paramsPattern);
 			paramsPattern += String.format(INDIVIDUAL_PARAM_PATTERN, commandType.startParam().regex());
 		}
-		System.out.println(paramsPattern);
 		
 		return paramsPattern;
 		
