@@ -123,7 +123,7 @@ public class CommandParser {
 	}
 
 	/**
-	 * This operation returns a pattern string consist of all the params of the command type
+	 * This operation returns a pattern string consist of all the params of the command type excluding the first params
 	 * @param commandType
 	 * @return
 	 */
@@ -138,6 +138,11 @@ public class CommandParser {
 		return paramsPattern;
 	}
 	
+	/**
+	 * This operation returns a pattern string consist of all the params of the command typ
+	 * @param commandType
+	 * @return
+	 */
 	private String makeStartParamsPatternString(CommandEnum commandType) {
 		ParamEnum[] params = commandType.params();
 		String paramsPattern = "";
