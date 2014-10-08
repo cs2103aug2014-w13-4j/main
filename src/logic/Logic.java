@@ -65,10 +65,10 @@ public class Logic implements ILogic {
 	public Feedback initialize() {
 		try {
 			storage = new Storage();
-			return display();
+			return displayAll();
 		} catch (IOException | FileFormatNotSupportedException e) {
 			System.out.println(e);
-			return createFeedback(null, ERROR_STORAGE_MESSAGE);
+			return createTaskListFeedback(ERROR_STORAGE_MESSAGE, null);
 		}
 	}
 
@@ -88,7 +88,7 @@ public class Logic implements ILogic {
 			throws TaskNotFoundException, IOException,
 			InvalidDateFormatException, InvalidInputException {
 		if (storage == null) {
-			return createFeedback(null, ERROR_STORAGE_MESSAGE);
+			return createTaskListFeedback(ERROR_STORAGE_MESSAGE, null);
 		} else {
 			CommandEnum commandType = command.getCommand();
 			switch (commandType) {
@@ -103,7 +103,7 @@ public class Logic implements ILogic {
 			case FILTER:
 				return null;
 			case DISPLAY:
-				return display();
+				return display(command);
 			case DONE:
 				return complete(command);
 			case LEVEL:
@@ -115,12 +115,21 @@ public class Logic implements ILogic {
 			}
 		}
 	}
+	
+	
+	private Feedback display(Command command) throws NumberFormatException, TaskNotFoundException {
+		String idString = command.getParam().get(ParamEnum.KEYWORD).get(0);
+		if (idString.isEmpty()) {
+			return displayAll();
+		} else {
+			int id = Integer.parseInt(idString);
+			return displayTask(id);
+		}
+	}
 
-	private Feedback search(Command command) {
-		Hashtable<ParamEnum, ArrayList<String>> params = command.getParam();
-		ArrayList<Task> taskList = storage.searchTask(params);
-		return createFeedback(taskList,
-				createMessage(SEARCH_MESSAGE, String.valueOf(taskList.size())));
+	private Feedback displayTask(int id) throws TaskNotFoundException {
+		Task task = storage.getTask(id);
+		return createTaskFeedback(createMessage(DISPLAY_MESSAGE, null), task);
 	}
 
 	/**
@@ -128,9 +137,23 @@ public class Logic implements ILogic {
 	 * 
 	 * @return feedback containing all the tasks in the file, and the message.
 	 */
-	private Feedback display() {
+	private Feedback displayAll() {
 		ArrayList<Task> taskList = storage.getAllTasks();
-		return createFeedback(taskList, createMessage(DISPLAY_MESSAGE, null));
+		return createTaskListFeedback(createMessage(DISPLAY_MESSAGE, null), taskList);
+	}
+
+	/**
+	 * Search for tasks that contain the keyword in the name, description or tags
+	 * 
+	 * @param command: the command created by CommandParser
+	 * @return feedback containing all the tasks in the file, and the message
+	 */
+
+	private Feedback search(Command command) {
+		Hashtable<ParamEnum, ArrayList<String>> params = command.getParam();
+		ArrayList<Task> taskList = storage.searchTask(params);
+		return createTaskListFeedback(createMessage(SEARCH_MESSAGE, String.valueOf(taskList.size())),
+				taskList);
 	}
 
 	/**
@@ -152,7 +175,7 @@ public class Logic implements ILogic {
 		String name = task.getName();
 		storage.writeTaskToFile(task);
 		ArrayList<Task> taskList = storage.getAllTasks();
-		return createFeedback(taskList, createMessage(COMPLETE_MESSAGE, name));
+		return createTaskListFeedback(createMessage(COMPLETE_MESSAGE, name), taskList);
 	}
 
 	/**
@@ -174,7 +197,7 @@ public class Logic implements ILogic {
 		storage.writeTaskToFile(newTask);
 		String name = newTask.getName();
 		ArrayList<Task> taskList = storage.getAllTasks();
-		return createFeedback(taskList, createMessage(ADD_MESSAGE, name));
+		return createTaskListFeedback(createMessage(ADD_MESSAGE, name), taskList);
 	}
 
 	/**
@@ -195,7 +218,7 @@ public class Logic implements ILogic {
 		TaskModifier.deleteTask(task);
 		storage.writeTaskToFile(task);
 		ArrayList<Task> taskList = storage.getAllTasks();
-		return createFeedback(taskList, createMessage(DELETE_MESSAGE, name));
+		return createTaskListFeedback(createMessage(DELETE_MESSAGE, name), taskList);
 	}
 
 	/**
@@ -218,15 +241,19 @@ public class Logic implements ILogic {
 		storage.writeTaskToFile(task);
 		String name = task.getName();
 		ArrayList<Task> taskList = storage.getAllTasks();
-		return createFeedback(taskList, createMessage(EDIT_MESSAGE, name));
+		return createTaskListFeedback(createMessage(EDIT_MESSAGE, name), taskList);
 	}
 
 	private static String createMessage(String message, String variableText1) {
 		return String.format(message, variableText1);
 	}
 
-	private Feedback createFeedback(ArrayList<Task> taskList, String message) {
-		return new Feedback(message, taskList);
+	private Feedback createTaskListFeedback(String message, ArrayList<Task> taskList) {
+		return new Feedback(message, taskList, null);
+	}
+	
+	private Feedback createTaskFeedback(String message, Task task) {
+		return new Feedback(message, null, task);
 	}
 
 	private int getTaskId(Command command) {
