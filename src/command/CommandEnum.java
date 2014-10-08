@@ -7,7 +7,7 @@ public enum CommandEnum {
 	ADD ("add", ParamEnum.NAME, ParamEnum.DUE_DATE, ParamEnum.OR_DUE, ParamEnum.OR_FROM, ParamEnum.DATE, ParamEnum.START_DATE,
 			ParamEnum.LEVEL, ParamEnum.NOTE, ParamEnum.TAG),
 	DELETE ("delete", ParamEnum.KEYWORD, null),
-	UPDATE ("update", ParamEnum.KEYWORD, ParamEnum.DUE_DATE, ParamEnum.DATE, ParamEnum.START_DATE,
+	UPDATE ("update", ParamEnum.KEYWORD, ParamEnum.NAME, ParamEnum.DUE_DATE, ParamEnum.DATE, ParamEnum.START_DATE,
 			ParamEnum.LEVEL, ParamEnum.NOTE, ParamEnum.TAG),
 	UNDO ("undo", ParamEnum.KEYWORD, null),
 	FILTER ("filter", ParamEnum.KEYWORD, null, ParamEnum.STATUS),
