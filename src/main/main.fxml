@@ -17,7 +17,7 @@
             <items>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                     <children>
-                        <SplitPane dividerPositions="0.7" prefHeight="365.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <SplitPane dividerPositions="0.675" prefHeight="365.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                             <items>
                                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="300.0">
                                     <children>
@@ -44,9 +44,30 @@
                                                         <TaskDateFactory/>
                                                     </cellFactory>
                                                 </TableColumn>
-                                                <TableColumn prefWidth="120.0" minWidth="120.0" text="Task Name" >
+                                                <TableColumn prefWidth="100.0" minWidth="100.0" maxWidth="100.0" text="Start" >
+                                                    <cellValueFactory>
+                                                        <PropertyValueFactory property="dateStart"/>
+                                                    </cellValueFactory>
+                                                    <cellFactory>
+                                                        <TaskDateFactory/>
+                                                    </cellFactory>
+                                                </TableColumn>
+                                                <TableColumn prefWidth="100.0" minWidth="100.0" maxWidth="100.0" text="End" >
+                                                    <cellValueFactory>
+                                                        <PropertyValueFactory property="dateEnd"/>
+                                                    </cellValueFactory>
+                                                    <cellFactory>
+                                                        <TaskDateFactory/>
+                                                    </cellFactory>
+                                                </TableColumn>
+                                                <TableColumn prefWidth="100.0" minWidth="100.0" text="Task Name" >
                                                     <cellValueFactory>
                                                         <PropertyValueFactory property="name"/>
+                                                    </cellValueFactory>
+                                                </TableColumn>
+                                                <TableColumn prefWidth="60.0" minWidth="60.0" maxWidth="60.0" text="Priority" >
+                                                    <cellValueFactory>
+                                                        <PropertyValueFactory property="priorityLevel"/>
                                                     </cellValueFactory>
                                                 </TableColumn>
                                             </columns>
@@ -69,12 +90,28 @@
                                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
                                             </rowConstraints>
                                             <children>
-                                                <Label text="Task Name:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                                                <Label fx:id="taskNameLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-                                                <Label text="Due:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-                                                <Label fx:id="dueDateLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                <Label text="ID:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                                                <Label fx:id="idLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                                                <Label text="Task Name:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                                                <Label fx:id="taskNameLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                <Label text="Due Date:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                                                <Label fx:id="dueDateLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                <Label text="Start Date:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                                                <Label fx:id="startDateLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                <Label text="End Date:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+                                                <Label fx:id="endDateLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                                <Label text="Priority:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+                                                <Label fx:id="priorityLevelLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                                <Label text="Description:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+                                                <Label fx:id="noteLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                                                <Label text="Conditional Dates:" GridPane.columnIndex="0" GridPane.rowIndex="7" />
+                                                <Label fx:id="conditionalDateLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="7" minHeight="60" minWidth="200"/>
                                             </children>
                                         </GridPane>
                                     </children>
