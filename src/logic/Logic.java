@@ -27,6 +27,7 @@ public class Logic implements ILogic {
 	private static final String DISPLAY_MESSAGE = "All tasks are displayed.";
 	private static final String INVALID_COMMAND_MESSAGE = "The command is invalid.";
 	private static final String INVALID_INDEX_MESSAGE = "The index is invalid.";
+	private static final String ERROR_ALREADY_DELETED_MESSAGE = "Task %1$s is already deleted.";
 	Storage storage = null;
 
 	public Logic() {
@@ -133,6 +134,9 @@ public class Logic implements ILogic {
 
 	private Feedback displayTask(int id) throws TaskNotFoundException {
 		Task task = storage.getTask(id);
+		if (task.isDeleted()) {
+			throw new TaskNotFoundException(createMessage(ERROR_ALREADY_DELETED_MESSAGE, Integer.toString(id)));
+		}
 		return createTaskFeedback(createMessage(DISPLAY_MESSAGE, null), task);
 	}
 
