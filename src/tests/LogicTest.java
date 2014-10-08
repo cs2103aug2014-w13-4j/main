@@ -13,6 +13,7 @@ import java.util.Hashtable;
 import logic.Logic;
 import logic.TaskModifier;
 import models.DateParser;
+import models.Command;
 import models.Feedback;
 import models.PriorityLevelEnum;
 import models.Task;
@@ -22,7 +23,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import storage.Storage;
-import command.Command;
 import command.CommandParser;
 import command.ParamEnum;
 

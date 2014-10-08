@@ -6,6 +6,8 @@ import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import models.Command;
+
 public class CommandParser {
 
 	private static final String FIRST_WORD_PATTERN = "^([\\w]+)";
@@ -121,7 +123,7 @@ public class CommandParser {
 	}
 
 	/**
-	 * This operation returns a pattern string consist of all the params of the command type
+	 * This operation returns a pattern string consist of all the params of the command type excluding the first params
 	 * @param commandType
 	 * @return
 	 */
@@ -136,6 +138,11 @@ public class CommandParser {
 		return paramsPattern;
 	}
 	
+	/**
+	 * This operation returns a pattern string consist of all the params of the command typ
+	 * @param commandType
+	 * @return
+	 */
 	private String makeStartParamsPatternString(CommandEnum commandType) {
 		ParamEnum[] params = commandType.params();
 		String paramsPattern = "";
@@ -183,22 +190,4 @@ public class CommandParser {
 			paramEnumTable.put(param.regex().replace("\\", ""), param);
 		}
 	}
-
-	// Test
-	public static void main(String[] args) {
-		CommandParser cp = new CommandParser();
-
-		Command userCommand;
-		try {
-			userCommand = cp.parseCommand("Add CS2103T from today due tomorrow or from wed or due fri or from sat or due tues note how are you +abc");
-			System.out.println(userCommand.getCommandArgument());
-			CommandEnum commandType = userCommand.getCommand();
-			System.out.println(commandType);
-			Hashtable<ParamEnum, ArrayList<String>> params = userCommand.getParam();
-			System.out.println(params);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 }

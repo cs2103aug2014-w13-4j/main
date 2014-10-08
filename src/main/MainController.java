@@ -1,6 +1,5 @@
 package main;
 
-import command.Command;
 import command.CommandParser;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -11,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import logic.Logic;
+import models.Command;
 import models.DateParser;
 import models.Feedback;
 import models.StartDueDatePair;
