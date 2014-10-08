@@ -3,10 +3,10 @@ package logic;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import models.Command;
 import models.DateParser;
 import models.PriorityLevelEnum;
 import models.Task;
-import command.Command;
 import command.ParamEnum;
 import exceptions.InvalidDateFormatException;
 

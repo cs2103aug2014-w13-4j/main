@@ -1,6 +1,6 @@
 package interfaces;
 
-import command.Command;
+import models.Command;
 
 public interface ICommandParser {
 	public Command parseCommand(String commandString) throws Exception;

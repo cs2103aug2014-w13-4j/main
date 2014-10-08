@@ -6,6 +6,8 @@ import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import models.Command;
+
 public class CommandParser {
 
 	private static final String FIRST_WORD_PATTERN = "^([\\w]+)";
