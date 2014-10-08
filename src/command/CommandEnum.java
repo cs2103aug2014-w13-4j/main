@@ -42,18 +42,4 @@ public enum CommandEnum {
 	public ParamEnum commandKey() { return commandKey; }
 	
 	public ParamEnum startParam() { return startParam; }
-
-	// Test
-	public static void main(String[] args) {
-		
-		System.out.println(CommandEnum.values());
-		String text = "Add how are you Note noted Date yesterday";
-		String patternString = "(Add|Date|Note)(.*?)(?=Note|Date|$)";
-		Pattern pattern = Pattern.compile(patternString);
-		Matcher matcher = pattern.matcher(text);
-		while(matcher.find()) {
-		    System.out.println("found: " + matcher.group(1) +
-		                       " "       + matcher.group(2).trim());
-		}
-	}
 }

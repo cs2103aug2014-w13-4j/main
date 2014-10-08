@@ -183,22 +183,4 @@ public class CommandParser {
 			paramEnumTable.put(param.regex().replace("\\", ""), param);
 		}
 	}
-
-	// Test
-	public static void main(String[] args) {
-		CommandParser cp = new CommandParser();
-
-		Command userCommand;
-		try {
-			userCommand = cp.parseCommand("Add CS2103T from today due tomorrow or from wed due thur or due fri or from sat or due tues note how are you +abc");
-			System.out.println(userCommand.getCommandArgument());
-			CommandEnum commandType = userCommand.getCommand();
-			System.out.println(commandType);
-			Hashtable<ParamEnum, ArrayList<String>> params = userCommand.getParam();
-			System.out.println(params);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 }

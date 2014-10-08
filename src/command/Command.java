@@ -47,18 +47,4 @@ public class Command {
 	public String getCommandArgument() {
 		return commandArgument;
 	}
-	
-	/**
-	 * Test
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		Command test = new Command(CommandEnum.ADD);
-		test.addCommandString("abc");
-		test.addParam(ParamEnum.DATE, "hello");
-		test.addParam(ParamEnum.DATE, "hey");
-		System.out.println(test.getCommand());
-		System.out.println(test.getParam().get(ParamEnum.DATE));
-		System.out.println(test.getCommandString());	
-	}
 }
