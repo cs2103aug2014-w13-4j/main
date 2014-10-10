@@ -24,7 +24,7 @@ public class DateParser {
 	 */
 	public static Calendar parseString(String dateString)
 			throws InvalidDateFormatException {
-		//TODO: Change this! 
+		// TODO: Change this!
 		if (dateString.isEmpty()) {
 			return null;
 		}
@@ -39,11 +39,12 @@ public class DateParser {
 			} catch (ParseException e) {
 			}
 		}
-		throw new InvalidDateFormatException("'" + dateString + "'" + " is invalid!");
+		throw new InvalidDateFormatException("'" + dateString + "'"
+				+ " is invalid!");
 	}
 
 	public static String parseCalendar(Calendar date) {
-		if (date != null){
+		if (date != null) {
 			int day = date.get(Calendar.DAY_OF_MONTH);
 			int month = date.get(Calendar.MONTH) + 1;
 			int year = date.get(Calendar.YEAR);

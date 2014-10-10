@@ -6,11 +6,11 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Hashtable;
 
 import logic.Logic;
+import logic.LogicApi;
 import logic.TaskModifier;
 import models.DateParser;
 import models.Command;
@@ -24,18 +24,23 @@ import org.junit.Test;
 
 import storage.Storage;
 import command.CommandParser;
-import command.ParamEnum;
 
 public class LogicTest {
-	Class<Logic> LogicClass = Logic.class;
-	Class<TaskModifier> TaskModifierClass = TaskModifier.class;
-	Field storage = LogicClass.getDeclaredField("storage");
-	Method modifyTask = TaskModifierClass.getDeclaredMethod("modifyTask",
+	Class<LogicApi> logicApiClass = LogicApi.class;
+	Class<Logic> logicClass = Logic.class;
+	Class<TaskModifier> taskModifierClass = TaskModifier.class;
+	Field logic = logicApiClass.getDeclaredField("logic");
+	Field storage = logicClass.getDeclaredField("storage");
+	Method modifyTask = taskModifierClass.getDeclaredMethod("modifyTask",
 			Hashtable.class, Task.class);
-	Method display = LogicClass.getDeclaredMethod("display", Hashtable.class);
+	Method display = logicClass.getDeclaredMethod("display", Hashtable.class);
+	LogicApi logicApiObject;
+	Logic logicObject;
+	Storage storageObject;
+	CommandParser parser;
 
 	public LogicTest() throws NoSuchMethodException, NoSuchFieldException {
-
+		parser = new CommandParser();
 	}
 
 	@Before
@@ -47,6 +52,7 @@ public class LogicTest {
 	@Before
 	public void setFieldsAccessible() {
 		storage.setAccessible(true);
+		logic.setAccessible(true);
 	}
 
 	@Before
@@ -56,16 +62,22 @@ public class LogicTest {
 		writer.close();
 	}
 
+	@Before
+	public void getLogicAndStorage() throws IllegalArgumentException,
+			IllegalAccessException {
+		logicApiObject = new LogicApi();
+		logicApiObject.initialize();
+		logicObject = (Logic) logic.get(logicApiObject);
+		storageObject = (Storage) storage.get(logicObject);
+	}
+
 	@Test
-	public final void testExecuteAddCommand() throws Exception {
-		Logic logic = new Logic();
-		logic.initialize();
-		CommandParser parser = new CommandParser();
+	public final void testModifyTask() throws Exception {
 		Command addCommand = parser
 				.parseCommand("add eat my pet dog from 20-02-1999 note I don't know why I want that? level 2");
 		Task newTask = new Task();
 		newTask.setId(-1);
-		modifyTask.invoke(TaskModifierClass, addCommand.getParam(), newTask);
+		modifyTask.invoke(taskModifierClass, addCommand.getParam(), newTask);
 		assertEquals("eat my pet dog", newTask.getName());
 		assertEquals("I don't know why I want that?", newTask.getNote());
 		assertEquals(PriorityLevelEnum.RED, newTask.getPriorityLevel());
@@ -76,32 +88,26 @@ public class LogicTest {
 
 	@Test
 	public final void testCompleteTask() throws Exception {
-		Logic logic = new Logic();
-		logic.initialize();
-		CommandParser parser = new CommandParser();
 		Command addCommand = parser
 				.parseCommand("add eat my pet dog from 20-02-1999 note I don't know why I want that? level 2");
-		logic.executeCommand(addCommand);
-		Task uncompletedTask = ((Storage) storage.get(logic)).getTask(0);
+		logicApiObject.executeCommand(addCommand);
+		Task uncompletedTask = storageObject.getTask(0);
 		assertTrue(uncompletedTask.getDateEnd() == null);
 		Command completeCommand = parser.parseCommand("done 0");
-		logic.executeCommand(completeCommand);
-		Task completedTask = ((Storage) storage.get(logic)).getTask(0);
+		logicApiObject.executeCommand(completeCommand);
+		Task completedTask = storageObject.getTask(0);
 		assertTrue(completedTask.getDateEnd() != null);
 	}
 
 	@Test
 	public final void testCompleteTaskWithDate() throws Exception {
-		Logic logic = new Logic();
-		logic.initialize();
-		CommandParser parser = new CommandParser();
 		Command addCommand = parser.parseCommand("add eat my pet dog");
-		logic.executeCommand(addCommand);
-		Task uncompletedTask = ((Storage) storage.get(logic)).getTask(0);
+		logicApiObject.executeCommand(addCommand);
+		Task uncompletedTask = storageObject.getTask(0);
 		assertNull(uncompletedTask.getDateEnd());
 		Command completeCommand = parser.parseCommand("done 0 date 30-1-1992");
-		logic.executeCommand(completeCommand);
-		Task completedTask = ((Storage) storage.get(logic)).getTask(0);
+		logicApiObject.executeCommand(completeCommand);
+		Task completedTask = storageObject.getTask(0);
 		assertEquals(30, completedTask.getDateEnd().get(Calendar.DAY_OF_MONTH));
 		assertEquals(1, completedTask.getDateEnd().get(Calendar.MONTH) + 1);
 		assertEquals(1992, completedTask.getDateEnd().get(Calendar.YEAR));
@@ -109,13 +115,10 @@ public class LogicTest {
 
 	@Test
 	public final void testDisplayIndividualTask() throws Exception {
-		Logic logic = new Logic();
-		logic.initialize();
-		CommandParser parser = new CommandParser();
 		Command addCommand = parser.parseCommand("add eat my pet dog");
-		logic.executeCommand(addCommand);
+		logicApiObject.executeCommand(addCommand);
 		Command displayCommand = parser.parseCommand("display 0");
-		Feedback feedback = (Feedback) display.invoke(logic,
+		Feedback feedback = (Feedback) display.invoke(logicObject,
 				displayCommand.getParam());
 		assertEquals("ID is the same", 0, feedback.getTaskDisplay().getId());
 		assertEquals("Name is correct", "eat my pet dog", feedback
@@ -125,26 +128,20 @@ public class LogicTest {
 
 	@Test(expected = TaskNotFoundException.class)
 	public final void testDisplayException() throws Exception {
-		Logic logic = new Logic();
-		logic.initialize();
-		CommandParser parser = new CommandParser();
 		Command addCommand = parser.parseCommand("add eat my pet dog");
-		logic.executeCommand(addCommand);
+		logicApiObject.executeCommand(addCommand);
 		Command displayCommand = parser.parseCommand("display -1");
-		logic.executeCommand(displayCommand);
+		logicApiObject.executeCommand(displayCommand);
 	}
 
 	@Test
 	public final void testDisplayAll() throws Exception {
-		Logic logic = new Logic();
-		logic.initialize();
-		CommandParser parser = new CommandParser();
 		Command addCommand = parser.parseCommand("add first");
-		logic.executeCommand(addCommand);
+		logicApiObject.executeCommand(addCommand);
 		addCommand = parser.parseCommand("add second thing");
-		logic.executeCommand(addCommand);
+		logicApiObject.executeCommand(addCommand);
 		Command displayCommand = parser.parseCommand("display");
-		Feedback feedback = (Feedback) display.invoke(logic,
+		Feedback feedback = (Feedback) display.invoke(logicObject,
 				displayCommand.getParam());
 		assertEquals("Task length is correct", 2, feedback.getTaskList().size());
 		assertEquals("Task 1 is correct", "first", feedback.getTaskList()
@@ -156,20 +153,30 @@ public class LogicTest {
 
 	@Test
 	public final void testConditionalTasks() throws Exception {
-		Logic logic = new Logic();
-		logic.initialize();
-		CommandParser parser = new CommandParser();
 		Command addCommand = parser
 				.parseCommand("Add CS2103T from 23.12.1992 due 23.12.2002 or due 8.10.2014");
-		Feedback feedback = logic.executeCommand(addCommand);
+		Feedback feedback = logicApiObject.executeCommand(addCommand);
 		Task task = feedback.getTaskList().get(0);
 		assertEquals("Task name is correct", "CS2103T", task.getName());
 		assertTrue("Conditional dates are present", task.getConditionalDates()
 				.size() == 2);
-		assertEquals("First start date is correct", "23-12-1992 00:00", DateParser.parseCalendar(task.getConditionalDates().get(0).getStartDate()));
-		assertEquals("Second start date is correct", null, task.getConditionalDates().get(1).getStartDate());
-		assertEquals("First due date is correct", "23-12-2002 00:00", DateParser.parseCalendar(task.getConditionalDates().get(0).getDueDate()));
-		assertEquals("Second due date is correct", "8-10-2014 00:00", DateParser.parseCalendar(task.getConditionalDates().get(1).getDueDate()));
+		assertEquals(
+				"First start date is correct",
+				"23-12-1992 00:00",
+				DateParser.parseCalendar(task.getConditionalDates().get(0)
+						.getStartDate()));
+		assertEquals("Second start date is correct", null, task
+				.getConditionalDates().get(1).getStartDate());
+		assertEquals(
+				"First due date is correct",
+				"23-12-2002 00:00",
+				DateParser.parseCalendar(task.getConditionalDates().get(0)
+						.getDueDate()));
+		assertEquals(
+				"Second due date is correct",
+				"8-10-2014 00:00",
+				DateParser.parseCalendar(task.getConditionalDates().get(1)
+						.getDueDate()));
 	}
 
 }
