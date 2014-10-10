@@ -4,7 +4,10 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.TreeMap;
+
+import org.hamcrest.internal.ArrayIterator;
 
 import exceptions.FileFormatNotSupportedException;
 import exceptions.InvalidDateFormatException;
@@ -328,17 +331,23 @@ public class Task {
 		ArrayList<StartDueDatePair> datePairArrayList = new ArrayList<StartDueDatePair>();
 		Calendar startDate = null;
 		Calendar endDate;
-		for (String stringElement : stringArray) {
-			if (startDate == null) {
-				startDate = stringToTaskProperty(stringElement);
+		for (int i=0; i<stringArray.length; i++) {
+			if (isEven(i)) {
+				startDate = stringToTaskProperty(stringArray[i]);
 			} else {
-				endDate = stringToTaskProperty(stringElement);
-				StartDueDatePair datePair = new StartDueDatePair(startDate,
-						endDate);
-				datePairArrayList.add(datePair);
-				startDate = null;
+				endDate = stringToTaskProperty(stringArray[i]);
+				StartDueDatePair datePair = new StartDueDatePair(startDate,endDate);
+            	datePairArrayList.add(datePair);
 			}
 		}
 		return datePairArrayList;
+	}
+
+	private boolean isEven(int number) {
+		if (number % 2 == 0) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }
