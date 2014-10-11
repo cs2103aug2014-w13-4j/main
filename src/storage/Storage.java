@@ -41,7 +41,12 @@ public class Storage {
 		tagFile.updateTagToFile(task.getTags());
 	}
 
+	public void updateTagToFile(ArrayList<String> tags) {
+		tagFile.updateTagToFile(tags);
+	}
+
 	// Delete a task from file
+	// delete this function later
 	public void deleteTaskFromFile(int taskID) throws TaskNotFoundException, IOException {
 		taskFile.deleteTaskFromFile(taskID);
 	}
