@@ -159,13 +159,13 @@ public class TaskStorage {
 	}
 
 	// Get a list of tasks that are done
-	public ArrayList<Task> getCompletedTasks() {
+	public ArrayList<Task> getCompletedTasks(ArrayList<Task> searchRange) {
 		ArrayList<Task> completedTaskList = new ArrayList<Task>();
 		// check whether there are tasks in storage
-		if (taskBuffer == null) {
+		if (searchRange == null) {
 			return null;
 		}
-		for (Task task: taskBuffer) {
+		for (Task task: searchRange) {
 			if (task.getDateEnd() == null || task.isDeleted()) {
 				continue;
 			} else {
@@ -176,13 +176,13 @@ public class TaskStorage {
 	}
 
 	// Get a list of tasks that are not completed
-	public ArrayList<Task> getActiveTasks() {
+	public ArrayList<Task> getActiveTasks(ArrayList<Task> searchRange) {
 		ArrayList<Task> activeTaskList = new ArrayList<Task>();
 		// check whether there are tasks in storage
-		if (taskBuffer == null) {
+		if (searchRange == null) {
 			return null;
 		}
-		for (Task task: taskBuffer) {
+		for (Task task: searchRange) {
 			if (task.getDateEnd() == null && !task.isDeleted()) {
 				activeTaskList.add(task);
 			} else {

@@ -62,13 +62,13 @@ public class Storage {
 	}
 
 	// Get a list of tasks that are done
-	public ArrayList<Task> getCompletedTasks() {
-		return taskFile.getCompletedTasks();
+	public ArrayList<Task> getCompletedTasks(ArrayList<Task> searchRange) {
+		return taskFile.getCompletedTasks(searchRange);
 	}
 
 	// Get a list of tasks that are not completed
-	public ArrayList<Task> getActiveTasks() {
-		return taskFile.getActiveTasks();
+	public ArrayList<Task> getActiveTasks(ArrayList<Task> searchRange) {
+		return taskFile.getActiveTasks(searchRange);
 	}
 
 	// Get a list of tags
