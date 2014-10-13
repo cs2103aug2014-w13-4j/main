@@ -50,29 +50,9 @@ public class Logic {
 		}
 	}
 
-	Feedback displayTask(int id) throws TaskNotFoundException {
-		Task task = storage.getTask(id);
-		if (task.isDeleted()) {
-			throw new TaskNotFoundException(createMessage(
-					ERROR_ALREADY_DELETED_MESSAGE, Integer.toString(id)));
-		}
-		return createTaskFeedback(createMessage(DISPLAY_MESSAGE, null), task);
-	}
-
 	// TODO: Confirm task
-	private Feedback confirm(Hashtable<ParamEnum, ArrayList<String>> param) {
+	Feedback confirm(Hashtable<ParamEnum, ArrayList<String>> param) {
 		return null;
-	}
-
-	/**
-	 * Displays all the tasks in the file
-	 * 
-	 * @return feedback containing all the tasks in the file, and the message.
-	 */
-	Feedback displayAll() {
-		ArrayList<Task> taskList = storage.getAllTasks();
-		return createTaskListFeedback(createMessage(DISPLAY_MESSAGE, null),
-				taskList);
 	}
 
 	/**
@@ -184,6 +164,26 @@ public class Logic {
 		ArrayList<Task> taskList = storage.getAllTasks();
 		return createTaskListFeedback(createMessage(EDIT_MESSAGE, name),
 				taskList);
+	}
+
+	/**
+	 * Displays all the tasks in the file
+	 * 
+	 * @return feedback containing all the tasks in the file, and the message.
+	 */
+	private Feedback displayAll() {
+		ArrayList<Task> taskList = storage.getAllTasks();
+		return createTaskListFeedback(createMessage(DISPLAY_MESSAGE, null),
+				taskList);
+	}
+
+	private Feedback displayTask(int id) throws TaskNotFoundException {
+		Task task = storage.getTask(id);
+		if (task.isDeleted()) {
+			throw new TaskNotFoundException(createMessage(
+					ERROR_ALREADY_DELETED_MESSAGE, Integer.toString(id)));
+		}
+		return createTaskFeedback(createMessage(DISPLAY_MESSAGE, null), task);
 	}
 
 	private String createMessage(String message, String variableText1) {
