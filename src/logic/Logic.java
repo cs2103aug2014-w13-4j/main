@@ -2,19 +2,26 @@ package logic;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Hashtable;
 
 import storage.Storage;
 import command.ParamEnum;
+import models.Command;
+import models.Feedback;
+import models.StartDueDatePair;
+import models.Task;
+import command.*;
 import exceptions.FileFormatNotSupportedException;
 import exceptions.InvalidDateFormatException;
+import exceptions.InvalidInputException;
 import exceptions.TaskNotFoundException;
 import models.Feedback;
 import models.Task;
 
-public class Logic {
 
-	private static final int NEW_ID = -1;
+//TODO: Throw exceptions when mandatory fields are missing
+public class Logic {
 	private static final String ADD_MESSAGE = "%1$s is successfully added.";
 	private static final String DELETE_MESSAGE = "%1$s is successfully deleted";
 	private static final String EDIT_MESSAGE = "%1$s is successfully edited.";
@@ -24,6 +31,8 @@ public class Logic {
 	private static final String DISPLAY_MESSAGE = "All tasks are displayed.";
 	private static final String INVALID_INDEX_MESSAGE = "The index is invalid.";
 	private static final String ERROR_ALREADY_DELETED_MESSAGE = "Task %1$s is already deleted.";
+	private static final String CONFIRM_MESSAGE = "%1$s is marked as confirmed.";
+	private static final String INVALID_COMMAND_MESSAGE = "The command is invalid.";
 	Storage storage = null;
 
 	Logic() {
@@ -38,7 +47,6 @@ public class Logic {
 			return createTaskListFeedback(ERROR_STORAGE_MESSAGE, null);
 		}
 	}
-
 	Feedback display(Hashtable<ParamEnum, ArrayList<String>> param)
 			throws NumberFormatException, TaskNotFoundException {
 		String idString = param.get(ParamEnum.KEYWORD).get(0);
@@ -50,9 +58,33 @@ public class Logic {
 		}
 	}
 
-	// TODO: Confirm task
-	Feedback confirm(Hashtable<ParamEnum, ArrayList<String>> param) {
-		return null;
+	Feedback confirm(Hashtable<ParamEnum, ArrayList<String>> param)
+			throws InvalidInputException, TaskNotFoundException, IOException {
+		if (!param.containsKey(ParamEnum.KEYWORD)
+				|| !param.containsKey(ParamEnum.ID)) {
+			throw new InvalidInputException(INVALID_COMMAND_MESSAGE);
+		} else {
+			int taskId = getTaskId(param);
+			String dateIdString = param.get(ParamEnum.ID).get(0);
+			int dateId = Integer.parseInt(dateIdString);
+			Task task = storage.getTask(taskId);
+			TaskModifier.confirmTask(dateId, task);
+			storage.writeTaskToFile(task);
+			String taskName = task.getName();
+			return createTaskAndTaskListFeedback(
+					createMessage(CONFIRM_MESSAGE, taskName),
+					storage.getAllTasks(), task);
+		}
+	}
+
+	/**
+	 * Display all tasks in the list
+	 * @return feedback containing all the tasks in the file, and the message.
+	 */
+	private Feedback displayAll() {
+		ArrayList<Task> taskList = storage.getAllTasks();
+		return createTaskListFeedback(createMessage(DISPLAY_MESSAGE, null),
+				taskList);
 	}
 
 	/**
@@ -110,7 +142,6 @@ public class Logic {
 			throws TaskNotFoundException, IOException,
 			InvalidDateFormatException {
 		Task newTask = new Task();
-		newTask.setId(NEW_ID);
 		TaskModifier.modifyTask(param, newTask);
 		storage.writeTaskToFile(newTask);
 		String name = newTask.getName();
@@ -166,17 +197,6 @@ public class Logic {
 				taskList);
 	}
 
-	/**
-	 * Displays all the tasks in the file
-	 * 
-	 * @return feedback containing all the tasks in the file, and the message.
-	 */
-	private Feedback displayAll() {
-		ArrayList<Task> taskList = storage.getAllTasks();
-		return createTaskListFeedback(createMessage(DISPLAY_MESSAGE, null),
-				taskList);
-	}
-
 	private Feedback displayTask(int id) throws TaskNotFoundException {
 		Task task = storage.getTask(id);
 		if (task.isDeleted()) {
@@ -197,6 +217,11 @@ public class Logic {
 
 	private Feedback createTaskFeedback(String message, Task task) {
 		return new Feedback(message, null, task);
+	}
+
+	private Feedback createTaskAndTaskListFeedback(String message,
+			ArrayList<Task> taskList, Task task) {
+		return new Feedback(message, taskList, task);
 	}
 
 	private int getTaskId(Hashtable<ParamEnum, ArrayList<String>> param) {

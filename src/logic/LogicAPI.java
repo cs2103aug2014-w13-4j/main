@@ -14,7 +14,7 @@ import exceptions.InvalidInputException;
 import exceptions.TaskNotFoundException;
 
 //TODO: Throw exceptions when mandatory fields are missing
-public class LogicApi implements ILogic {
+public class LogicApi {
 	Logic logic;
 	private static final String INVALID_COMMAND_MESSAGE = "The command is invalid.";
 

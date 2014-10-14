@@ -178,5 +178,21 @@ public class LogicTest {
 				DateParser.parseCalendar(task.getConditionalDates().get(1)
 						.getDueDate()));
 	}
+	
+	@Test
+	public final void testConfirmConditionalTasks() throws Exception {
+		CommandParser parser = new CommandParser();
+		Command addCommand = parser
+				.parseCommand("Add CS2103T from 23.12.1992 due 23.12.2002 or due 8.10.2014");
+		logicApiObject.executeCommand(addCommand);
+		Command confirmCommand = parser.parseCommand("confirm 0 id 1");
+		logicApiObject.executeCommand(confirmCommand);
+		Task task = storageObject.getTask(0);
+		assertEquals("Task name is correct", "CS2103T", task.getName());
+		assertTrue("Task is confirmed", task.isConfirmed());
+		assertEquals("Confirmed start date is correct", task.getConditionalDates().get(0).getStartDate(), task.getDateStart());
+		assertEquals("Confirmed due date is correct", task.getConditionalDates().get(0).getStartDate(), task.getDateDue());
+		assertEquals("Second due date is correct", "8-10-2014 00:00", DateParser.parseCalendar(task.getConditionalDates().get(1).getDueDate()));
+	}
 
 }

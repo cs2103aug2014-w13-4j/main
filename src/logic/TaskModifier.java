@@ -10,9 +10,12 @@ import models.StartDueDatePair;
 import models.Task;
 import command.ParamEnum;
 import exceptions.InvalidDateFormatException;
+import exceptions.InvalidInputException;
 
 public class TaskModifier {
-
+	private static final String INVALID_CONDITIONAL_DATE_ID_MESSAGE = "The conditional date id is invalid.";
+	private static final int MIN_ID = 0;
+	
 	static void modifyTask(Hashtable<ParamEnum, ArrayList<String>> param,
 			Task task) throws InvalidDateFormatException {
 		setNameFromCommand(param, task);
@@ -48,6 +51,20 @@ public class TaskModifier {
 			task.setDateEnd(Calendar.getInstance());
 		}
 
+	}
+
+	static void confirmTask(int dateId, Task task) throws InvalidInputException {
+		if (isLessThanMinId(dateId) || hasNullConditionalDates(task)
+				|| isIdOutsideConditionalDatesRange(dateId, task)) {
+			throw new InvalidInputException(INVALID_CONDITIONAL_DATE_ID_MESSAGE);
+		} else {
+			StartDueDatePair conditionalDatesToConfirm = task
+					.getConditionalDates().get(dateId);
+			Calendar startDate = conditionalDatesToConfirm.getStartDate();
+			task.setDateStart(startDate);
+			Calendar dueDate = conditionalDatesToConfirm.getStartDate();
+			task.setDateDue(dueDate);
+		}
 	}
 
 	private static void setConditionalDatesFromCommand(
@@ -142,6 +159,18 @@ public class TaskModifier {
 	private static boolean hasSingleStartDate(
 			Hashtable<ParamEnum, ArrayList<String>> param) {
 		return param.get(ParamEnum.START_DATE).size() == 1;
+	}
+
+	private static boolean isIdOutsideConditionalDatesRange(int dateId, Task task) {
+		return task.getConditionalDates().size() <= dateId;
+	}
+
+	private static boolean hasNullConditionalDates(Task task) {
+		return task.getConditionalDates() == null;
+	}
+
+	private static boolean isLessThanMinId(int dateId) {
+		return dateId < MIN_ID;
 	}
 
 }
