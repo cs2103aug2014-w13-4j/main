@@ -65,7 +65,6 @@ public class TaskModifier {
 					.getConditionalDates().get(dateId);
 			Calendar startDate = conditionalDatesToConfirm.getStartDate();
 			task.setDateStart(startDate);
-			System.out.println ("Test:" + task.getDateStart() == null);
 			Calendar dueDate = conditionalDatesToConfirm.getDueDate();
 			task.setDateDue(dueDate);
 		}
