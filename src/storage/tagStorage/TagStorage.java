@@ -50,13 +50,13 @@ public class TagStorage {
             if (tagBuffer.contains(tag)) {
                 continue;
             } else {
-                addToFile(tag);
+                addTagToFile(tag);
                 tagBuffer.add(tag);
             }
         }        
     }
     
-    private void addToFile(String tag) throws IOException {
+    private void addTagToFile(String tag) throws IOException {
     	BufferedWriter bufferedWriter = null;
         try {
             bufferedWriter = new BufferedWriter(new FileWriter(dataFile, true));
