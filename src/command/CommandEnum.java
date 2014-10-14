@@ -15,7 +15,8 @@ public enum CommandEnum {
 	DISPLAY ("display", ParamEnum.KEYWORD, null),
 	DONE ("done", ParamEnum.KEYWORD, null, ParamEnum.DATE),
 	TAG ("\\+", ParamEnum.KEYWORD, null),
-	LEVEL ("level", ParamEnum.KEYWORD, null);
+	LEVEL ("level", ParamEnum.KEYWORD, null),
+	CONFIRM ("confirm", ParamEnum.KEYWORD, ParamEnum.ID);
 	
 	private final String regex;
 	private final ParamEnum commandKey;
