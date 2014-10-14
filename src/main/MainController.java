@@ -92,6 +92,11 @@ public class MainController {
 		});
 	}
 
+	public void handleUserIncrementalInput(){
+		String userInput = userInputField.getText();
+		System.out.println(userInput);
+	}
+
 	public void handleUserInput() {
 		CommandParser commandParser = new CommandParser();
 		String userInput = userInputField.getText();
