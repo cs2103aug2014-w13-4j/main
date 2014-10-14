@@ -95,9 +95,8 @@ public class LogicApi {
 				return null;
 			case SEARCH:
 				return logic.search(param);
-				/**
-				 * case CONFIRM: return confirm(command);
-				 **/
+			case CONFIRM:
+				return logic.confirm(param);
 			default:
 				throw new InvalidInputException(INVALID_COMMAND_MESSAGE);
 			}

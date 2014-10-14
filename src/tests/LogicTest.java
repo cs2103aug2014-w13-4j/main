@@ -144,10 +144,8 @@ public class LogicTest {
 		Feedback feedback = (Feedback) display.invoke(logicObject,
 				displayCommand.getParam());
 		assertEquals("Task length is correct", 2, feedback.getTaskList().size());
-		assertEquals("Task 1 is correct", "first", feedback.getTaskList()
-				.get(0).getName());
-		assertEquals("Task 2 is correct", "second thing", feedback
-				.getTaskList().get(1).getName());
+		assertEquals("Task 1 is correct", "first", storageObject.getTask(0).getName());
+		assertEquals("Task 2 is correct", "second thing", storageObject.getTask(1).getName());
 		assertNull("Task Display is empty", feedback.getTaskDisplay());
 	}
 
@@ -156,7 +154,7 @@ public class LogicTest {
 		Command addCommand = parser
 				.parseCommand("Add CS2103T from 23.12.1992 due 23.12.2002 or due 8.10.2014");
 		Feedback feedback = logicApiObject.executeCommand(addCommand);
-		Task task = feedback.getTaskList().get(0);
+		Task task = storageObject.getTask(0);
 		assertEquals("Task name is correct", "CS2103T", task.getName());
 		assertTrue("Conditional dates are present", task.getConditionalDates()
 				.size() == 2);
@@ -190,8 +188,8 @@ public class LogicTest {
 		Task task = storageObject.getTask(0);
 		assertEquals("Task name is correct", "CS2103T", task.getName());
 		assertTrue("Task is confirmed", task.isConfirmed());
-		assertEquals("Confirmed start date is correct", task.getConditionalDates().get(0).getStartDate(), task.getDateStart());
-		assertEquals("Confirmed due date is correct", task.getConditionalDates().get(0).getStartDate(), task.getDateDue());
+		assertEquals("Confirmed start date is correct", task.getConditionalDates().get(1).getStartDate(), task.getDateStart());
+		assertEquals("Confirmed due date is correct", task.getConditionalDates().get(1).getDueDate(), task.getDateDue());
 		assertEquals("Second due date is correct", "8-10-2014 00:00", DateParser.parseCalendar(task.getConditionalDates().get(1).getDueDate()));
 	}
 

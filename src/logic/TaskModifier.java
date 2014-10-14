@@ -15,6 +15,7 @@ import exceptions.InvalidInputException;
 public class TaskModifier {
 	private static final String INVALID_CONDITIONAL_DATE_ID_MESSAGE = "The conditional date id is invalid.";
 	private static final int MIN_ID = 0;
+	private static final String INVALID_CONFIRMED_TASK_MESSAGE = "The task is already confirmed.";
 	
 	static void modifyTask(Hashtable<ParamEnum, ArrayList<String>> param,
 			Task task) throws InvalidDateFormatException {
@@ -57,12 +58,15 @@ public class TaskModifier {
 		if (isLessThanMinId(dateId) || hasNullConditionalDates(task)
 				|| isIdOutsideConditionalDatesRange(dateId, task)) {
 			throw new InvalidInputException(INVALID_CONDITIONAL_DATE_ID_MESSAGE);
+		} else if (task.isConfirmed()) {
+			throw new InvalidInputException(INVALID_CONFIRMED_TASK_MESSAGE);
 		} else {
 			StartDueDatePair conditionalDatesToConfirm = task
 					.getConditionalDates().get(dateId);
 			Calendar startDate = conditionalDatesToConfirm.getStartDate();
 			task.setDateStart(startDate);
-			Calendar dueDate = conditionalDatesToConfirm.getStartDate();
+			System.out.println ("Test:" + task.getDateStart() == null);
+			Calendar dueDate = conditionalDatesToConfirm.getDueDate();
 			task.setDateDue(dueDate);
 		}
 	}
