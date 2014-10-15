@@ -10,7 +10,7 @@ import java.util.Calendar;
 import java.util.Hashtable;
 
 import logic.Logic;
-import logic.LogicApi;
+import logic.LogicApi1;
 import logic.TaskModifier;
 import models.DateParser;
 import models.Command;
@@ -26,7 +26,7 @@ import storage.Storage;
 import command.CommandParser;
 
 public class LogicTest {
-	Class<LogicApi> logicApiClass = LogicApi.class;
+	Class<LogicApi1> logicApiClass = LogicApi1.class;
 	Class<Logic> logicClass = Logic.class;
 	Class<TaskModifier> taskModifierClass = TaskModifier.class;
 	Field logic = logicApiClass.getDeclaredField("logic");
@@ -34,7 +34,7 @@ public class LogicTest {
 	Method modifyTask = taskModifierClass.getDeclaredMethod("modifyTask",
 			Hashtable.class, Task.class);
 	Method display = logicClass.getDeclaredMethod("display", Hashtable.class);
-	LogicApi logicApiObject;
+	LogicApi1 logicApiObject;
 	Logic logicObject;
 	Storage storageObject;
 	CommandParser parser;
@@ -65,7 +65,7 @@ public class LogicTest {
 	@Before
 	public void getLogicAndStorage() throws IllegalArgumentException,
 			IllegalAccessException {
-		logicApiObject = new LogicApi();
+		logicApiObject = new LogicApi1();
 		logicApiObject.initialize();
 		logicObject = (Logic) logic.get(logicApiObject);
 		storageObject = (Storage) storage.get(logicObject);
