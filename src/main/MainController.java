@@ -17,8 +17,6 @@ import models.StartDueDatePair;
 import models.Task;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Observable;
 
 /**
  * Controller for the main GUI window.
@@ -140,14 +138,16 @@ public class MainController {
 		setLabelValueInGui(priorityLevelLabelValue, (taskToDisplay.getPriorityLevel() == null ? null : taskToDisplay.getPriorityLevel().name()));
 		setLabelValueInGui(noteLabelValue, taskToDisplay.getNote());
 
-		// TODO: Fix and refactor
-		ArrayList<StartDueDatePair> cd = taskToDisplay.getConditionalDates();
-		String listcd = "";
-		if (cd != null){
-			for (StartDueDatePair sddp : cd){
-				listcd += DateParser.parseCalendar(sddp.getStartDate())+" - "+DateParser.parseCalendar(sddp.getDueDate())+"\n";
+		// Conditional dates require special treatment
+		ArrayList<StartDueDatePair> conditionalDateList = taskToDisplay.getConditionalDates();
+		String conditionalDates = "";
+		if (conditionalDateList != null){
+			for (StartDueDatePair conditionalDatePair : conditionalDateList){
+				conditionalDates += DateParser.parseCalendar(conditionalDatePair.getStartDate())
+						+ " - " + DateParser.parseCalendar(conditionalDatePair.getDueDate())
+						+ "\n";
 			}
-			setLabelValueInGui(conditionalDateLabelValue, listcd);
+		setLabelValueInGui(conditionalDateLabelValue, conditionalDates);
 		}
 
 	}

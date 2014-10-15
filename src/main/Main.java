@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 /**
@@ -14,9 +15,14 @@ public class Main extends Application{
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+		// Scale window to display's DPI. Should maintain a consistent size
+		// even on different displays. Method from:
+		// http://news.kynosarges.org/2013/08/09/javafx-dpi-scaling/
+		final double rem = Math.rint(new Text("").getLayoutBounds().getHeight());
+
 		Parent root = FXMLLoader.load(getClass().getResource("main.fxml"));
 		primaryStage.setTitle("Awesome Task Manager");
-		primaryStage.setScene(new Scene(root, 1024, 768));
+		primaryStage.setScene(new Scene(root, 80*rem, 60*rem));
 		primaryStage.show();
 	}
 
