@@ -111,7 +111,7 @@
                                                 <Label text="Description:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
                                                 <Label fx:id="noteLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                                                 <Label text="Conditional Dates:" GridPane.columnIndex="0" GridPane.rowIndex="7" />
-                                                <Label fx:id="conditionalDateLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="7" minHeight="60" minWidth="200"/>
+                                                <Label fx:id="conditionalDateLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="7" minHeight="60" minWidth="250"/>
                                             </children>
                                         </GridPane>
                                     </children>
