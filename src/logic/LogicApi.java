@@ -14,11 +14,11 @@ import exceptions.InvalidInputException;
 import exceptions.TaskNotFoundException;
 
 //TODO: Throw exceptions when mandatory fields are missing
-public class LogicApi1 {
+public class LogicApi {
 	Logic logic;
 	private static final String INVALID_COMMAND_MESSAGE = "The command is invalid.";
 
-	public LogicApi1() {
+	public LogicApi() {
 
 	}
 
