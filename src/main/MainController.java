@@ -9,7 +9,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import logic.Logic;
+import logic.LogicApi;
 import models.Command;
 import models.DateParser;
 import models.Feedback;
@@ -25,7 +25,7 @@ import java.util.Observable;
  * @author szhlibrary
  */
 public class MainController {
-	Logic logic;
+	LogicApi logic;
 
 	public TextField userInputField;
 	public TableView<Task> taskTableView;
@@ -62,7 +62,7 @@ public class MainController {
 	}
 
 	private Feedback initializeLogic() {
-		logic = new Logic();
+		logic = new LogicApi();
 		return logic.initialize();
 	}
 

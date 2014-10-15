@@ -13,19 +13,19 @@ import models.PriorityLevelEnum;
 public class Task {
 	private static final String MESSAGE_SEPARATOR = "\tT@T";
 
-	private int id;
-	private String name;
-	private Calendar dateDue;
-	private Calendar dateStart;
-	private Calendar dateEnd;
-	private PriorityLevelEnum priorityLevel;
-	private String note;
-	private ArrayList<String> tags;
-	private ArrayList<Integer> parentTasks;
-	private ArrayList<Integer> childTasks;
-	public TreeMap<TaskAttributeEnum, String> taskAttributes;
-	private ArrayList<StartDueDatePair> conditionalDates;
-	private boolean isDeleted;
+	private int id = -1;
+	private String name = null;
+	private Calendar dateDue = null;
+	private Calendar dateStart = null;
+	private Calendar dateEnd = null;
+	private PriorityLevelEnum priorityLevel = null;
+	private String note = null;
+	private ArrayList<String> tags = null;
+	private ArrayList<Integer> parentTasks = null;
+	private ArrayList<Integer> childTasks = null;
+	public TreeMap<TaskAttributeEnum, String> taskAttributes = null;
+	private ArrayList<StartDueDatePair> conditionalDates = null;
+	private boolean isDeleted = false;
 
 	public Task() {
 		taskAttributes = new TreeMap<TaskAttributeEnum, String>();
@@ -202,7 +202,7 @@ public class Task {
 
 	public boolean isConfirmed() {
 		if (conditionalDates != null) {
-			return (dateStart != null || dateEnd != null);
+			return (dateStart != null || dateDue != null);
 		} else {
 			return true;
 		}

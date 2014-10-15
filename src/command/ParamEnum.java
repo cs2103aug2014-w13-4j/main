@@ -12,6 +12,7 @@ public enum ParamEnum {
 	OR_FROM ("or from", "(?<from>\\S+)( due)?(?<due>.*)?$", "from", "due"),
 	OR_DUE ("or due", "(?<due>.*)(?<from>.*?)?$", "from", "due"),
 	NAME ("name", ""),
+	ID ("id", ""),
 	STATUS ("status", "");
 	
 	private final String regex;

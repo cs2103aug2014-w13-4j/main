@@ -1,24 +1,28 @@
 package logic;
 
-import interfaces.ILogic;
-
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Hashtable;
 
 import storage.Storage;
+import command.CommandParser;
+import command.ParamEnum;
 import models.Command;
 import models.Feedback;
+import models.StartDueDatePair;
 import models.Task;
 import command.*;
 import exceptions.FileFormatNotSupportedException;
 import exceptions.InvalidDateFormatException;
 import exceptions.InvalidInputException;
 import exceptions.TaskNotFoundException;
+import models.Feedback;
+import models.Task;
+
 
 //TODO: Throw exceptions when mandatory fields are missing
-public class Logic implements ILogic {
-	private static final int NEW_ID = -1;
+public class Logic {
 	private static final String ADD_MESSAGE = "%1$s is successfully added.";
 	private static final String DELETE_MESSAGE = "%1$s is successfully deleted";
 	private static final String EDIT_MESSAGE = "%1$s is successfully edited.";
@@ -26,45 +30,16 @@ public class Logic implements ILogic {
 	private static final String SEARCH_MESSAGE = "%1$s results are found.";
 	private static final String ERROR_STORAGE_MESSAGE = "There is an error loading the storage.";
 	private static final String DISPLAY_MESSAGE = "All tasks are displayed.";
-	private static final String INVALID_COMMAND_MESSAGE = "The command is invalid.";
 	private static final String INVALID_INDEX_MESSAGE = "The index is invalid.";
 	private static final String ERROR_ALREADY_DELETED_MESSAGE = "Task %1$s is already deleted.";
+	private static final String CONFIRM_MESSAGE = "%1$s is marked as confirmed.";
+	private static final String INVALID_COMMAND_MESSAGE = "The command is invalid.";
 	Storage storage = null;
 
-	public Logic() {
-
+	Logic() {
 	}
 
-	/**
-	 * constructor This constructor follows the singleton pattern It can only be
-	 * called with in the current class (Logic.getInstance()) This is to ensure
-	 * that only there is exactly one instance of Logic class
-	 * 
-	 * @throws FileFormatNotSupportedException
-	 *             , IOException
-	 * @return Logic object
-	 * 
-	 *         To be implemented in the future
-	 */
-	/**
-	 * private static Logic instance = null;
-	 * 
-	 * private Logic() {
-	 * 
-	 * }
-	 * 
-	 * public static Logic getInstance() { if (instance == null) { instance =
-	 * new Logic(); } return instance; }
-	 **/
-
-	/**
-	 * Initialises the logic object by creating its corresponding storage object
-	 * It also catches the exceptions that can be thrown
-	 * 
-	 * @return the feedback indicating whether the storage has been successfully
-	 *         loaded.
-	 */
-	public Feedback initialize() {
+	Feedback initialize() {
 		try {
 			storage = new Storage();
 			return displayAll();
@@ -73,57 +48,8 @@ public class Logic implements ILogic {
 			return createTaskListFeedback(ERROR_STORAGE_MESSAGE, null);
 		}
 	}
-
-	/**
-	 * Main function to call to execute command
-	 * 
-	 * @param the
-	 *            command created by the commandParser
-	 * @return the feedback (tasklist and message) corresponding to the
-	 *         particular command
-	 * @throws InvalidDateFormatException
-	 * @throws IOException
-	 * @throws TaskNotFoundException
-	 * @throws InvalidInputException
-	 */
-	public Feedback executeCommand(Command command)
-			throws TaskNotFoundException, IOException,
-			InvalidDateFormatException, InvalidInputException {
-		if (storage == null) {
-			return createTaskListFeedback(ERROR_STORAGE_MESSAGE, null);
-		} else {
-			CommandEnum commandType = command.getCommand();
-			Hashtable<ParamEnum, ArrayList<String>> param = command.getParam();
-			switch (commandType) {
-			case ADD:
-				return add(param);
-			case DELETE:
-				return delete(param);
-			case UPDATE:
-				return update(param);
-			case UNDO:
-				return null;
-			case FILTER:
-				return null;
-			case DISPLAY:
-				return display(param);
-			case DONE:
-				return complete(param);
-			case LEVEL:
-				return null;
-			case SEARCH:
-				return search(param);
-				/**
-				 * case CONFIRM: return confirm(command);
-				 **/
-			default:
-				throw new InvalidInputException(INVALID_COMMAND_MESSAGE);
-			}
-		}
-	}
-	
-	
-	private Feedback display(Hashtable<ParamEnum, ArrayList<String>> param) throws NumberFormatException, TaskNotFoundException {
+	Feedback display(Hashtable<ParamEnum, ArrayList<String>> param)
+			throws NumberFormatException, TaskNotFoundException {
 		String idString = param.get(ParamEnum.KEYWORD).get(0);
 		if (idString.isEmpty()) {
 			return displayAll();
@@ -133,38 +59,48 @@ public class Logic implements ILogic {
 		}
 	}
 
-	private Feedback displayTask(int id) throws TaskNotFoundException {
-		Task task = storage.getTask(id);
-		if (task.isDeleted()) {
-			throw new TaskNotFoundException(createMessage(ERROR_ALREADY_DELETED_MESSAGE, Integer.toString(id)));
+	Feedback confirm(Hashtable<ParamEnum, ArrayList<String>> param)
+			throws InvalidInputException, TaskNotFoundException, IOException {
+		if (!param.containsKey(ParamEnum.KEYWORD)
+				|| !param.containsKey(ParamEnum.ID)) {
+			throw new InvalidInputException(INVALID_COMMAND_MESSAGE);
+		} else {
+			int taskId = getTaskId(param);
+			String dateIdString = param.get(ParamEnum.ID).get(0);
+			int dateId = Integer.parseInt(dateIdString);
+			Task task = storage.getTask(taskId);
+			TaskModifier.confirmTask(dateId, task);
+			storage.writeTaskToFile(task);
+			String taskName = task.getName();
+			return createTaskAndTaskListFeedback(
+					createMessage(CONFIRM_MESSAGE, taskName),
+					storage.getAllTasks(), task);
 		}
-		return createTaskFeedback(createMessage(DISPLAY_MESSAGE, null), task);
-	}
-
-	private Feedback confirm(Command command) {
-		return null;
 	}
 
 	/**
-	 * Displays all the tasks in the file
-	 * 
+	 * Display all tasks in the list
 	 * @return feedback containing all the tasks in the file, and the message.
 	 */
 	private Feedback displayAll() {
 		ArrayList<Task> taskList = storage.getAllTasks();
-		return createTaskListFeedback(createMessage(DISPLAY_MESSAGE, null), taskList);
+		return createTaskListFeedback(createMessage(DISPLAY_MESSAGE, null),
+				taskList);
 	}
 
 	/**
-	 * Search for tasks that contain the keyword in the name, description or tags
+	 * Search for tasks that contain the keyword in the name, description or
+	 * tags
 	 * 
-	 * @param command: the command created by CommandParser
+	 * @param command
+	 *            : the command created by CommandParser
 	 * @return feedback containing all the tasks in the file, and the message
 	 */
 
-	private Feedback search(Hashtable<ParamEnum, ArrayList<String>> param) {
+	Feedback search(Hashtable<ParamEnum, ArrayList<String>> param) {
 		ArrayList<Task> taskList = storage.searchTask(param);
-		return createTaskListFeedback(createMessage(SEARCH_MESSAGE, String.valueOf(taskList.size())),
+		return createTaskListFeedback(
+				createMessage(SEARCH_MESSAGE, String.valueOf(taskList.size())),
 				taskList);
 	}
 
@@ -179,7 +115,7 @@ public class Logic implements ILogic {
 	 * @throws IOException
 	 * @throws InvalidDateFormatException
 	 */
-	private Feedback complete(Hashtable<ParamEnum, ArrayList<String>> param)
+	Feedback complete(Hashtable<ParamEnum, ArrayList<String>> param)
 			throws TaskNotFoundException, IOException,
 			InvalidDateFormatException {
 		int id = getTaskId(param);
@@ -188,7 +124,8 @@ public class Logic implements ILogic {
 		String name = task.getName();
 		storage.writeTaskToFile(task);
 		ArrayList<Task> taskList = storage.getAllTasks();
-		return createTaskListFeedback(createMessage(COMPLETE_MESSAGE, name), taskList);
+		return createTaskListFeedback(createMessage(COMPLETE_MESSAGE, name),
+				taskList);
 	}
 
 	/**
@@ -202,16 +139,16 @@ public class Logic implements ILogic {
 	 * @throws IOException
 	 * @throws InvalidDateFormatException
 	 */
-	private Feedback add(Hashtable<ParamEnum, ArrayList<String>> param)
+	Feedback add(Hashtable<ParamEnum, ArrayList<String>> param)
 			throws TaskNotFoundException, IOException,
 			InvalidDateFormatException {
 		Task newTask = new Task();
-		newTask.setId(NEW_ID);
 		TaskModifier.modifyTask(param, newTask);
 		storage.writeTaskToFile(newTask);
 		String name = newTask.getName();
 		ArrayList<Task> taskList = storage.getAllTasks();
-		return createTaskListFeedback(createMessage(ADD_MESSAGE, name), taskList);
+		return createTaskListFeedback(createMessage(ADD_MESSAGE, name),
+				taskList);
 	}
 
 	/**
@@ -224,7 +161,7 @@ public class Logic implements ILogic {
 	 * @throws TaskNotFoundException
 	 * @throws IOException
 	 */
-	private Feedback delete(Hashtable<ParamEnum, ArrayList<String>> param)
+	Feedback delete(Hashtable<ParamEnum, ArrayList<String>> param)
 			throws TaskNotFoundException, IOException {
 		int id = getTaskId(param);
 		Task task = storage.getTask(id);
@@ -232,7 +169,8 @@ public class Logic implements ILogic {
 		TaskModifier.deleteTask(task);
 		storage.writeTaskToFile(task);
 		ArrayList<Task> taskList = storage.getAllTasks();
-		return createTaskListFeedback(createMessage(DELETE_MESSAGE, name), taskList);
+		return createTaskListFeedback(createMessage(DELETE_MESSAGE, name),
+				taskList);
 	}
 
 	/**
@@ -247,7 +185,7 @@ public class Logic implements ILogic {
 	 * @throws IOException
 	 * @throws InvalidDateFormatException
 	 */
-	private Feedback update(Hashtable<ParamEnum, ArrayList<String>> param)
+	Feedback update(Hashtable<ParamEnum, ArrayList<String>> param)
 			throws TaskNotFoundException, IOException,
 			InvalidDateFormatException {
 		int id = getTaskId(param);
@@ -256,19 +194,35 @@ public class Logic implements ILogic {
 		storage.writeTaskToFile(task);
 		String name = task.getName();
 		ArrayList<Task> taskList = storage.getAllTasks();
-		return createTaskListFeedback(createMessage(EDIT_MESSAGE, name), taskList);
+		return createTaskListFeedback(createMessage(EDIT_MESSAGE, name),
+				taskList);
 	}
 
-	private static String createMessage(String message, String variableText1) {
+	private Feedback displayTask(int id) throws TaskNotFoundException {
+		Task task = storage.getTask(id);
+		if (task.isDeleted()) {
+			throw new TaskNotFoundException(createMessage(
+					ERROR_ALREADY_DELETED_MESSAGE, Integer.toString(id)));
+		}
+		return createTaskFeedback(createMessage(DISPLAY_MESSAGE, null), task);
+	}
+
+	private String createMessage(String message, String variableText1) {
 		return String.format(message, variableText1);
 	}
 
-	private Feedback createTaskListFeedback(String message, ArrayList<Task> taskList) {
+	private Feedback createTaskListFeedback(String message,
+			ArrayList<Task> taskList) {
 		return new Feedback(message, taskList, null);
 	}
-	
+
 	private Feedback createTaskFeedback(String message, Task task) {
 		return new Feedback(message, null, task);
+	}
+
+	private Feedback createTaskAndTaskListFeedback(String message,
+			ArrayList<Task> taskList, Task task) {
+		return new Feedback(message, taskList, task);
 	}
 
 	private int getTaskId(Hashtable<ParamEnum, ArrayList<String>> param) {
