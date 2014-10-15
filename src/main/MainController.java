@@ -48,7 +48,6 @@ public class MainController {
 
 	public void initialize(){
 		System.out.println("Initializing...");
-		CommandParser commandParser = new CommandParser();
 		try {
 			Feedback displayAllActiveTasks = initializeLogic();
 			initializeGuiTaskList(displayAllActiveTasks);
