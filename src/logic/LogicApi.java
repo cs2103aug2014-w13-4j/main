@@ -74,44 +74,87 @@ public class LogicApi {
 		} else {
 			CommandEnum commandType = command.getCommand();
 			Hashtable<ParamEnum, ArrayList<String>> param = command.getParam();
+			assert param.containsKey(ParamEnum.KEYWORD);
 			switch (commandType) {
 			case ADD:
-				if (param.containsKey(ParamEnum.NAME)) {
+				assert hasNameParam(param);
+				if (!isNameParamEmpty(param)) {
 					return logic.add(param);
 				}
+				break;
 			case DELETE:
-				if (param.containsKey(ParamEnum.KEYWORD)) {
-					return logic.delete(param);
+				if (!isKeywordParamEmpty(param)) {
+				return logic.delete(param);
 				}
+				break;
 			case UPDATE:
-				if (param.containsKey(ParamEnum.KEYWORD)) {
-					return logic.update(param);
+				if (!isKeywordParamEmpty(param)) {
+				return logic.update(param);
 				}
+				break;
 			case UNDO:
 				return null;
 			case FILTER:
-				if (param.containsKey(ParamEnum.STATUS)) {
+				if (hasStatusParam(param)) {
 					return logic.filter(param);
 				}
+				break;
 			case DISPLAY:
 				return logic.display(param);
 			case DONE:
-				if (param.containsKey(ParamEnum.KEYWORD)) {
+				if (!isKeywordParamEmpty(param)) {
 					return logic.complete(param);
 				}
+				break;
 			case LEVEL:
 				return null;
 			case SEARCH:
-				return logic.search(param);
+				if (!isKeywordParamEmpty(param) || hasNameParam(param) || hasNoteParam(param) || hasTagParam(param)) {
+					return logic.search(param);
+				}
+				break;
 			case CONFIRM:
-				if (param.containsKey(ParamEnum.KEYWORD)
-						&& param.containsKey(ParamEnum.ID)) {
+				if (!isKeywordParamEmpty(param) && hasIdParam(param)) {
 					return logic.confirm(param);
 				}
+				break;
+			case TAG:
+				break;
 			default:
-				throw new InvalidInputException(INVALID_COMMAND_MESSAGE);
+				break;
 			}
+			throw new InvalidInputException(INVALID_COMMAND_MESSAGE);
 		}
+	}
+
+	private boolean hasStatusParam(Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.containsKey(ParamEnum.STATUS);
+	}
+
+	private boolean hasTagParam(Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.containsKey(ParamEnum.TAG);
+	}
+
+	private boolean hasNoteParam(Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.containsKey(ParamEnum.NOTE);
+	}
+
+	private boolean hasNameParam(Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.containsKey(ParamEnum.NAME);
+	}
+
+	private boolean isNameParamEmpty(
+			Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.get(ParamEnum.NAME).get(0).isEmpty();
+	}
+
+	private boolean hasIdParam(Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.containsKey(ParamEnum.ID);
+	}
+
+	private boolean isKeywordParamEmpty(
+			Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.get(ParamEnum.KEYWORD).get(0).isEmpty();
 	}
 
 }
