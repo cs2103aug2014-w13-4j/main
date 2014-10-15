@@ -1,7 +1,5 @@
 package logic;
 
-import interfaces.ILogic;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -26,20 +24,20 @@ public class LogicApi {
 	 * constructor This constructor follows the singleton pattern It can only be
 	 * called with in the current class (Logic.getInstance()) This is to ensure
 	 * that only there is exactly one instance of Logic class
-	 * 
+	 *
 	 * @throws FileFormatNotSupportedException
 	 *             , IOException
 	 * @return Logic object
-	 * 
+	 *
 	 *         To be implemented in the future
 	 */
 	/**
 	 * private static Logic instance = null;
-	 * 
+	 *
 	 * private Logic() {
-	 * 
+	 *
 	 * }
-	 * 
+	 *
 	 * public static Logic getInstance() { if (instance == null) { instance =
 	 * new Logic(); } return instance; }
 	 **/
@@ -47,7 +45,7 @@ public class LogicApi {
 	/**
 	 * Initialises the logic object by creating its corresponding storage object
 	 * It also catches the exceptions that can be thrown
-	 * 
+	 *
 	 * @return the feedback indicating whether the storage has been successfully
 	 *         loaded.
 	 */
@@ -58,7 +56,7 @@ public class LogicApi {
 
 	/**
 	 * Main function to call to execute command
-	 * 
+	 *
 	 * @param the
 	 *            command created by the commandParser
 	 * @return the feedback (tasklist and message) corresponding to the
@@ -78,25 +76,38 @@ public class LogicApi {
 			Hashtable<ParamEnum, ArrayList<String>> param = command.getParam();
 			switch (commandType) {
 			case ADD:
-				return logic.add(param);
+				if (param.containsKey(ParamEnum.NAME)) {
+					return logic.add(param);
+				}
 			case DELETE:
-				return logic.delete(param);
+				if (param.containsKey(ParamEnum.KEYWORD)) {
+					return logic.delete(param);
+				}
 			case UPDATE:
-				return logic.update(param);
+				if (param.containsKey(ParamEnum.KEYWORD)) {
+					return logic.update(param);
+				}
 			case UNDO:
 				return null;
 			case FILTER:
-				return null;
+				if (param.containsKey(ParamEnum.STATUS)) {
+					return logic.filter(param);
+				}
 			case DISPLAY:
 				return logic.display(param);
 			case DONE:
-				return logic.complete(param);
+				if (param.containsKey(ParamEnum.KEYWORD)) {
+					return logic.complete(param);
+				}
 			case LEVEL:
 				return null;
 			case SEARCH:
 				return logic.search(param);
 			case CONFIRM:
-				return logic.confirm(param);
+				if (param.containsKey(ParamEnum.KEYWORD)
+						&& param.containsKey(ParamEnum.ID)) {
+					return logic.confirm(param);
+				}
 			default:
 				throw new InvalidInputException(INVALID_COMMAND_MESSAGE);
 			}
