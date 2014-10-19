@@ -22,14 +22,7 @@ import storage.taskStorage.TaskStorage;
 
 public class TaskStorageTest {
 	private static final int ID_FOR_NEW_TASK = -1;
-
-	@Before
-	public void clearData() throws FileNotFoundException {
-		PrintWriter writer = new PrintWriter("taskStorage.data");
-		writer.print("");
-		writer.close();
-	}
-	@Test
+	
     private Task createTaskForTest(int id, String name, int priorityLevel, String note, boolean isDeleted, ArrayList<StartDueDatePair> datePair) {
         Task task = new Task();
         task.setId(id);
@@ -40,16 +33,10 @@ public class TaskStorageTest {
         task.setConditionalDates(datePair);
         return task;
     }
-
-
+    
 	@Test
 	public void testCanAddAndUpdateTask() {
 		try {
-			// clear the file before testing
-			/*
-
-            */
-
 			TaskStorage taskStorage = new TaskStorage("taskStorage.data");
             ArrayList<StartDueDatePair> datePairArrayList = new ArrayList<StartDueDatePair>();
             StartDueDatePair datePairA = new StartDueDatePair(DateParser.parseString("23.10.2010"), DateParser.parseString("24.10.2010"));
