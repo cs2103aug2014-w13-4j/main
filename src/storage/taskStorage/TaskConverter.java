@@ -1,8 +1,6 @@
 package storage.taskStorage;
 
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -28,7 +26,6 @@ class TaskConverter {
     private static final String MESSAGE_SEPARATOR_FOR_ATTRIBUTE = "\tT@T";    
     private static final String MESSAGE_NULL = "";
 
-    private static final int RESULT_THRESHOLD = -1;
 
     /**
      * Converts a task to a string
@@ -208,7 +205,7 @@ class TaskConverter {
     private static String arrayListToString(ArrayList<String> stringArray) {
         StringBuilder stringBuilder = new StringBuilder();
         for (String str : stringArray) {
-            stringBuilder.append(str + MESSAGE_SEPARATOR);
+            stringBuilder.append(str + MESSAGE_SEPARATOR_FOR_ATTRIBUTE);
         }
         return stringBuilder.toString();
     }

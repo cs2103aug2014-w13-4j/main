@@ -2,9 +2,6 @@ package tests;
 
 import static org.junit.Assert.*;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
@@ -14,10 +11,8 @@ import models.StartDueDatePair;
 import models.Task;
 import command.ParamEnum;
 
-import org.junit.Before;
 import org.junit.Test;
 
-import exceptions.FileFormatNotSupportedException;
 import storage.taskStorage.TaskStorage;
 
 public class TaskStorageTest {
@@ -51,7 +46,6 @@ public class TaskStorageTest {
             taskStorage.writeTaskToFile(task);
             assertEquals(task, taskStorage.getTask(0));
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -68,7 +62,6 @@ public class TaskStorageTest {
 					taskStorage.getAllTasks());
 			assertEquals(searchResult.size(), taskStorage.getAllTasks().size());
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
