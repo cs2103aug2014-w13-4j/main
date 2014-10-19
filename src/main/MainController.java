@@ -17,8 +17,6 @@ import models.StartDueDatePair;
 import models.Task;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Observable;
 
 /**
  * Controller for the main GUI window.
@@ -50,7 +48,6 @@ public class MainController {
 
 	public void initialize(){
 		System.out.println("Initializing...");
-		CommandParser commandParser = new CommandParser();
 		try {
 			Feedback displayAllActiveTasks = initializeLogic();
 			initializeGuiTaskList(displayAllActiveTasks);
@@ -144,19 +141,22 @@ public class MainController {
 		setLabelValueInGui(endDateLabelValue, DateParser.parseCalendar(taskToDisplay.getDateEnd()));
 		setLabelValueInGui(priorityLevelLabelValue, (taskToDisplay.getPriorityLevel() == null ? null : taskToDisplay.getPriorityLevel().name()));
 		setLabelValueInGui(noteLabelValue, taskToDisplay.getNote());
+		updateTaskPanelForConditionalDates(taskToDisplay);
+	}
 
-		// Conditional dates require special treatment
+	private void updateTaskPanelForConditionalDates(Task taskToDisplay){
 		ArrayList<StartDueDatePair> conditionalDateList = taskToDisplay.getConditionalDates();
 		String conditionalDates = "";
-		if (conditionalDateList != null){
-			for (StartDueDatePair conditionalDatePair : conditionalDateList){
-				conditionalDates += DateParser.parseCalendar(conditionalDatePair.getStartDate())
+		if (conditionalDateList != null) {
+			int dateId = 0;
+			for (StartDueDatePair conditionalDatePair : conditionalDateList) {
+				conditionalDates += dateId + ": " + DateParser.parseCalendar(conditionalDatePair.getStartDate())
 						+ " - " + DateParser.parseCalendar(conditionalDatePair.getDueDate())
 						+ "\n";
+				dateId++;
 			}
-		setLabelValueInGui(conditionalDateLabelValue, conditionalDates);
+			setLabelValueInGui(conditionalDateLabelValue, conditionalDates);
 		}
-
 	}
 
 	private void setLabelValueInGui(StringProperty labelValue, String value){

@@ -10,7 +10,7 @@ import exceptions.InvalidDateFormatException;
 public class DateParser {
 
 	private static final String[] VALID_DATE_FORMATS = { "dd.MM.yyyy",
-			"dd-MM-yyyy hh:mm", "dd-MM-yyyy" };
+			"dd-MM-yyyy HH:mm", "dd-MM-yyyy" };
 	private static final String STORE_DATE_FORMAT = "%d-%d-%d %02d:%02d";
 
 	/**

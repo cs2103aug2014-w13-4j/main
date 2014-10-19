@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Hashtable;
 
@@ -153,7 +154,7 @@ public class LogicTest {
 	public final void testConditionalTasks() throws Exception {
 		Command addCommand = parser
 				.parseCommand("Add CS2103T from 23.12.1992 due 23.12.2002 or due 8.10.2014");
-		Feedback feedback = logicApiObject.executeCommand(addCommand);
+		 logicApiObject.executeCommand(addCommand);
 		Task task = storageObject.getTask(0);
 		assertEquals("Task name is correct", "CS2103T", task.getName());
 		assertTrue("Conditional dates are present", task.getConditionalDates()
@@ -191,6 +192,25 @@ public class LogicTest {
 		assertEquals("Confirmed start date is correct", task.getConditionalDates().get(1).getStartDate(), task.getDateStart());
 		assertEquals("Confirmed due date is correct", task.getConditionalDates().get(1).getDueDate(), task.getDateDue());
 		assertEquals("Second due date is correct", "8-10-2014 00:00", DateParser.parseCalendar(task.getConditionalDates().get(1).getDueDate()));
+	}
+	
+	@Test
+	public final void testFilterTask() throws Exception {
+		CommandParser parser = new CommandParser();
+		Command addCommand = parser
+				.parseCommand("Add completed task from 23.12.1992 due 23.12.2002");
+		logicApiObject.executeCommand(addCommand);
+		Command completeCommand = parser.parseCommand("done 0");
+		logicApiObject.executeCommand(completeCommand);
+		addCommand = parser
+				.parseCommand("Add nocompleted task");
+		logicApiObject.executeCommand(addCommand);
+		Command filterCommand = parser.parseCommand("filter status completed");
+		Feedback feedback = logicApiObject.executeCommand(filterCommand);
+		ArrayList<Task> taskList = feedback.getTaskList();
+		assertEquals("Only 1 task is shown", 1, taskList.size());
+		assertEquals("Completed task is shown", "completed task", taskList.get(0).getName());
+		
 	}
 
 }

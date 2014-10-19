@@ -14,7 +14,7 @@ import java.util.Calendar;
  * the methods provided by the models.DateParser class.
  * @author szhlibrary
  */
-public class TaskDateFactory<Task,Calendar>
+public class TaskDateFactory<T,C>
 		implements Callback<TableColumn<Task, Calendar>, TableCell<Task,java.util.Calendar>> {
 
 	@Override
@@ -23,12 +23,21 @@ public class TaskDateFactory<Task,Calendar>
 			@Override
 			public void updateItem(java.util.Calendar item, boolean empty) {
 				super.updateItem(item, empty);
-				if (item == null || empty) {
-					setText(null);
-					setStyle("");
-				} else {
-					// Format date.
-					setText(DateParser.parseCalendar(item));
+
+				Task task = null;
+				if (getTableRow() != null) {
+					task = (Task) getTableRow().getItem();
+				}
+
+				if (task != null){
+					if (task.isConfirmed() && item == null || empty){
+						setText("-");
+						setStyle("");
+					} else if (task.isConfirmed()){
+						setText(DateParser.parseCalendar(item));
+					} else {
+						setText("Unconfirmed");
+					}
 				}
 			}
 		};
