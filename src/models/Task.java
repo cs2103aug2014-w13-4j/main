@@ -6,11 +6,10 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.TreeMap;
 
-import exceptions.FileFormatNotSupportedException;
 import exceptions.InvalidDateFormatException;
 import models.PriorityLevelEnum;
 
-public class Task implements Cloneable {
+public class Task {
 	private static final String MESSAGE_SEPARATOR = "\tT@T";
 
 	private int id = -1;
