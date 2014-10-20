@@ -10,7 +10,7 @@ import exceptions.FileFormatNotSupportedException;
 import exceptions.InvalidDateFormatException;
 import models.PriorityLevelEnum;
 
-public class Task {
+public class Task implements Cloneable {
 	private static final String MESSAGE_SEPARATOR = "\tT@T";
 
 	private int id = -1;
@@ -38,7 +38,11 @@ public class Task {
 	public TreeMap<TaskAttributeEnum, String> getTaskAttributes() {
 		return taskAttributes;
 	}
-
+	
+	 /**
+	  * Alternative style for a copy constructor, using a static newInstance
+	  * method.
+	  */
 	public void setTaskAttributes(
 			TreeMap<TaskAttributeEnum, String> taskAttributes)
 			throws ParseException, InvalidDateFormatException {

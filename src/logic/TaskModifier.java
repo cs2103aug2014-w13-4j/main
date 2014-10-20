@@ -176,4 +176,22 @@ public class TaskModifier {
 		return dateId < MIN_ID;
 	}
 
+	public static void undeleteTask(Task task) {
+		assert(task.isDeleted());
+		task.setDeleted(false);
+		
+	}
+
+	public static void uncompleteTask(Task task) {
+		assert(task.getDateEnd() != null);
+		task.setDateEnd(null);
+	}
+
+	public static void unconfirmTask(Task task) {
+		assert (task.getDateStart() != null || task.getDateDue() != null);
+		task.setDateStart(null);
+		task.setDateDue(null);
+		
+	}
+
 }

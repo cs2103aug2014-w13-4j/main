@@ -7,6 +7,7 @@ import java.util.Hashtable;
 import models.Command;
 import models.Feedback;
 import command.*;
+import exceptions.HistoryNotFoundException;
 import exceptions.InvalidDateFormatException;
 import exceptions.InvalidInputException;
 import exceptions.TaskNotFoundException;
@@ -65,10 +66,11 @@ public class LogicApi {
 	 * @throws IOException
 	 * @throws TaskNotFoundException
 	 * @throws InvalidInputException
+	 * @throws HistoryNotFoundException 
 	 */
 	public Feedback executeCommand(Command command)
 			throws TaskNotFoundException, IOException,
-			InvalidDateFormatException, InvalidInputException {
+			InvalidDateFormatException, InvalidInputException, HistoryNotFoundException {
 		if (logic.storage == null) {
 			throw new IOException();
 		} else {
@@ -93,7 +95,7 @@ public class LogicApi {
 				}
 				break;
 			case UNDO:
-				return null;
+				return logic.undo();
 			case FILTER:
 				if (hasStatusParam(param)) {
 					return logic.filter(param);
