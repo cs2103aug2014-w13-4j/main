@@ -8,6 +8,7 @@ import java.util.Hashtable;
 import command.ParamEnum;
 
 import exceptions.FileFormatNotSupportedException;
+import exceptions.InvalidDateFormatException;
 import exceptions.TaskNotFoundException;
 import storage.tagStorage.TagStorage;
 import storage.taskStorage.TaskStorage;
@@ -45,12 +46,6 @@ public class Storage {
 		tagFile.updateTagToFile(tags);
 	}
 
-	// Delete a task from file
-	// delete this function later
-	public void deleteTaskFromFile(int taskID) throws TaskNotFoundException, IOException {
-		taskFile.deleteTaskFromFile(taskID);
-	}
-
 	// Get a task by task ID
 	public Task getTask(int taskID) throws TaskNotFoundException {
 		return taskFile.getTask(taskID);
@@ -76,14 +71,9 @@ public class Storage {
 		return tagFile.getAllTags();
 	}
 
-	// Search a list of tasks with certain tags
-	public ArrayList<Task> searchTask(ArrayList<String> tags) {
-		return taskFile.searchTask(tags, getAllTasks());
-	}
-
 	// Search a list of tasks with certain key words
 	// Assume keywords of name and note is only one string
-	public ArrayList<Task> searchTask(Hashtable<ParamEnum, ArrayList<String>> keyWordTable) {
+	public ArrayList<Task> searchTask(Hashtable<ParamEnum, ArrayList<String>> keyWordTable) throws InvalidDateFormatException {
 		return taskFile.searchTask(keyWordTable, getAllTasks());
 	}
 }

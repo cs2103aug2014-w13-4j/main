@@ -262,5 +262,4 @@ class TaskConverter {
         }
         return datePairArrayList;
     }
-
 }
