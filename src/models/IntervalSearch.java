@@ -5,7 +5,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 
 
-public class intervalSearch {
+public class IntervalSearch {
 
     public static class DateRange implements Comparable<DateRange> {
         public long startDate;
