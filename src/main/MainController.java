@@ -113,6 +113,13 @@ public class MainController {
 
 	public void handleUserIncrementalInput(){
 		String userInput = userInputField.getText();
+		if (userInput.split(" ")[0].equalsIgnoreCase(String.valueOf(CommandEnum.SEARCH))){
+			try{
+				executeCommand();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		System.out.println(userInput);
 	}
 
