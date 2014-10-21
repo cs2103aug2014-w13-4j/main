@@ -18,21 +18,21 @@ public class LogicUndo {
 	 *             , IOException
 	 * @return Logic object
 	 *
-	 *         To be implemented in the future
+	 *         To be implemented in the future private static LogicUndo instance
+	 *         = null; private Stack<History> undoStack;
+	 * 
+	 *         private LogicUndo() { undoStack = new Stack<History>();
+	 * 
+	 *         }
+	 * 
+	 * 
+	 *         public static LogicUndo getInstance() { if (instance == null) {
+	 *         instance = new LogicUndo(); } return instance; }
 	 */
-	private static LogicUndo instance = null;
 	private Stack<History> undoStack;
 
-	private LogicUndo() {
+	LogicUndo() {
 		undoStack = new Stack<History>();
-
-	}
-
-	public static LogicUndo getInstance() {
-		if (instance == null) {
-			instance = new LogicUndo();
-		}
-		return instance;
 	}
 
 	/**
@@ -61,8 +61,8 @@ public class LogicUndo {
 	}
 
 	/**
-	 * Creates a history object containing the undeleted version of the task, and
-	 * stores it in the stack
+	 * Creates a history object containing the undeleted version of the task,
+	 * and stores it in the stack
 	 * 
 	 * @param task
 	 *            : the task after it was deleted
@@ -74,10 +74,11 @@ public class LogicUndo {
 	}
 
 	/**
-	 * Creates a history object containing the uncompleted version of the task, and
-	 * stores it in the stack
+	 * Creates a history object containing the uncompleted version of the task,
+	 * and stores it in the stack
 	 * 
-	 * @param task : the task after it was completed. 
+	 * @param task
+	 *            : the task after it was completed.
 	 */
 	void pushCompleteCommandToHistory(Task task) {
 		TaskModifier.uncompleteTask(task);
@@ -108,7 +109,7 @@ public class LogicUndo {
 	 * @throws HistoryNotFoundException
 	 *             when the stack is empty
 	 */
-	History getLastAction() throws HistoryNotFoundException {
+	public History getLastAction() throws HistoryNotFoundException {
 		try {
 			return undoStack.pop();
 		} catch (EmptyStackException e) {

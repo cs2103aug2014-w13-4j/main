@@ -14,7 +14,7 @@ import exceptions.TaskNotFoundException;
 
 //TODO: Throw exceptions when mandatory fields are missing
 public class LogicApi {
-	Logic logic;
+	private Logic logic;
 	private static final String INVALID_COMMAND_MESSAGE = "The command is invalid.";
 
 	public LogicApi() {
@@ -66,11 +66,12 @@ public class LogicApi {
 	 * @throws IOException
 	 * @throws TaskNotFoundException
 	 * @throws InvalidInputException
-	 * @throws HistoryNotFoundException 
+	 * @throws HistoryNotFoundException
 	 */
 	public Feedback executeCommand(Command command)
 			throws TaskNotFoundException, IOException,
-			InvalidDateFormatException, InvalidInputException, HistoryNotFoundException {
+			InvalidDateFormatException, InvalidInputException,
+			HistoryNotFoundException {
 		if (logic.storage == null) {
 			throw new IOException();
 		} else {
@@ -86,12 +87,12 @@ public class LogicApi {
 				break;
 			case DELETE:
 				if (!isKeywordParamEmpty(param)) {
-				return logic.delete(param);
+					return logic.delete(param);
 				}
 				break;
 			case UPDATE:
 				if (!isKeywordParamEmpty(param)) {
-				return logic.update(param);
+					return logic.update(param);
 				}
 				break;
 			case UNDO:
@@ -111,7 +112,8 @@ public class LogicApi {
 			case LEVEL:
 				return null;
 			case SEARCH:
-				if (!isKeywordParamEmpty(param) || hasNameParam(param) || hasNoteParam(param) || hasTagParam(param)) {
+				if (!isKeywordParamEmpty(param) || hasNameParam(param)
+						|| hasNoteParam(param) || hasTagParam(param)) {
 					return logic.search(param);
 				}
 				break;

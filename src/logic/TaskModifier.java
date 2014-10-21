@@ -16,7 +16,7 @@ public class TaskModifier {
 	private static final String INVALID_CONDITIONAL_DATE_ID_MESSAGE = "The conditional date id is invalid.";
 	private static final int MIN_ID = 0;
 	private static final String INVALID_CONFIRMED_TASK_MESSAGE = "The task is already confirmed.";
-	
+
 	static void modifyTask(Hashtable<ParamEnum, ArrayList<String>> param,
 			Task task) throws InvalidDateFormatException {
 		setNameFromCommand(param, task);
@@ -164,7 +164,8 @@ public class TaskModifier {
 		return param.get(ParamEnum.START_DATE).size() == 1;
 	}
 
-	private static boolean isIdOutsideConditionalDatesRange(int dateId, Task task) {
+	private static boolean isIdOutsideConditionalDatesRange(int dateId,
+			Task task) {
 		return task.getConditionalDates().size() <= dateId;
 	}
 
@@ -177,13 +178,13 @@ public class TaskModifier {
 	}
 
 	public static void undeleteTask(Task task) {
-		assert(task.isDeleted());
+		assert (task.isDeleted());
 		task.setDeleted(false);
-		
+
 	}
 
 	public static void uncompleteTask(Task task) {
-		assert(task.getDateEnd() != null);
+		assert (task.getDateEnd() != null);
 		task.setDateEnd(null);
 	}
 
@@ -191,7 +192,7 @@ public class TaskModifier {
 		assert (task.getDateStart() != null || task.getDateDue() != null);
 		task.setDateStart(null);
 		task.setDateDue(null);
-		
+
 	}
 
 }

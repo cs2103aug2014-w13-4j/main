@@ -34,7 +34,8 @@ public class Logic {
 	private static final String FILTER_KEYWORD_WRONG = "Filter keyword is wrong.";
 	private static final Object ACTIVE = "active";
 	Storage storage = null;
-	private LogicUndo logicUndo = LogicUndo.getInstance();
+	private LogicUndo logicUndo = new LogicUndo();
+	// public LogicUndo logicUndo = LogicUndo.getInstance();
 	private Cloner cloner = new Cloner();
 
 	Logic() {
@@ -67,7 +68,7 @@ public class Logic {
 		int taskId = getTaskId(param);
 		String dateIdString = param.get(ParamEnum.ID).get(0);
 		int dateId = Integer.parseInt(dateIdString);
-		Task task = storage.getTask(taskId);
+		Task task = getTaskFromStorage(taskId);
 		TaskModifier.confirmTask(dateId, task);
 		storage.writeTaskToFile(task);
 		Task clonedTask = cloner.deepClone(task);
@@ -91,8 +92,8 @@ public class Logic {
 		ArrayList<Task> taskList = storage.searchTask(param);
 		logicUndo.pushNullCommandToHistory();
 		return createTaskListFeedback(
-				createMessage(SEARCH_MESSAGE, String.valueOf(taskList.size()), null),
-				taskList);
+				createMessage(SEARCH_MESSAGE, String.valueOf(taskList.size()),
+						null), taskList);
 	}
 
 	/**
@@ -109,16 +110,16 @@ public class Logic {
 	Feedback complete(Hashtable<ParamEnum, ArrayList<String>> param)
 			throws TaskNotFoundException, IOException,
 			InvalidDateFormatException {
-		int id = getTaskId(param);
-		Task task = storage.getTask(id);
+		int taskId = getTaskId(param);
+		Task task = getTaskFromStorage(taskId);
 		TaskModifier.completeTask(param, task);
 		String name = task.getName();
 		storage.writeTaskToFile(task);
 		Task clonedTask = cloner.deepClone(task);
 		logicUndo.pushCompleteCommandToHistory(clonedTask);
 		ArrayList<Task> taskList = storage.getAllTasks();
-		return createTaskListFeedback(createMessage(COMPLETE_MESSAGE, name, null),
-				taskList);
+		return createTaskListFeedback(
+				createMessage(COMPLETE_MESSAGE, name, null), taskList);
 	}
 
 	/**
@@ -158,16 +159,16 @@ public class Logic {
 	 */
 	Feedback delete(Hashtable<ParamEnum, ArrayList<String>> param)
 			throws TaskNotFoundException, IOException {
-		int id = getTaskId(param);
-		Task task = storage.getTask(id);
+		int taskId = getTaskId(param);
+		Task task = getTaskFromStorage(taskId);
 		String name = task.getName();
 		TaskModifier.deleteTask(task);
 		storage.writeTaskToFile(task);
 		Task clonedTask = cloner.deepClone(task);
 		logicUndo.pushDeleteCommandToHistory(clonedTask);
 		ArrayList<Task> taskList = storage.getAllTasks();
-		return createTaskListFeedback(createMessage(DELETE_MESSAGE, name, null),
-				taskList);
+		return createTaskListFeedback(
+				createMessage(DELETE_MESSAGE, name, null), taskList);
 	}
 
 	/**
@@ -185,8 +186,8 @@ public class Logic {
 	Feedback update(Hashtable<ParamEnum, ArrayList<String>> param)
 			throws TaskNotFoundException, IOException,
 			InvalidDateFormatException {
-		int id = getTaskId(param);
-		Task oldTask = storage.getTask(id);
+		int taskId = getTaskId(param);
+		Task oldTask = getTaskFromStorage(taskId);
 		Task task = cloner.deepClone(oldTask);
 		TaskModifier.modifyTask(param, task);
 		storage.writeTaskToFile(task);
@@ -233,12 +234,13 @@ public class Logic {
 			if (task.isDeleted()) {
 				return createTaskAndTaskListFeedback(
 						createMessage(UNDO_MESSAGE, lastAction.getCommand()
-								.regex(), task.getName()), storage.getAllTasks(), null);
+								.regex(), task.getName()),
+						storage.getAllTasks(), null);
 			} else {
 				return createTaskAndTaskListFeedback(
 						createMessage(UNDO_MESSAGE, lastAction.getCommand()
-								.regex(), task.getName()), storage.getAllTasks(),
-						lastAction.getTask());
+								.regex(), task.getName()),
+						storage.getAllTasks(), lastAction.getTask());
 			}
 		}
 	}
@@ -250,20 +252,46 @@ public class Logic {
 	 */
 	private Feedback displayAll() {
 		ArrayList<Task> taskList = storage.getAllTasks();
-		return createTaskListFeedback(createMessage(DISPLAY_MESSAGE, null, null),
-				taskList);
+		return createTaskListFeedback(
+				createMessage(DISPLAY_MESSAGE, null, null), taskList);
 	}
 
+	/**
+	 * Displays the individual task
+	 * 
+	 * @param id
+	 *            : task id
+	 * @return feedback containing the task and the message
+	 * @throws TaskNotFoundException
+	 *             : if the id is invalid or if it is deleted
+	 */
+
 	private Feedback displayTask(int id) throws TaskNotFoundException {
+		Task task = getTaskFromStorage(id);
+		return createTaskFeedback(createMessage(DISPLAY_MESSAGE, null, null),
+				task);
+	}
+
+	/**
+	 * Gets the task from storage
+	 * 
+	 * @param id
+	 *            : id of task
+	 * @return task corresponding to the id
+	 * @throws TaskNotFoundException
+	 *             : if task is already deleted, or if id is invalid
+	 */
+	private Task getTaskFromStorage(int id) throws TaskNotFoundException {
 		Task task = storage.getTask(id);
 		if (task.isDeleted()) {
 			throw new TaskNotFoundException(createMessage(
 					ERROR_ALREADY_DELETED_MESSAGE, Integer.toString(id), null));
 		}
-		return createTaskFeedback(createMessage(DISPLAY_MESSAGE, null, null), task);
+		return task;
 	}
 
-	private String createMessage(String message, String variableText1, String variableText2) {
+	private String createMessage(String message, String variableText1,
+			String variableText2) {
 		return String.format(message, variableText1, variableText2);
 	}
 
