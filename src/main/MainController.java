@@ -87,11 +87,11 @@ public class MainController {
 	}
 
 	private void initializeAutoComplete(Feedback displayAllActiveTasks){
-		initializeAutoCompleteForCommands(displayAllActiveTasks);
+		initializeAutoCompleteForCommands();
 	}
 
-	private void initializeAutoCompleteForCommands(Feedback displayAllActiveTasks){
 		ArrayList<String> autoCompleteStringList = new ArrayList<String>();
+	private void initializeAutoCompleteForCommands(){
 
 		for (CommandEnum command : CommandEnum.values()){
 			autoCompleteStringList.add(String.valueOf(command).toLowerCase());
