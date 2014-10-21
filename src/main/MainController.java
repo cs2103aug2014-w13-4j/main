@@ -50,6 +50,8 @@ public class MainController {
 	final StringProperty conditionalDateLabelValue = new SimpleStringProperty("-");
 
 	private AutoCompletionBinding<String> autoCompletionBinding;
+	private boolean autoCompleteCommandInitialized = false;
+	private boolean autoCompleteSearchInitialized = false;
 
 	public void initialize(){
 		System.out.println("Initializing...");
@@ -90,16 +92,37 @@ public class MainController {
 		initializeAutoCompleteForCommands();
 	}
 
-		ArrayList<String> autoCompleteStringList = new ArrayList<String>();
 	private void initializeAutoCompleteForCommands(){
+		if (!autoCompleteCommandInitialized) {
+			ArrayList<String> autoCompleteStringList = new ArrayList<String>();
 
-		for (CommandEnum command : CommandEnum.values()){
-			autoCompleteStringList.add(String.valueOf(command).toLowerCase());
+			for (CommandEnum command : CommandEnum.values()) {
+				autoCompleteStringList.add(String.valueOf(command).toLowerCase());
+			}
+			if (autoCompletionBinding != null) {
+				autoCompletionBinding.dispose();
+			}
+			autoCompletionBinding = TextFields.bindAutoCompletion(userInputField, autoCompleteStringList);
+			autoCompleteCommandInitialized = true;
 		}
-		if (autoCompletionBinding != null){
-			autoCompletionBinding.dispose();
+	}
+
+	private void initializeAutoCompleteForSearch(Feedback displayAllActiveTasks){
+		if (!autoCompleteSearchInitialized){
+			ArrayList<String> autoCompleteStringList = new ArrayList<String>();
+			ArrayList<Task> taskList = displayAllActiveTasks.getTaskList();
+
+			for (Task task : taskList){
+				if (!task.isDeleted()){
+					autoCompleteStringList.add("search name "+ task.getName());
+				}
+			}
+			if (autoCompletionBinding != null){
+				autoCompletionBinding.dispose();
+			}
+			autoCompletionBinding = TextFields.bindAutoCompletion(userInputField, autoCompleteStringList);
+			autoCompleteSearchInitialized = true;
 		}
-		autoCompletionBinding = TextFields.bindAutoCompletion(userInputField, autoCompleteStringList);
 	}
 
 	private void setFocusToUserInputField(){
@@ -115,10 +138,18 @@ public class MainController {
 		String userInput = userInputField.getText();
 		if (userInput.split(" ")[0].equalsIgnoreCase(String.valueOf(CommandEnum.SEARCH))){
 			try{
+				CommandParser commandParser = new CommandParser();
+				Command displayCommand = commandParser.parseCommand(String.valueOf(CommandEnum.DISPLAY));
+				Feedback displayCommandFeedback = logic.executeCommand(displayCommand);
+				initializeAutoCompleteForSearch(displayCommandFeedback);
+				autoCompleteCommandInitialized = false;
 				executeCommand();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		} else {
+			autoCompleteSearchInitialized = false;
+			initializeAutoCompleteForCommands();
 		}
 		System.out.println(userInput);
 	}
