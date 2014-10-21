@@ -13,6 +13,7 @@ public enum CommandEnum {
 	SEARCH ("search", ParamEnum.KEYWORD, null, ParamEnum.NAME, ParamEnum.NOTE, ParamEnum.TAG, ParamEnum.STATUS),
 	DISPLAY ("display", ParamEnum.KEYWORD, null),
 	DONE ("done", ParamEnum.KEYWORD, null, ParamEnum.DATE),
+	COMPLETE ("complete", ParamEnum.KEYWORD, null, ParamEnum.DATE),
 	TAG ("\\+", ParamEnum.KEYWORD, null),
 	LEVEL ("level", ParamEnum.KEYWORD, null),
 	CONFIRM ("confirm", ParamEnum.KEYWORD, ParamEnum.ID);
