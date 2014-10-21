@@ -1,5 +1,6 @@
 package main;
 
+import command.CommandEnum;
 import command.CommandParser;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -15,6 +16,8 @@ import models.DateParser;
 import models.Feedback;
 import models.StartDueDatePair;
 import models.Task;
+import org.controlsfx.control.textfield.AutoCompletionBinding;
+import org.controlsfx.control.textfield.TextFields;
 
 import java.util.ArrayList;
 
@@ -46,12 +49,15 @@ public class MainController {
 	final StringProperty noteLabelValue = new SimpleStringProperty("-");
 	final StringProperty conditionalDateLabelValue = new SimpleStringProperty("-");
 
+	private AutoCompletionBinding<String> autoCompletionBinding;
+
 	public void initialize(){
 		System.out.println("Initializing...");
 		try {
 			Feedback displayAllActiveTasks = initializeLogic();
 			initializeGuiTaskList(displayAllActiveTasks);
 			initializeGuiLabelBindings();
+			initializeAutoComplete(displayAllActiveTasks);
 			setFocusToUserInputField();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -78,6 +84,15 @@ public class MainController {
 		priorityLevelLabel.textProperty().bind(priorityLevelLabelValue);
 		noteLabel.textProperty().bind(noteLabelValue);
 		conditionalDateLabel.textProperty().bind(conditionalDateLabelValue);
+	}
+
+	private void initializeAutoComplete(Feedback displayAllActiveTasks){
+		ArrayList<String> autoCompleteStringList = new ArrayList<String>();
+		ArrayList<Task> taskList = displayAllActiveTasks.getTaskList();
+		for (CommandEnum command : CommandEnum.values()){
+			autoCompleteStringList.add(String.valueOf(command).toLowerCase());
+		}
+		autoCompletionBinding = TextFields.bindAutoCompletion(userInputField, autoCompleteStringList);
 	}
 
 	private void setFocusToUserInputField(){
