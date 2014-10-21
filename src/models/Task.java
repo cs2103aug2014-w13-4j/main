@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.TreeMap;
 
-import exceptions.FileFormatNotSupportedException;
 import exceptions.InvalidDateFormatException;
 import models.PriorityLevelEnum;
 
@@ -14,17 +13,17 @@ public class Task {
 	private static final String MESSAGE_SEPARATOR = "\tT@T";
 
 	private int id = -1;
-	private String name = null;
+	private String name = "";
 	private Calendar dateDue = null;
 	private Calendar dateStart = null;
 	private Calendar dateEnd = null;
-	private PriorityLevelEnum priorityLevel = null;
-	private String note = null;
-	private ArrayList<String> tags = null;
-	private ArrayList<Integer> parentTasks = null;
-	private ArrayList<Integer> childTasks = null;
-	public TreeMap<TaskAttributeEnum, String> taskAttributes = null;
-	private ArrayList<StartDueDatePair> conditionalDates = null;
+	private PriorityLevelEnum priorityLevel = PriorityLevelEnum.DEFAULT;
+	private String note = "";
+	private ArrayList<String> tags = new ArrayList<String>();
+	private ArrayList<Integer> parentTasks = new ArrayList<Integer>();
+	private ArrayList<Integer> childTasks = new ArrayList<Integer>();
+	public TreeMap<TaskAttributeEnum, String> taskAttributes;
+	private ArrayList<StartDueDatePair> conditionalDates = new ArrayList<StartDueDatePair>();
 	private boolean isDeleted = false;
 
 	public Task() {
@@ -38,7 +37,11 @@ public class Task {
 	public TreeMap<TaskAttributeEnum, String> getTaskAttributes() {
 		return taskAttributes;
 	}
-
+	
+	 /**
+	  * Alternative style for a copy constructor, using a static newInstance
+	  * method.
+	  */
 	public void setTaskAttributes(
 			TreeMap<TaskAttributeEnum, String> taskAttributes)
 			throws ParseException, InvalidDateFormatException {

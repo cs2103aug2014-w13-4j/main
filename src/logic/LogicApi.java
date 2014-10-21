@@ -1,7 +1,5 @@
 package logic;
 
-import interfaces.ILogic;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -9,13 +7,14 @@ import java.util.Hashtable;
 import models.Command;
 import models.Feedback;
 import command.*;
+import exceptions.HistoryNotFoundException;
 import exceptions.InvalidDateFormatException;
 import exceptions.InvalidInputException;
 import exceptions.TaskNotFoundException;
 
 //TODO: Throw exceptions when mandatory fields are missing
 public class LogicApi {
-	Logic logic;
+	private Logic logic;
 	private static final String INVALID_COMMAND_MESSAGE = "The command is invalid.";
 
 	public LogicApi() {
@@ -26,20 +25,20 @@ public class LogicApi {
 	 * constructor This constructor follows the singleton pattern It can only be
 	 * called with in the current class (Logic.getInstance()) This is to ensure
 	 * that only there is exactly one instance of Logic class
-	 * 
+	 *
 	 * @throws FileFormatNotSupportedException
 	 *             , IOException
 	 * @return Logic object
-	 * 
+	 *
 	 *         To be implemented in the future
 	 */
 	/**
 	 * private static Logic instance = null;
-	 * 
+	 *
 	 * private Logic() {
-	 * 
+	 *
 	 * }
-	 * 
+	 *
 	 * public static Logic getInstance() { if (instance == null) { instance =
 	 * new Logic(); } return instance; }
 	 **/
@@ -47,7 +46,7 @@ public class LogicApi {
 	/**
 	 * Initialises the logic object by creating its corresponding storage object
 	 * It also catches the exceptions that can be thrown
-	 * 
+	 *
 	 * @return the feedback indicating whether the storage has been successfully
 	 *         loaded.
 	 */
@@ -58,7 +57,7 @@ public class LogicApi {
 
 	/**
 	 * Main function to call to execute command
-	 * 
+	 *
 	 * @param the
 	 *            command created by the commandParser
 	 * @return the feedback (tasklist and message) corresponding to the
@@ -67,40 +66,106 @@ public class LogicApi {
 	 * @throws IOException
 	 * @throws TaskNotFoundException
 	 * @throws InvalidInputException
+	 * @throws HistoryNotFoundException
 	 */
 	public Feedback executeCommand(Command command)
 			throws TaskNotFoundException, IOException,
-			InvalidDateFormatException, InvalidInputException {
+			InvalidDateFormatException, InvalidInputException,
+			HistoryNotFoundException {
 		if (logic.storage == null) {
 			throw new IOException();
 		} else {
 			CommandEnum commandType = command.getCommand();
 			Hashtable<ParamEnum, ArrayList<String>> param = command.getParam();
+			assert hasKeywordParam(param);
 			switch (commandType) {
 			case ADD:
-				return logic.add(param);
+				assert hasNameParam(param);
+				if (!isNameParamEmpty(param)) {
+					return logic.add(param);
+				}
+				break;
 			case DELETE:
-				return logic.delete(param);
+				if (!isKeywordParamEmpty(param)) {
+					return logic.delete(param);
+				}
+				break;
 			case UPDATE:
-				return logic.update(param);
+				if (!isKeywordParamEmpty(param)) {
+					return logic.update(param);
+				}
+				break;
 			case UNDO:
-				return null;
+				return logic.undo();
 			case FILTER:
-				return null;
+				if (hasStatusParam(param)) {
+					return logic.filter(param);
+				}
+				break;
 			case DISPLAY:
 				return logic.display(param);
 			case DONE:
-				return logic.complete(param);
+				if (!isKeywordParamEmpty(param)) {
+					return logic.complete(param);
+				}
+				break;
 			case LEVEL:
 				return null;
 			case SEARCH:
-				return logic.search(param);
+				// to add: !isKeywordParamEmpty(param) after search in multiple
+				// fields is supported in storage
+				if (hasNameParam(param) || hasNoteParam(param)
+						|| hasTagParam(param)) {
+					return logic.search(param);
+				}
+				break;
 			case CONFIRM:
-				return logic.confirm(param);
+				if (!isKeywordParamEmpty(param) && hasIdParam(param)) {
+					return logic.confirm(param);
+				}
+				break;
+			case TAG:
+				break;
 			default:
-				throw new InvalidInputException(INVALID_COMMAND_MESSAGE);
+				break;
 			}
+			throw new InvalidInputException(INVALID_COMMAND_MESSAGE);
 		}
+	}
+
+	private boolean hasKeywordParam(
+			Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.containsKey(ParamEnum.KEYWORD);
+	}
+
+	private boolean hasStatusParam(Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.containsKey(ParamEnum.STATUS);
+	}
+
+	private boolean hasTagParam(Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.containsKey(ParamEnum.TAG);
+	}
+
+	private boolean hasNoteParam(Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.containsKey(ParamEnum.NOTE);
+	}
+
+	private boolean hasNameParam(Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.containsKey(ParamEnum.NAME);
+	}
+
+	private boolean isNameParamEmpty(
+			Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.get(ParamEnum.NAME).get(0).isEmpty();
+	}
+
+	private boolean hasIdParam(Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.containsKey(ParamEnum.ID);
+	}
+
+	private boolean isKeywordParamEmpty(
+			Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.get(ParamEnum.KEYWORD).get(0).isEmpty();
 	}
 
 }

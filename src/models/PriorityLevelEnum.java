@@ -2,6 +2,7 @@ package models;
 
 //TODO: Implement taking in input of colours
 public enum PriorityLevelEnum {
+	DEFAULT (-1), 
 	GREEN (0),
 	ORANGE (1),
 	RED (2);
