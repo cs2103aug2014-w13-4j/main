@@ -117,6 +117,11 @@ public class MainController {
 	}
 
 	public void handleUserInput() {
+		executeCommand();
+		userInputField.clear();
+	}
+
+	private void executeCommand() {
 		CommandParser commandParser = new CommandParser();
 		String userInput = userInputField.getText();
 		if (validateUserInput(userInput)){
@@ -124,6 +129,7 @@ public class MainController {
 				Command userCommand = commandParser.parseCommand(userInput);
 				Feedback userCommandFeedback = logic.executeCommand(userCommand);
 				String feedbackMessage = userCommandFeedback.getFeedbackMessage();
+
 				System.out.println(feedbackMessage);
 
 				ArrayList<Task> taskList = userCommandFeedback.getTaskList();
@@ -135,7 +141,6 @@ public class MainController {
 				if (taskToDisplay != null){
 					updateTaskPanel(taskToDisplay);
 				}
-				userInputField.clear();
 			} catch (Exception e){
 				e.printStackTrace();
 				System.out.println("failed");
