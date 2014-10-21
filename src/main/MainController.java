@@ -87,10 +87,17 @@ public class MainController {
 	}
 
 	private void initializeAutoComplete(Feedback displayAllActiveTasks){
+		initializeAutoCompleteForCommands(displayAllActiveTasks);
+	}
+
+	private void initializeAutoCompleteForCommands(Feedback displayAllActiveTasks){
 		ArrayList<String> autoCompleteStringList = new ArrayList<String>();
-		ArrayList<Task> taskList = displayAllActiveTasks.getTaskList();
+
 		for (CommandEnum command : CommandEnum.values()){
 			autoCompleteStringList.add(String.valueOf(command).toLowerCase());
+		}
+		if (autoCompletionBinding != null){
+			autoCompletionBinding.dispose();
 		}
 		autoCompletionBinding = TextFields.bindAutoCompletion(userInputField, autoCompleteStringList);
 	}
