@@ -77,7 +77,7 @@ public class LogicApi {
 		} else {
 			CommandEnum commandType = command.getCommand();
 			Hashtable<ParamEnum, ArrayList<String>> param = command.getParam();
-			assert param.containsKey(ParamEnum.KEYWORD);
+			assert hasKeywordParam(param);
 			switch (commandType) {
 			case ADD:
 				assert hasNameParam(param);
@@ -112,8 +112,10 @@ public class LogicApi {
 			case LEVEL:
 				return null;
 			case SEARCH:
-				if (!isKeywordParamEmpty(param) || hasNameParam(param)
-						|| hasNoteParam(param) || hasTagParam(param)) {
+				// to add: !isKeywordParamEmpty(param) after search in multiple
+				// fields is supported in storage
+				if (hasNameParam(param) || hasNoteParam(param)
+						|| hasTagParam(param)) {
 					return logic.search(param);
 				}
 				break;
@@ -129,6 +131,11 @@ public class LogicApi {
 			}
 			throw new InvalidInputException(INVALID_COMMAND_MESSAGE);
 		}
+	}
+
+	private boolean hasKeywordParam(
+			Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.containsKey(ParamEnum.KEYWORD);
 	}
 
 	private boolean hasStatusParam(Hashtable<ParamEnum, ArrayList<String>> param) {

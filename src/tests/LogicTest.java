@@ -94,6 +94,29 @@ public class LogicTest {
 	}
 
 	/**
+	 * Tests that a task must have a name before it is added
+	 * 
+	 * @throws Exception
+	 */
+	@Test(expected = InvalidInputException.class)
+	public final void testCannotAddTaskWithoutName() throws Exception {
+		Command addCommand = parser
+				.parseCommand("add from 20-02-1999 due 21-02-1999 note I don't know why I want that? level 2");
+		logicApiObject.executeCommand(addCommand);
+	}
+
+	/**
+	 * Tests that a task must have a keyword before it is deleted
+	 * 
+	 * @throws Exception
+	 */
+	@Test(expected = InvalidInputException.class)
+	public final void testCannotUpdateTaskWithoutId() throws Exception {
+		Command updateCommand = parser.parseCommand("add from 20-02-1999 due 21-02-1999 note I don't know why I want that? level 2");
+		logicApiObject.executeCommand(updateCommand);
+	}
+
+	/**
 	 * Tests that tasks that are absent cannot be displayed
 	 *
 	 * @throws Exception
