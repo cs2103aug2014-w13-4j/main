@@ -29,15 +29,23 @@ public class IntervalSearch {
                     && endDate >= range.getStartDate();
         }
 
+        public int hashCode() {
+            int hash = 3;
+            hash = (int) (7 * hash + endDate);
+            hash = (int) (7 * hash + startDate);
+            return hash;
+        }
+
         @Override
-        public int compareTo(DateRange o) {
-            if (startDate > o.getStartDate()) {
-                return 1;
-            } else if (startDate == o.getStartDate()) {
-                return 0;
-            } else {
-                return -1;
-            }
+        public boolean equals(Object obj) {
+            if (!(obj instanceof DateRange))
+                return false;
+            if (obj == this)
+                return true;
+
+            DateRange range = (DateRange) obj;
+            return startDate == range.getStartDate()
+                    && endDate == range.getEndDate();
         }
     }
 
