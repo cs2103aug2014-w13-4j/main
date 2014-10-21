@@ -86,7 +86,7 @@ public class IntervalSearch {
         return results;
     }
 
-    public boolean addDateRange(Calendar start, Calendar end, int id) {
+    public boolean add(Calendar start, Calendar end, int id) {
         assert start.getTimeInMillis() >= end.getTimeInMillis();
         
         if (isValid(start, end)) {
@@ -98,7 +98,7 @@ public class IntervalSearch {
         }
     }
     
-    public boolean removeDateRange(Calendar start, Calendar end, int id) {
+    public boolean remove(Calendar start, Calendar end, int id) {
         DateRange range = new DateRange(start, end);
         
         if(map.containsKey(range)) {

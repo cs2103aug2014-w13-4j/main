@@ -22,15 +22,15 @@ public class IntervalSearchTest {
         
         Calendar start = new GregorianCalendar(2014,11,12);
         Calendar end = new GregorianCalendar(2014,11,13);
-        tr.addDateRange(start, end, 3);
+        tr.add(start, end, 3);
         
         Calendar secondStart = new GregorianCalendar(2014,11,15);
         Calendar secondEnd = new GregorianCalendar(2014,11,18);
-        tr.addDateRange(secondStart, secondEnd, 4);
+        tr.add(secondStart, secondEnd, 4);
         
         Calendar thirdStart = new GregorianCalendar(2014,8,10);
         Calendar thirdEnd = new GregorianCalendar(2014,9,12);
-        tr.addDateRange(thirdStart, thirdEnd, 5);
+        tr.add(thirdStart, thirdEnd, 5);
     }
 
     @Test
@@ -39,7 +39,7 @@ public class IntervalSearchTest {
 
         Calendar newStart = new GregorianCalendar(2014,10,3);
         Calendar newEnd = new GregorianCalendar(2014,10,4);
-        tr.addDateRange(newStart, newEnd, 5);
+        tr.add(newStart, newEnd, 5);
         int newSize = tr.size();
 
         assertTrue((newSize - currentSize) == 1);
