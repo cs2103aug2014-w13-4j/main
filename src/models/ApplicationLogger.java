@@ -3,6 +3,7 @@ package models;
 import java.io.IOException;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 /**
  * @author szhlibrary
@@ -22,7 +23,9 @@ public class ApplicationLogger {
 	*/
 	private ApplicationLogger() throws IOException {
 		logger = Logger.getLogger(this.getClass().getName());
-		logger.addHandler(new FileHandler("application.log"));
+		FileHandler fileHandler = new FileHandler("./logs/application.log");
+		fileHandler.setFormatter(new SimpleFormatter());
+		logger.addHandler(fileHandler);
 	}
 
 	private static ApplicationLogger getInstance() throws IOException {
