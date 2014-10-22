@@ -97,7 +97,7 @@ public class MainController {
 			ArrayList<String> autoCompleteStringList = new ArrayList<String>();
 
 			for (CommandEnum command : CommandEnum.values()) {
-				autoCompleteStringList.add(String.valueOf(command).toLowerCase());
+				autoCompleteStringList.add(String.valueOf(command).toLowerCase() + " ");
 			}
 			if (autoCompletionBinding != null) {
 				autoCompletionBinding.dispose();
