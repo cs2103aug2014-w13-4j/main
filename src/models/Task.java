@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.TreeMap;
 
-import exceptions.FileFormatNotSupportedException;
 import exceptions.InvalidDateFormatException;
 import models.PriorityLevelEnum;
 
@@ -38,7 +37,11 @@ public class Task {
 	public TreeMap<TaskAttributeEnum, String> getTaskAttributes() {
 		return taskAttributes;
 	}
-
+	
+	 /**
+	  * Alternative style for a copy constructor, using a static newInstance
+	  * method.
+	  */
 	public void setTaskAttributes(
 			TreeMap<TaskAttributeEnum, String> taskAttributes)
 			throws ParseException, InvalidDateFormatException {
