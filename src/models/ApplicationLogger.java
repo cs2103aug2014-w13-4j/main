@@ -12,16 +12,12 @@ public class ApplicationLogger {
 	private Logger logger;
 	private static ApplicationLogger applicationLogger;
 
-	private ApplicationLogger() {
-		try {
-			logger = Logger.getLogger(this.getClass().getName());
-			logger.addHandler(new FileHandler("application.log"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	private ApplicationLogger() throws IOException {
+		logger = Logger.getLogger(this.getClass().getName());
+		logger.addHandler(new FileHandler("application.log"));
 	}
 
-	public static ApplicationLogger getInstance() {
+	public static ApplicationLogger getInstance() throws IOException {
 		if (applicationLogger == null) {
 			applicationLogger = new ApplicationLogger();
 		}
