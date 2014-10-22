@@ -4,11 +4,13 @@ package storage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.logging.Level;
 
 import command.ParamEnum;
 
 import exceptions.FileFormatNotSupportedException;
 import exceptions.TaskNotFoundException;
+import models.ApplicationLogger;
 import storage.tagStorage.TagStorage;
 import storage.taskStorage.TaskStorage;
 import models.Task;
@@ -31,12 +33,14 @@ public class Storage {
 	 * @throws FileFormatNotSupportedException, IOException
 	 */
 	public Storage() throws IOException, FileFormatNotSupportedException{
+		ApplicationLogger.getApplicationLogger().log(Level.INFO, "Initializing Storage.");
 		taskFile = new TaskStorage("taskStorage.data");
 		tagFile = new TagStorage("TagStorage.data");
 	}
 
 	// Add/Update a task to file
 	public void writeTaskToFile(Task task) throws TaskNotFoundException, IOException {
+		ApplicationLogger.getApplicationLogger().log(Level.INFO, "Writing Task to file.");
 		taskFile.writeTaskToFile(task);
 		tagFile.updateTagToFile(task.getTags());
 	}
