@@ -22,7 +22,7 @@ public class Main extends Application{
 
 		Parent root = FXMLLoader.load(getClass().getResource("main.fxml"));
 		primaryStage.setTitle("Awesome Task Manager");
-		primaryStage.setScene(new Scene(root, 80*rem, 60*rem));
+		primaryStage.setScene(new Scene(root));
 		primaryStage.show();
 	}
 

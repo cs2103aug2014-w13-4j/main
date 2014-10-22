@@ -204,7 +204,7 @@ public class Task {
 	}
 
 	public boolean isConfirmed() {
-		if (conditionalDates != null) {
+		if (conditionalDates != null && !conditionalDates.isEmpty()) {
 			return (dateStart != null || dateDue != null);
 		} else {
 			return true;
