@@ -9,6 +9,7 @@ import command.ParamEnum;
 
 import exceptions.FileFormatNotSupportedException;
 import exceptions.InvalidDateFormatException;
+import exceptions.InvalidInputException;
 import exceptions.TaskNotFoundException;
 import storage.tagStorage.TagStorage;
 import storage.taskStorage.TaskStorage;
@@ -56,16 +57,6 @@ public class Storage {
 		return taskFile.getAllTasks();
 	}
 
-	// Get a list of tasks that are done
-	public ArrayList<Task> getCompletedTasks(ArrayList<Task> searchRange) {
-		return taskFile.getCompletedTasks(searchRange);
-	}
-
-	// Get a list of tasks that are not completed
-	public ArrayList<Task> getActiveTasks(ArrayList<Task> searchRange) {
-		return taskFile.getActiveTasks(searchRange);
-	}
-
 	// Get a list of tags
 	public ArrayList<String> getAllTags() {
 		return tagFile.getAllTags();
@@ -73,7 +64,8 @@ public class Storage {
 
 	// Search a list of tasks with certain key words
 	// Assume keywords of name and note is only one string
-	public ArrayList<Task> searchTask(Hashtable<ParamEnum, ArrayList<String>> keyWordTable) throws InvalidDateFormatException {
+	public ArrayList<Task> searchTask(Hashtable<ParamEnum, ArrayList<String>> keyWordTable) 
+			throws InvalidDateFormatException, InvalidInputException {
 		return taskFile.searchTask(keyWordTable, getAllTasks());
 	}
 }
