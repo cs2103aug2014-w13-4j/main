@@ -25,10 +25,14 @@ public class ApplicationLogger {
 		logger.addHandler(new FileHandler("application.log"));
 	}
 
-	public static ApplicationLogger getInstance() throws IOException {
+	private static ApplicationLogger getInstance() throws IOException {
 		if (applicationLogger == null) {
 			applicationLogger = new ApplicationLogger();
 		}
 		return applicationLogger;
+	}
+
+	public static Logger getApplicationLogger() throws IOException {
+		return getInstance().logger;
 	}
 }
