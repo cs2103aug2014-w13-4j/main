@@ -3,5 +3,8 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="lib/cloning-1.8.5/cloning-1.8.5-sources.jar"/>
+	<classpathentry kind="lib" path="lib/cloning-1.8.5/cloning-1.8.5.jar"/>
+	<classpathentry kind="lib" path="lib/cloning-1.8.5/objenesis-1.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -7,13 +7,14 @@ import java.util.Hashtable;
 import models.Command;
 import models.Feedback;
 import command.*;
+import exceptions.HistoryNotFoundException;
 import exceptions.InvalidDateFormatException;
 import exceptions.InvalidInputException;
 import exceptions.TaskNotFoundException;
 
 //TODO: Throw exceptions when mandatory fields are missing
 public class LogicApi {
-	Logic logic;
+	private Logic logic;
 	private static final String INVALID_COMMAND_MESSAGE = "The command is invalid.";
 
 	public LogicApi() {
@@ -65,16 +66,18 @@ public class LogicApi {
 	 * @throws IOException
 	 * @throws TaskNotFoundException
 	 * @throws InvalidInputException
+	 * @throws HistoryNotFoundException
 	 */
 	public Feedback executeCommand(Command command)
 			throws TaskNotFoundException, IOException,
-			InvalidDateFormatException, InvalidInputException {
+			InvalidDateFormatException, InvalidInputException,
+			HistoryNotFoundException {
 		if (logic.storage == null) {
 			throw new IOException();
 		} else {
 			CommandEnum commandType = command.getCommand();
 			Hashtable<ParamEnum, ArrayList<String>> param = command.getParam();
-			assert param.containsKey(ParamEnum.KEYWORD);
+			assert hasKeywordParam(param);
 			switch (commandType) {
 			case ADD:
 				assert hasNameParam(param);
@@ -84,16 +87,16 @@ public class LogicApi {
 				break;
 			case DELETE:
 				if (!isKeywordParamEmpty(param)) {
-				return logic.delete(param);
+					return logic.delete(param);
 				}
 				break;
 			case UPDATE:
 				if (!isKeywordParamEmpty(param)) {
-				return logic.update(param);
+					return logic.update(param);
 				}
 				break;
 			case UNDO:
-				return null;
+				return logic.undo();
 			case FILTER:
 				if (hasStatusParam(param)) {
 					return logic.filter(param);
@@ -109,7 +112,10 @@ public class LogicApi {
 			case LEVEL:
 				return null;
 			case SEARCH:
-				if (!isKeywordParamEmpty(param) || hasNameParam(param) || hasNoteParam(param) || hasTagParam(param)) {
+				// to add: !isKeywordParamEmpty(param) after search in multiple
+				// fields is supported in storage
+				if (hasNameParam(param) || hasNoteParam(param)
+						|| hasTagParam(param)) {
 					return logic.search(param);
 				}
 				break;
@@ -125,6 +131,11 @@ public class LogicApi {
 			}
 			throw new InvalidInputException(INVALID_COMMAND_MESSAGE);
 		}
+	}
+
+	private boolean hasKeywordParam(
+			Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.containsKey(ParamEnum.KEYWORD);
 	}
 
 	private boolean hasStatusParam(Hashtable<ParamEnum, ArrayList<String>> param) {
