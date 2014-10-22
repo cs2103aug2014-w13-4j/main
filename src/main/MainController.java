@@ -147,7 +147,7 @@ public class MainController {
 				autoCompleteCommandInitialized = false;
 				executeCommand();
 			} catch (Exception e) {
-				ApplicationLogger.getApplicationLogger().log(Level.SEVERE, e.getMessage());
+				ApplicationLogger.getApplicationLogger().log(Level.WARNING, e.getMessage());
 			}
 		} else {
 			autoCompleteSearchInitialized = false;
