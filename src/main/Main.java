@@ -19,6 +19,7 @@ public class Main extends Application{
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		ApplicationLogger.getApplicationLogger().log(Level.INFO, "Initializing JavaFX UI.");
+		
 		// Scale window to display's DPI. Should maintain a consistent size
 		// even on different displays. Method from:
 		// http://news.kynosarges.org/2013/08/09/javafx-dpi-scaling/
