@@ -38,6 +38,9 @@ public class TaskDateFactory<T,C>
 					} else {
 						setText("Unconfirmed");
 					}
+				} else {
+					setText(null);
+					setStyle("");
 				}
 			}
 		};
