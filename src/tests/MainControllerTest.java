@@ -1,5 +1,6 @@
-package main;
+package tests;
 
+import main.MainController;
 import org.junit.Before;
 import org.junit.Test;
 
