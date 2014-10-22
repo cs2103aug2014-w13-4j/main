@@ -21,21 +21,26 @@ public class ApplicationLogger {
 	*
 	* @throws IOException
 	*/
-	private ApplicationLogger() throws IOException {
+	private ApplicationLogger(){
 		logger = Logger.getLogger(this.getClass().getName());
-		FileHandler fileHandler = new FileHandler("./logs/application.log");
-		fileHandler.setFormatter(new SimpleFormatter());
-		logger.addHandler(fileHandler);
+		FileHandler fileHandler;
+		try {
+			fileHandler = new FileHandler("./logs/application.log");
+			fileHandler.setFormatter(new SimpleFormatter());
+			logger.addHandler(fileHandler);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
-	private static ApplicationLogger getInstance() throws IOException {
+	private static ApplicationLogger getInstance() {
 		if (applicationLogger == null) {
 			applicationLogger = new ApplicationLogger();
 		}
 		return applicationLogger;
 	}
 
-	public static Logger getApplicationLogger() throws IOException {
+	public static Logger getApplicationLogger() {
 		return getInstance().logger;
 	}
 }
