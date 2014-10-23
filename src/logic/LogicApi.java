@@ -78,7 +78,7 @@ public class LogicApi {
 		if (logic.storage == null) {
 			throw new IOException();
 		} else {
-			ApplicationLogger.getApplicationLogger().log(Level.INFO, "Executing command");
+			ApplicationLogger.getApplicationLogger().log(Level.INFO, "Executing command: " + command.getCommand() + " " + command.getParam());
 			CommandEnum commandType = command.getCommand();
 			Hashtable<ParamEnum, ArrayList<String>> param = command.getParam();
 			assert hasKeywordParam(param);
@@ -103,7 +103,7 @@ public class LogicApi {
 				return logic.undo();
 			case DISPLAY:
 				return logic.display(param);
-			case DONE:
+			case DONE: case COMPLETE:
 				if (!isKeywordParamEmpty(param)) {
 					return logic.complete(param);
 				}
