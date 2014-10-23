@@ -8,6 +8,7 @@ import java.util.HashMap;
 public class IntervalSearch {
     
     private static long END_OF_DATE = Long.MAX_VALUE;
+    private static long START_OF_DATE = Long.MIN_VALUE;
 
     public static class DateRange {
         public long startDate;
@@ -132,6 +133,12 @@ public class IntervalSearch {
     public ArrayList<Integer> getTasksFrom(Calendar start) {
         Calendar end = GregorianCalendar.getInstance();
         end.setTimeInMillis(END_OF_DATE);
+        return getTasksWithinInterval(start, end);
+    }
+
+    public ArrayList<Integer> getTasksBefore(Calendar end) {
+        Calendar start = GregorianCalendar.getInstance();
+        start.setTimeInMillis(START_OF_DATE);
         return getTasksWithinInterval(start, end);
     }
 
