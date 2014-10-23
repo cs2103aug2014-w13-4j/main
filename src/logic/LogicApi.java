@@ -115,7 +115,7 @@ public class LogicApi {
 				//To add: Date param
 				// fields is supported in storage
 				if (hasNameParam(param) || hasNoteParam(param)
-						|| hasTagParam(param) || hasStatusParam(param))) {
+						|| hasTagParam(param) || hasStatusParam(param)) {
 					return logic.search(param);
 				}
 				break;
@@ -133,13 +133,13 @@ public class LogicApi {
 		}
 	}
 
+	private boolean hasStatusParam(Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.containsKey(ParamEnum.STATUS);
+	}
+
 	private boolean hasKeywordParam(
 			Hashtable<ParamEnum, ArrayList<String>> param) {
 		return param.containsKey(ParamEnum.KEYWORD);
-	}
-
-	private boolean hasStatusParam(Hashtable<ParamEnum, ArrayList<String>> param) {
-		return param.containsKey(ParamEnum.STATUS);
 	}
 
 	private boolean hasTagParam(Hashtable<ParamEnum, ArrayList<String>> param) {
