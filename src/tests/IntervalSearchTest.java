@@ -34,6 +34,9 @@ public class IntervalSearchTest {
     }
 
     @Test
+    /**
+     * This test the add date function of the interval search
+     */
     public void testAddDate() {
         int currentSize = tr.size();
 
@@ -46,6 +49,9 @@ public class IntervalSearchTest {
     }
 
     @Test
+    /**
+     * This test the get interval function of the interval search
+     */
     public void testGetInterval() {
         Calendar searchStart = new GregorianCalendar(2014, 11, 1);
         Calendar searchEnd = new GregorianCalendar(2014, 11, 30);
@@ -68,6 +74,9 @@ public class IntervalSearchTest {
     }
 
     @Test
+    /**
+     * This test the get intervalId function of the interval search
+     */
     public void testGetIntervalId() {
         Calendar searchStart = new GregorianCalendar(2014, 11, 1);
         Calendar searchEnd = new GregorianCalendar(2014, 11, 30);
@@ -82,6 +91,9 @@ public class IntervalSearchTest {
     }
 
     @Test
+    /**
+     * This test the get task id beyond a specific date function of interval search
+     */
     public void testGetIdFromDate() {
         Calendar searchStart = new GregorianCalendar(2014, 11, 1);
 
@@ -94,6 +106,9 @@ public class IntervalSearchTest {
     }
 
     @Test
+    /**
+     * This test the update function of interval search
+     */
     public void testUpdate() {
         Calendar oldStart = new GregorianCalendar(2014, 11, 12);
         Calendar oldEnd = new GregorianCalendar(2014, 11, 13);
