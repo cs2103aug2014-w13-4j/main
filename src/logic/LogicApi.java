@@ -101,11 +101,6 @@ public class LogicApi {
 				break;
 			case UNDO:
 				return logic.undo();
-			case FILTER:
-				if (hasStatusParam(param)) {
-					return logic.filter(param);
-				}
-				break;
 			case DISPLAY:
 				return logic.display(param);
 			case DONE:
@@ -117,9 +112,10 @@ public class LogicApi {
 				return null;
 			case SEARCH:
 				// to add: !isKeywordParamEmpty(param) after search in multiple
+				//To add: Date param
 				// fields is supported in storage
 				if (hasNameParam(param) || hasNoteParam(param)
-						|| hasTagParam(param)) {
+						|| hasTagParam(param) || hasStatusParam(param))) {
 					return logic.search(param);
 				}
 				break;

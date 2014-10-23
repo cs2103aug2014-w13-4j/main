@@ -21,7 +21,6 @@ import exceptions.TaskNotFoundException;
 
 //TODO: Throw exceptions when mandatory fields are missing
 public class Logic {
-	private static final String COMPLETED = "completed";
 	private static final String ADD_MESSAGE = "%1$s is successfully added.";
 	private static final String DELETE_MESSAGE = "%1$s is successfully deleted";
 	private static final String EDIT_MESSAGE = "%1$s is successfully edited.";
@@ -31,10 +30,7 @@ public class Logic {
 	private static final String DISPLAY_MESSAGE = "All tasks are displayed.";
 	private static final String ERROR_ALREADY_DELETED_MESSAGE = "Task %1$s is already deleted.";
 	private static final String CONFIRM_MESSAGE = "%1$s is marked as confirmed.";
-	private static final String FILTER_MESSAGE = "%1$s tasks are filtered";
 	private static final String UNDO_MESSAGE = "%1$s %2$s is undone";
-	private static final String FILTER_KEYWORD_WRONG = "Filter keyword is wrong.";
-	private static final Object ACTIVE = "active";
 	Storage storage = null;
 	private LogicUndo logicUndo = new LogicUndo();
 	// public LogicUndo logicUndo = LogicUndo.getInstance();
@@ -89,9 +85,11 @@ public class Logic {
 	 * @param command
 	 *            : the command created by CommandParser
 	 * @return feedback containing all the tasks in the file, and the message
+	 * @throws InvalidInputException 
+	 * @throws InvalidDateFormatException 
 	 */
 
-	Feedback search(Hashtable<ParamEnum, ArrayList<String>> param) {
+	Feedback search(Hashtable<ParamEnum, ArrayList<String>> param) throws InvalidDateFormatException, InvalidInputException {
 		ArrayList<Task> taskList = storage.searchTask(param);
 		logicUndo.pushNullCommandToHistory();
 		return createTaskListFeedback(
@@ -201,27 +199,6 @@ public class Logic {
 				taskList);
 	}
 
-	// set assert to ensure that value is an arraylist
-	Feedback filter(Hashtable<ParamEnum, ArrayList<String>> param)
-			throws InvalidInputException {
-		logicUndo.pushNullCommandToHistory();
-		if (isFilterStatusCompleted(param)) {
-			ArrayList<Task> taskList = storage.getCompletedTasks(storage
-					.getAllTasks());
-			return createTaskListFeedback(
-					createMessage(FILTER_MESSAGE, COMPLETED, null), taskList);
-		} else if (isFilterStatusActive(param)) {
-			ArrayList<Task> taskList = storage.getActiveTasks(storage
-					.getAllTasks());
-			return createTaskListFeedback(
-					createMessage(FILTER_MESSAGE, COMPLETED, null), taskList);
-		} else {
-			throw new InvalidInputException(createMessage(FILTER_KEYWORD_WRONG,
-					null, null));
-		}
-
-	}
-
 	// Hiccup: undo add will not update the task (make it disappear) if it is
 	// displayed
 	Feedback undo() throws HistoryNotFoundException, TaskNotFoundException,
@@ -314,16 +291,5 @@ public class Logic {
 
 	private int getTaskId(Hashtable<ParamEnum, ArrayList<String>> param) {
 		return Integer.parseInt(param.get(ParamEnum.KEYWORD).get(0));
-	}
-
-	private boolean isFilterStatusActive(
-			Hashtable<ParamEnum, ArrayList<String>> param) {
-		return param.get(ParamEnum.STATUS).get(0).toLowerCase().equals(ACTIVE);
-	}
-
-	private boolean isFilterStatusCompleted(
-			Hashtable<ParamEnum, ArrayList<String>> param) {
-		return param.get(ParamEnum.STATUS).get(0).toLowerCase()
-				.equals(COMPLETED);
 	}
 }
