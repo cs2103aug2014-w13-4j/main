@@ -10,7 +10,7 @@ public enum CommandEnum {
 	UPDATE ("update", ParamEnum.KEYWORD, ParamEnum.END_DATE, ParamEnum.DUE_DATE, ParamEnum.OR_END, ParamEnum.OR_FROM, ParamEnum.DATE, ParamEnum.START_DATE,
             ParamEnum.LEVEL, ParamEnum.NOTE, ParamEnum.TAG, ParamEnum.NAME),
 	UNDO ("undo", ParamEnum.KEYWORD, null),
-	SEARCH ("search", ParamEnum.KEYWORD, null, ParamEnum.NAME, ParamEnum.NOTE, ParamEnum.TAG, ParamEnum.STATUS),
+	SEARCH ("search", ParamEnum.KEYWORD, null, ParamEnum.NAME, ParamEnum.NOTE, ParamEnum.TAG, ParamEnum.STATUS, ParamEnum.AFTER, ParamEnum.BEFORE, ParamEnum.START_DATE, ParamEnum.ON),
 	DISPLAY ("display", ParamEnum.KEYWORD, null),
 	DONE ("done", ParamEnum.KEYWORD, null, ParamEnum.DATE),
 	COMPLETE ("complete", ParamEnum.KEYWORD, null, ParamEnum.DATE),
