@@ -202,7 +202,7 @@ public class CommandParser {
 
 	private void initializeParamTable() {
 		for (ParamEnum param : ParamEnum.values()) {
-			paramEnumTable.put(param.regex().replace("\\", ""), param);
+			paramEnumTable.put(param.regex().replace(ESCAPE_SEQUENCE, ""), param);
 		}
 	}
 }
