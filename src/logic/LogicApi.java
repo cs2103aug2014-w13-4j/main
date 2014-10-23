@@ -78,7 +78,7 @@ public class LogicApi {
 		if (logic.storage == null) {
 			throw new IOException();
 		} else {
-			ApplicationLogger.getApplicationLogger().log(Level.INFO, "Executing command");
+			ApplicationLogger.getApplicationLogger().log(Level.INFO, "Executing command: " + command.getCommand() + " " + command.getParam());
 			CommandEnum commandType = command.getCommand();
 			Hashtable<ParamEnum, ArrayList<String>> param = command.getParam();
 			assert hasKeywordParam(param);
@@ -101,14 +101,9 @@ public class LogicApi {
 				break;
 			case UNDO:
 				return logic.undo();
-			case FILTER:
-				if (hasStatusParam(param)) {
-					return logic.filter(param);
-				}
-				break;
 			case DISPLAY:
 				return logic.display(param);
-			case DONE:
+			case DONE: case COMPLETE:
 				if (!isKeywordParamEmpty(param)) {
 					return logic.complete(param);
 				}
@@ -117,9 +112,10 @@ public class LogicApi {
 				return null;
 			case SEARCH:
 				// to add: !isKeywordParamEmpty(param) after search in multiple
+				//To add: Date param
 				// fields is supported in storage
 				if (hasNameParam(param) || hasNoteParam(param)
-						|| hasTagParam(param)) {
+						|| hasTagParam(param) || hasStatusParam(param)) {
 					return logic.search(param);
 				}
 				break;
@@ -137,13 +133,13 @@ public class LogicApi {
 		}
 	}
 
+	private boolean hasStatusParam(Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.containsKey(ParamEnum.STATUS);
+	}
+
 	private boolean hasKeywordParam(
 			Hashtable<ParamEnum, ArrayList<String>> param) {
 		return param.containsKey(ParamEnum.KEYWORD);
-	}
-
-	private boolean hasStatusParam(Hashtable<ParamEnum, ArrayList<String>> param) {
-		return param.containsKey(ParamEnum.STATUS);
 	}
 
 	private boolean hasTagParam(Hashtable<ParamEnum, ArrayList<String>> param) {
