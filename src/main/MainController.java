@@ -1,5 +1,6 @@
 package main;
 
+import command.CommandEnum;
 import command.CommandParser;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -10,13 +11,12 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import logic.LogicApi;
-import models.Command;
-import models.DateParser;
-import models.Feedback;
-import models.StartDueDatePair;
-import models.Task;
+import models.*;
+import org.controlsfx.control.textfield.AutoCompletionBinding;
+import org.controlsfx.control.textfield.TextFields;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
 
 /**
  * Controller for the main GUI window.
@@ -46,19 +46,26 @@ public class MainController {
 	final StringProperty noteLabelValue = new SimpleStringProperty("-");
 	final StringProperty conditionalDateLabelValue = new SimpleStringProperty("-");
 
+	private AutoCompletionBinding<String> autoCompletionBinding;
+	private boolean autoCompleteCommandInitialized = false;
+	private boolean autoCompleteSearchInitialized = false;
+
 	public void initialize(){
-		System.out.println("Initializing...");
+		ApplicationLogger.getApplicationLogger().log(Level.INFO, "Initializing Main Controller.");
+
 		try {
 			Feedback displayAllActiveTasks = initializeLogic();
 			initializeGuiTaskList(displayAllActiveTasks);
 			initializeGuiLabelBindings();
+			initializeAutoComplete(displayAllActiveTasks);
 			setFocusToUserInputField();
 		} catch (Exception e) {
-			e.printStackTrace();
+			ApplicationLogger.getApplicationLogger().log(Level.SEVERE, e.getMessage());
 		}
 	}
 
 	private Feedback initializeLogic() {
+		ApplicationLogger.getApplicationLogger().log(Level.INFO, "Initializing Logic.");
 		logic = new LogicApi();
 		return logic.initialize();
 	}
@@ -80,6 +87,43 @@ public class MainController {
 		conditionalDateLabel.textProperty().bind(conditionalDateLabelValue);
 	}
 
+	private void initializeAutoComplete(Feedback displayAllActiveTasks){
+		initializeAutoCompleteForCommands();
+	}
+
+	private void initializeAutoCompleteForCommands(){
+		if (!autoCompleteCommandInitialized) {
+			ArrayList<String> autoCompleteStringList = new ArrayList<String>();
+
+			for (CommandEnum command : CommandEnum.values()) {
+				autoCompleteStringList.add(String.valueOf(command).toLowerCase() + " ");
+			}
+			if (autoCompletionBinding != null) {
+				autoCompletionBinding.dispose();
+			}
+			autoCompletionBinding = TextFields.bindAutoCompletion(userInputField, autoCompleteStringList);
+			autoCompleteCommandInitialized = true;
+		}
+	}
+
+	private void initializeAutoCompleteForSearch(Feedback displayAllActiveTasks){
+		if (!autoCompleteSearchInitialized){
+			ArrayList<String> autoCompleteStringList = new ArrayList<String>();
+			ArrayList<Task> taskList = displayAllActiveTasks.getTaskList();
+
+			for (Task task : taskList){
+				if (!task.isDeleted()){
+					autoCompleteStringList.add("search name "+ task.getName());
+				}
+			}
+			if (autoCompletionBinding != null){
+				autoCompletionBinding.dispose();
+			}
+			autoCompletionBinding = TextFields.bindAutoCompletion(userInputField, autoCompleteStringList);
+			autoCompleteSearchInitialized = true;
+		}
+	}
+
 	private void setFocusToUserInputField(){
 		Platform.runLater(new Runnable() {
 			@Override
@@ -89,7 +133,35 @@ public class MainController {
 		});
 	}
 
+	public void handleUserIncrementalInput(){
+		String userInput = userInputField.getText();
+		if (userInput.split(" ")[0].equalsIgnoreCase(String.valueOf(CommandEnum.SEARCH))){
+			try{
+				ApplicationLogger.getApplicationLogger().log(Level.INFO, "Sent to Command Parser: "+ userInput);
+				CommandParser commandParser = new CommandParser();
+				Command displayCommand = commandParser.parseCommand(String.valueOf(CommandEnum.DISPLAY));
+
+				ApplicationLogger.getApplicationLogger().log(Level.INFO, "Sent to Logic: "+ userInput);
+				Feedback displayCommandFeedback = logic.executeCommand(displayCommand);
+				initializeAutoCompleteForSearch(displayCommandFeedback);
+				autoCompleteCommandInitialized = false;
+				executeCommand();
+			} catch (Exception e) {
+				ApplicationLogger.getApplicationLogger().log(Level.WARNING, e.getMessage());
+			}
+		} else {
+			autoCompleteSearchInitialized = false;
+			initializeAutoCompleteForCommands();
+		}
+		System.out.println(userInput);
+	}
+
 	public void handleUserInput() {
+		executeCommand();
+		userInputField.clear();
+	}
+
+	private void executeCommand() {
 		CommandParser commandParser = new CommandParser();
 		String userInput = userInputField.getText();
 		if (validateUserInput(userInput)){
@@ -97,7 +169,8 @@ public class MainController {
 				Command userCommand = commandParser.parseCommand(userInput);
 				Feedback userCommandFeedback = logic.executeCommand(userCommand);
 				String feedbackMessage = userCommandFeedback.getFeedbackMessage();
-				System.out.println(feedbackMessage);
+
+				ApplicationLogger.getApplicationLogger().log(Level.INFO, "Message shown: " + feedbackMessage);
 
 				ArrayList<Task> taskList = userCommandFeedback.getTaskList();
 				if (taskList != null){
@@ -108,7 +181,6 @@ public class MainController {
 				if (taskToDisplay != null){
 					updateTaskPanel(taskToDisplay);
 				}
-				userInputField.clear();
 			} catch (Exception e){
 				e.printStackTrace();
 				System.out.println("failed");

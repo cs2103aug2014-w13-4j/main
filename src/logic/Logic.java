@@ -3,9 +3,11 @@ package logic;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.logging.Level;
 
 import com.rits.cloning.Cloner;
 
+import models.ApplicationLogger;
 import storage.Storage;
 import command.ParamEnum;
 import models.Feedback;
@@ -43,10 +45,11 @@ public class Logic {
 
 	Feedback initialize() {
 		try {
+			ApplicationLogger.getApplicationLogger().log(Level.INFO, "Initializing Logic Backend.");
 			storage = new Storage();
 			return displayAll();
 		} catch (IOException | FileFormatNotSupportedException e) {
-			System.out.println(e);
+			ApplicationLogger.getApplicationLogger().log(Level.SEVERE, e.getMessage());
 			return createTaskListFeedback(ERROR_STORAGE_MESSAGE, null);
 		}
 	}

@@ -29,11 +29,15 @@ public class TaskModifier {
 		} else {
 			if (param.containsKey(ParamEnum.START_DATE)) {
 				assert hasSingleStartDate(param);
-				setStartDateFromCommand(param, task);
+				if (!param.get(ParamEnum.START_DATE).get(0).isEmpty()) {
+					setStartDateFromCommand(param, task);
+				}
 			}
 			if (param.containsKey(ParamEnum.DUE_DATE)) {
 				assert hasSingleDueDate(param);
-				setDueDateFromCommand(param, task);
+				if (!param.get(ParamEnum.DUE_DATE).get(0).isEmpty()) {
+					setDueDateFromCommand(param, task);
+				}
 			}
 		}
 	}

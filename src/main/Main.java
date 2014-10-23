@@ -6,6 +6,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import models.ApplicationLogger;
+
+import java.util.logging.Level;
 
 /**
  * The main method of the program; program execution starts here.
@@ -15,6 +18,8 @@ public class Main extends Application{
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+		ApplicationLogger.getApplicationLogger().log(Level.INFO, "Initializing JavaFX UI.");
+
 		// Scale window to display's DPI. Should maintain a consistent size
 		// even on different displays. Method from:
 		// http://news.kynosarges.org/2013/08/09/javafx-dpi-scaling/
@@ -22,7 +27,7 @@ public class Main extends Application{
 
 		Parent root = FXMLLoader.load(getClass().getResource("main.fxml"));
 		primaryStage.setTitle("Awesome Task Manager");
-		primaryStage.setScene(new Scene(root, 80*rem, 60*rem));
+		primaryStage.setScene(new Scene(root));
 		primaryStage.show();
 	}
 

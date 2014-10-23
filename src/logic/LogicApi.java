@@ -3,7 +3,9 @@ package logic;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.logging.Level;
 
+import models.ApplicationLogger;
 import models.Command;
 import models.Feedback;
 import command.*;
@@ -51,6 +53,7 @@ public class LogicApi {
 	 *         loaded.
 	 */
 	public Feedback initialize() {
+		ApplicationLogger.getApplicationLogger().log(Level.INFO, "Initializing Logic API.");
 		logic = new Logic();
 		return logic.initialize();
 	}
@@ -75,6 +78,7 @@ public class LogicApi {
 		if (logic.storage == null) {
 			throw new IOException();
 		} else {
+			ApplicationLogger.getApplicationLogger().log(Level.INFO, "Executing command");
 			CommandEnum commandType = command.getCommand();
 			Hashtable<ParamEnum, ArrayList<String>> param = command.getParam();
 			assert hasKeywordParam(param);
