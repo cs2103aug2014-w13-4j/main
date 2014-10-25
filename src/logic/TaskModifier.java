@@ -169,39 +169,6 @@ public class TaskModifier {
 		}
 	}
 
-	private static boolean hasSameNumberOfEndDates(
-			Hashtable<ParamEnum, ArrayList<String>> param) {
-		return param.containsKey(ParamEnum.END_DATE)
-				&& param.get(ParamEnum.END_DATE).size() == param.get(
-						ParamEnum.START_DATE).size()
-				&& hasNoNullElements(param.get(ParamEnum.END_DATE));
-	}
-
-	private static boolean hasMultipleStartDates(
-			Hashtable<ParamEnum, ArrayList<String>> param) {
-		return param.containsKey(ParamEnum.START_DATE)
-				&& param.get(ParamEnum.START_DATE).size() > 1;
-	}
-
-	private static boolean hasSingleDueDate(
-			Hashtable<ParamEnum, ArrayList<String>> param) {
-		return param.get(ParamEnum.DUE_DATE).size() == 1;
-	}
-
-	private static boolean hasSingleStartDate(
-			Hashtable<ParamEnum, ArrayList<String>> param) {
-		return param.get(ParamEnum.START_DATE).size() == 1;
-	}
-
-	private static boolean hasNoNullElements(ArrayList<String> arrayList) {
-		for (String s : arrayList) {
-			if (s == null) {
-				return false;
-			}
-		}
-		return true;
-	}
-
 	private static boolean isIdOutsideConditionalDatesRange(int dateId,
 			Task task) {
 		return task.getConditionalDates().size() <= dateId;
