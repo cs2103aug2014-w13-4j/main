@@ -8,6 +8,7 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import logic.LogicApi;
@@ -27,6 +28,8 @@ public class MainController {
 
 	public TextField userInputField;
 	public TableView<Task> taskTableView;
+
+	public TableColumn dueDateTableColumn;
 
 	public Label idLabel;
 	public Label taskNameLabel;
@@ -74,6 +77,12 @@ public class MainController {
 		ArrayList<Task> taskList = displayAllActiveTasks.getTaskList();
 		ObservableList<Task> observableList = FXCollections.observableArrayList(taskList);
 		taskTableView.getItems().addAll(observableList);
+		sortTaskListByDueDate();
+	}
+
+	private void sortTaskListByDueDate() {
+		dueDateTableColumn.setSortType(TableColumn.SortType.ASCENDING);
+		taskTableView.getSortOrder().add(dueDateTableColumn);
 	}
 
 	private void initializeGuiLabelBindings() {
@@ -198,6 +207,7 @@ public class MainController {
 		taskTableView.getItems().clear();
 		ObservableList<Task> observableList = FXCollections.observableArrayList(taskList);
 		taskTableView.getItems().addAll(observableList);
+		sortTaskListByDueDate();
 	}
 
 	private void updateTaskPanel(Task taskToDisplay) {
