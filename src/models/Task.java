@@ -83,9 +83,23 @@ public class Task {
 		return tags;
 	}
 
+	public boolean isCompleted() {
+		Boolean isEventCompleted = isNull(dateDue) && isDateEndOver();
+		Boolean isTaskCompleted = !isNull(dateDue) && !isNull(dateEnd);
+		return isEventCompleted || isTaskCompleted;
+	}
+
+	private boolean isNull(Calendar date) {
+		return date == null;
+	}
+
+	private boolean isDateEndOver() {
+		return dateEnd.compareTo(Calendar.getInstance()) <= 0;
+	}
+
 	public boolean isConfirmed() {
 		if (conditionalDates != null && !conditionalDates.isEmpty()) {
-			return (dateStart != null || dateDue != null);
+			return (dateStart != null || dateEnd != null);
 		} else {
 			return true;
 		}
