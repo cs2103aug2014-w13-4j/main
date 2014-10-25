@@ -27,9 +27,7 @@ public class Main extends Application{
 		ApplicationLogger.getApplicationLogger().log(Level.INFO, "Initializing JavaFX UI.");
 
 		initPrimaryStage(primaryStage);
-		initRootLayout();
-		initTaskList();
-
+		initLayouts();
 	}
 
 	private void initPrimaryStage(Stage primaryStage) {
@@ -37,30 +35,31 @@ public class Main extends Application{
 		this.primaryStage.setTitle("Awesome Task Manager");
 	}
 
-	public void initRootLayout(){
+	public void initLayouts(){
 		try {
-			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(Main.class.getResource("views/RootLayout.fxml"));
-			rootLayout = loader.load();
-
-			Scene scene = new Scene(rootLayout);
-			primaryStage.setScene(scene);
-			primaryStage.show();
+			initRootLayout();
+			initTaskList();
 		} catch (IOException e) {
-			e.printStackTrace();
+			ApplicationLogger.getApplicationLogger().log(Level.SEVERE, e.getMessage());
 		}
 	}
 
-	public void initTaskList(){
-		try {
-			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(Main.class.getResource("main.fxml"));
-			AnchorPane taskList = loader.load();
+	public void initRootLayout() throws IOException {
+		FXMLLoader loader = new FXMLLoader();
+		loader.setLocation(Main.class.getResource("views/RootLayout.fxml"));
+		rootLayout = loader.load();
 
-			rootLayout.setCenter(taskList);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		Scene scene = new Scene(rootLayout);
+		primaryStage.setScene(scene);
+		primaryStage.show();
+	}
+
+	public void initTaskList() throws IOException {
+		FXMLLoader loader = new FXMLLoader();
+		loader.setLocation(Main.class.getResource("main.fxml"));
+		AnchorPane taskList = loader.load();
+
+		rootLayout.setCenter(taskList);
 	}
 
 	public static void main(String[] args) {
