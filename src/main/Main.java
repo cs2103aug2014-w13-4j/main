@@ -4,10 +4,13 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import models.ApplicationLogger;
 
+import java.io.IOException;
 import java.util.logging.Level;
 
 /**
@@ -16,19 +19,48 @@ import java.util.logging.Level;
  */
 public class Main extends Application{
 
+	private Stage primaryStage;
+	private BorderPane rootLayout;
+
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		ApplicationLogger.getApplicationLogger().log(Level.INFO, "Initializing JavaFX UI.");
 
-		// Scale window to display's DPI. Should maintain a consistent size
-		// even on different displays. Method from:
-		// http://news.kynosarges.org/2013/08/09/javafx-dpi-scaling/
-		final double rem = Math.rint(new Text("").getLayoutBounds().getHeight());
+		this.primaryStage = primaryStage;
+		this.primaryStage.setTitle("Awesome Task Manager");
+		initRootLayout();
+		initTaskList();
 
-		Parent root = FXMLLoader.load(getClass().getResource("main.fxml"));
-		primaryStage.setTitle("Awesome Task Manager");
-		primaryStage.setScene(new Scene(root));
-		primaryStage.show();
+//		Parent root = FXMLLoader.load(getClass().getResource("main.fxml"));
+//		primaryStage.setTitle("Awesome Task Manager");
+//		primaryStage.setScene(new Scene(root));
+//		primaryStage.show();
+	}
+
+	public void initRootLayout(){
+		try {
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(Main.class.getResource("views/RootLayout.fxml"));
+			rootLayout = loader.load();
+
+			Scene scene = new Scene(rootLayout);
+			primaryStage.setScene(scene);
+			primaryStage.show();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void initTaskList(){
+		try {
+			FXMLLoader loader = new FXMLLoader();
+			loader.setLocation(Main.class.getResource("main.fxml"));
+			AnchorPane taskList = loader.load();
+
+			rootLayout.setCenter(taskList);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static void main(String[] args) {
