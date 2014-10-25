@@ -26,8 +26,7 @@ public class Main extends Application{
 	public void start(Stage primaryStage) throws Exception {
 		ApplicationLogger.getApplicationLogger().log(Level.INFO, "Initializing JavaFX UI.");
 
-		this.primaryStage = primaryStage;
-		this.primaryStage.setTitle("Awesome Task Manager");
+		initPrimaryStage(primaryStage);
 		initRootLayout();
 		initTaskList();
 
@@ -35,6 +34,11 @@ public class Main extends Application{
 //		primaryStage.setTitle("Awesome Task Manager");
 //		primaryStage.setScene(new Scene(root));
 //		primaryStage.show();
+	}
+
+	private void initPrimaryStage(Stage primaryStage) {
+		this.primaryStage = primaryStage;
+		this.primaryStage.setTitle("Awesome Task Manager");
 	}
 
 	public void initRootLayout(){
