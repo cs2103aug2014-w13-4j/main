@@ -34,8 +34,6 @@ public class LogicTest {
 	Class<TaskModifier> taskModifierClass = TaskModifier.class;
 	Field logic = logicApiClass.getDeclaredField("logic");
 	Field storage = logicClass.getDeclaredField("storage");
-	Method modifyTask = taskModifierClass.getDeclaredMethod("modifyTask",
-			Hashtable.class, Task.class);
 	Method display = logicClass.getDeclaredMethod("display", Hashtable.class);
 	LogicApi logicApiObject;
 	Logic logicObject;
@@ -55,7 +53,7 @@ public class LogicTest {
 
 	@Before
 	public void getLogicAndStorage() throws IllegalArgumentException,
-			IllegalAccessException {
+	IllegalAccessException {
 		logicApiObject = new LogicApi();
 		logicApiObject.initialize();
 		logicObject = (Logic) logic.get(logicApiObject);
@@ -70,7 +68,6 @@ public class LogicTest {
 
 	@Before
 	public void setFunctionsAccessible() {
-		modifyTask.setAccessible(true);
 		display.setAccessible(true);
 	}
 
@@ -81,7 +78,7 @@ public class LogicTest {
 	 */
 	public final void testAddTask() throws Exception {
 		Command addCommand = parser
-				.parseCommand("add eat my pet dog from 20-02-1999 due 21-02-1999 note I don't know why I want that? level 2");
+				.parseCommand("add eat my pet dog from 20-02-1999 to 21-02-1999 note I don't know why I want that? level 2");
 		Feedback feedback = logicApiObject.executeCommand(addCommand);
 		Task newTask = storageObject.getTask(0);
 		assertEquals("eat my pet dog", newTask.getName());
@@ -90,12 +87,15 @@ public class LogicTest {
 		assertEquals(20, newTask.getDateStart().get(Calendar.DAY_OF_MONTH));
 		assertEquals(2, newTask.getDateStart().get(Calendar.MONTH) + 1);
 		assertEquals(1999, newTask.getDateStart().get(Calendar.YEAR));
+		assertEquals(21, newTask.getDateEnd().get(Calendar.DAY_OF_MONTH));
+		assertEquals(2, newTask.getDateEnd().get(Calendar.MONTH) + 1);
+		assertEquals(1999, newTask.getDateEnd().get(Calendar.YEAR));
 		assertEquals(feedback.getTaskList().get(0), newTask);
 	}
 
 	/**
 	 * Tests that a task must have a name before it is added
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test(expected = InvalidInputException.class)
@@ -103,17 +103,6 @@ public class LogicTest {
 		Command addCommand = parser
 				.parseCommand("add from 20-02-1999 due 21-02-1999 note I don't know why I want that? level 2");
 		logicApiObject.executeCommand(addCommand);
-	}
-
-	/**
-	 * Tests that a task must have a keyword before it is deleted
-	 * 
-	 * @throws Exception
-	 */
-	@Test(expected = InvalidInputException.class)
-	public final void testCannotUpdateTaskWithoutId() throws Exception {
-		Command updateCommand = parser.parseCommand("add from 20-02-1999 due 21-02-1999 note I don't know why I want that? level 2");
-		logicApiObject.executeCommand(updateCommand);
 	}
 
 	/**
@@ -170,7 +159,7 @@ public class LogicTest {
 	(expected = TaskNotFoundException.class)
 	public final void testCannotModifyDeleteTask() throws Exception {
 		Command addCommand = parser
-				.parseCommand("add eat my pet dog from 20-02-1999 note I don't know why I want that? level 2");
+				.parseCommand("add eat my pet dog note I don't know why I want that? level 2");
 		logicApiObject.executeCommand(addCommand);
 		Task task = storageObject.getTask(0);
 		assertTrue(task.isDeleted() == false);
@@ -207,6 +196,18 @@ public class LogicTest {
 		logicApiObject.executeCommand(undoCommand);
 	}
 
+	/**
+	 * Tests that a task must have a keyword before it is deleted
+	 *
+	 * @throws Exception
+	 */
+	@Test(expected = InvalidInputException.class)
+	public final void testCannotUpdateTaskWithoutId() throws Exception {
+		Command updateCommand = parser
+				.parseCommand("add from 20-02-1999 due 21-02-1999 note I don't know why I want that? level 2");
+		logicApiObject.executeCommand(updateCommand);
+	}
+
 	@Test
 	/**
 	 * Tests that the task can be marked as completed
@@ -214,7 +215,7 @@ public class LogicTest {
 	 */
 	public final void testCompleteTask() throws Exception {
 		Command addCommand = parser
-				.parseCommand("add eat my pet dog from 20-02-1999 note I don't know why I want that? level 2");
+				.parseCommand("add eat my pet dog due 20-02-1999 note I don't know why I want that? level 2");
 		logicApiObject.executeCommand(addCommand);
 		Task uncompletedTask = storageObject.getTask(0);
 		assertTrue(uncompletedTask.getDateEnd() == null);
@@ -250,7 +251,7 @@ public class LogicTest {
 	@Test
 	public final void testConditionalTasks() throws Exception {
 		Command addCommand = parser
-				.parseCommand("Add CS2103T from 23.12.1992 due 23.12.2002 or due 8.10.2014");
+				.parseCommand("Add CS2103T from 23.12.1992 to 23.12.2002 or from 7.10.2014 to 8.10.2014");
 		logicApiObject.executeCommand(addCommand);
 		Task task = storageObject.getTask(0);
 		assertEquals("Task name is correct", "CS2103T", task.getName());
@@ -261,8 +262,11 @@ public class LogicTest {
 				"23-12-1992 00:00",
 				DateParser.parseCalendar(task.getConditionalDates().get(0)
 						.getStartDate()));
-		assertEquals("Second start date is correct", null, task
-				.getConditionalDates().get(1).getStartDate());
+		assertEquals(
+				"Second start date is correct",
+				"7-10-2014 00:00",
+				DateParser.parseCalendar(task.getConditionalDates().get(1)
+						.getStartDate()));
 		assertEquals(
 				"First due date is correct",
 				"23-12-2002 00:00",
@@ -284,7 +288,7 @@ public class LogicTest {
 	public final void testConfirmConditionalTasks() throws Exception {
 		CommandParser parser = new CommandParser();
 		Command addCommand = parser
-				.parseCommand("Add CS2103T from 23.12.1992 due 23.12.2002 or due 8.10.2014");
+				.parseCommand("Add CS2103T from 23.12.1992 to 23.12.2002 or from 7.10.2014 to 8.10.2014");
 		logicApiObject.executeCommand(addCommand);
 		Command confirmCommand = parser.parseCommand("confirm 0 id 1");
 		logicApiObject.executeCommand(confirmCommand);
@@ -295,12 +299,7 @@ public class LogicTest {
 				.getConditionalDates().get(1).getStartDate(),
 				task.getDateStart());
 		assertEquals("Confirmed due date is correct", task
-				.getConditionalDates().get(1).getDueDate(), task.getDateDue());
-		assertEquals(
-				"Second due date is correct",
-				"8-10-2014 00:00",
-				DateParser.parseCalendar(task.getConditionalDates().get(1)
-						.getDueDate()));
+				.getConditionalDates().get(1).getDueDate(), task.getDateEnd());
 	}
 
 	/**
@@ -344,7 +343,7 @@ public class LogicTest {
 	 */
 	public final void testDeleteTask() throws Exception {
 		Command addCommand = parser
-				.parseCommand("add eat my pet dog from 20-02-1999 note I don't know why I want that? level 2");
+				.parseCommand("add eat my pet dog due 20-02-1999 note I don't know why I want that? level 2");
 		logicApiObject.executeCommand(addCommand);
 		Task task = storageObject.getTask(0);
 		assertTrue(task.isDeleted() == false);
@@ -401,13 +400,13 @@ public class LogicTest {
 	public final void testFilterActiveTask() throws Exception {
 		CommandParser parser = new CommandParser();
 		Command addCommand = parser
-				.parseCommand("Add completed task from 23.12.1992 due 23.12.2002");
+				.parseCommand("Add completed task due 10.10.2013");
 		logicApiObject.executeCommand(addCommand);
 		Command completeCommand = parser.parseCommand("done 0");
 		logicApiObject.executeCommand(completeCommand);
 		addCommand = parser.parseCommand("Add nocompleted task");
 		logicApiObject.executeCommand(addCommand);
-		Command filterCommand = parser.parseCommand("filter status active");
+		Command filterCommand = parser.parseCommand("search status active");
 		Feedback feedback = logicApiObject.executeCommand(filterCommand);
 		ArrayList<Task> taskList = feedback.getTaskList();
 		assertEquals("Only 1 task is shown", 1, taskList.size());
@@ -424,37 +423,18 @@ public class LogicTest {
 	public final void testFilterCompletedTask() throws Exception {
 		CommandParser parser = new CommandParser();
 		Command addCommand = parser
-				.parseCommand("Add completed task from 23.12.1992 due 23.12.2002");
+				.parseCommand("Add completed task due 23.12.2002");
 		logicApiObject.executeCommand(addCommand);
 		Command completeCommand = parser.parseCommand("done 0");
 		logicApiObject.executeCommand(completeCommand);
 		addCommand = parser.parseCommand("Add nocompleted task");
 		logicApiObject.executeCommand(addCommand);
-		Command filterCommand = parser.parseCommand("filter status completed");
+		Command filterCommand = parser.parseCommand("search status completed");
 		Feedback feedback = logicApiObject.executeCommand(filterCommand);
 		ArrayList<Task> taskList = feedback.getTaskList();
 		assertEquals("Only 1 task is shown", 1, taskList.size());
 		assertEquals("Completed task is shown", storageObject.getTask(0),
 				taskList.get(0));
-	}
-
-	@Test
-	/**
-	 * Tests that the modifyTask method in TaskModifier can update the task correctly given the command
-	 * @throws Exception
-	 */
-	public final void testModifyTask() throws Exception {
-		Command addCommand = parser
-				.parseCommand("add eat my pet dog from 20-02-1999 note I don't know why I want that? level 2");
-		Task newTask = new Task();
-		newTask.setId(-1);
-		modifyTask.invoke(taskModifierClass, addCommand.getParam(), newTask);
-		assertEquals("eat my pet dog", newTask.getName());
-		assertEquals("I don't know why I want that?", newTask.getNote());
-		assertEquals(PriorityLevelEnum.RED, newTask.getPriorityLevel());
-		assertEquals(20, newTask.getDateStart().get(Calendar.DAY_OF_MONTH));
-		assertEquals(2, newTask.getDateStart().get(Calendar.MONTH) + 1);
-		assertEquals(1999, newTask.getDateStart().get(Calendar.YEAR));
 	}
 
 	/**
@@ -466,7 +446,7 @@ public class LogicTest {
 	public final void testUndoAddTask() throws Exception {
 		CommandParser parser = new CommandParser();
 		Command addCommand = parser
-				.parseCommand("Add blah from 23.12.1992 due 23.12.2002");
+				.parseCommand("Add blah from 23.12.1992 to 23.12.2002");
 		logicApiObject.executeCommand(addCommand);
 		Command undoCommand = parser.parseCommand("undo");
 		Feedback feedback = logicApiObject.executeCommand(undoCommand);
@@ -483,7 +463,7 @@ public class LogicTest {
 	public final void testUndoDeleteTask() throws Exception {
 		CommandParser parser = new CommandParser();
 		Command addCommand = parser
-				.parseCommand("Add blah from 23.12.1992 due 23.12.2002");
+				.parseCommand("Add blah from 23.12.1992 to 23.12.2002");
 		logicApiObject.executeCommand(addCommand);
 		Command deleteCommand = parser.parseCommand("Delete 0");
 		logicApiObject.executeCommand(deleteCommand);
@@ -501,8 +481,7 @@ public class LogicTest {
 	@Test
 	public final void testUndoUpdateTask() throws Exception {
 		CommandParser parser = new CommandParser();
-		Command addCommand = parser
-				.parseCommand("Add blah from 23.12.1992 due 23.12.2002");
+		Command addCommand = parser.parseCommand("Add blah due 23.12.2002");
 		logicApiObject.executeCommand(addCommand);
 		Task oldTask = storageObject.getTask(0);
 		Command updateCommand = parser.parseCommand("Update 0 name changed");
@@ -520,10 +499,10 @@ public class LogicTest {
 	 */
 	public final void testUpdateTask() throws Exception {
 		Command addCommand = parser
-				.parseCommand("add eat my pet dog from 20-02-1999 due 21-02-1999 note I don't know why I want that? level 2");
+				.parseCommand("add eat my pet dog from 20-02-1999 to 21-02-1999 note I don't know why I want that? level 2");
 		logicApiObject.executeCommand(addCommand);
 		Command updateCommand = parser
-				.parseCommand("update 0 name changed from 01-01-1999 due 01-02-1999 note changed description level 1");
+				.parseCommand("update 0 name changed from 01-01-1999 to 01-02-1999 note changed description level 1");
 		Feedback feedback = logicApiObject.executeCommand(updateCommand);
 		Task newTask = storageObject.getTask(0);
 		assertEquals("changed", newTask.getName());

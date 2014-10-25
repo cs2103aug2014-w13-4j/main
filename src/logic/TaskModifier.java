@@ -17,29 +17,43 @@ public class TaskModifier {
 	private static final int MIN_ID = 0;
 	private static final String INVALID_CONFIRMED_TASK_MESSAGE = "The task is already confirmed.";
 
-	static void modifyTask(Hashtable<ParamEnum, ArrayList<String>> param,
+	static void modifyTimedTask(Hashtable<ParamEnum, ArrayList<String>> param,
 			Task task) throws InvalidDateFormatException {
 		setNameFromCommand(param, task);
 		setTagsFromCommand(param, task);
 		setLevelFromCommand(param, task);
 		setNoteFromCommand(param, task);
-		if (hasMultipleStartDates(param)) {
-			assert hasSameNumberOfDueDates(param);
-			setConditionalDatesFromCommand(param, task);
-		} else {
-			if (param.containsKey(ParamEnum.START_DATE)) {
-				assert hasSingleStartDate(param);
-				if (!param.get(ParamEnum.START_DATE).get(0).isEmpty()) {
-					setStartDateFromCommand(param, task);
-				}
-			}
-			if (param.containsKey(ParamEnum.DUE_DATE)) {
-				assert hasSingleDueDate(param);
-				if (!param.get(ParamEnum.DUE_DATE).get(0).isEmpty()) {
-					setDueDateFromCommand(param, task);
-				}
-			}
-		}
+		setStartDateFromCommand(param, task);
+		setEndDateFromCommand(param, task);
+	}
+
+	static void modifyConditionalTask(
+			Hashtable<ParamEnum, ArrayList<String>> param, Task task)
+			throws InvalidDateFormatException {
+		setNameFromCommand(param, task);
+		setTagsFromCommand(param, task);
+		setLevelFromCommand(param, task);
+		setNoteFromCommand(param, task);
+		setConditionalDatesFromCommand(param, task);
+	}
+
+	static void modifyDeadlineTask(
+			Hashtable<ParamEnum, ArrayList<String>> param, Task task)
+			throws InvalidDateFormatException, InvalidInputException {
+		setNameFromCommand(param, task);
+		setTagsFromCommand(param, task);
+		setLevelFromCommand(param, task);
+		setNoteFromCommand(param, task);
+		setDueDateFromCommand(param, task);
+	}
+
+	static void modifyFloatingTask(
+			Hashtable<ParamEnum, ArrayList<String>> param, Task task)
+			throws InvalidDateFormatException, InvalidInputException {
+		setNameFromCommand(param, task);
+		setTagsFromCommand(param, task);
+		setLevelFromCommand(param, task);
+		setNoteFromCommand(param, task);
 	}
 
 	static void deleteTask(Task task) {
@@ -58,19 +72,20 @@ public class TaskModifier {
 
 	}
 
-	static void confirmTask(int dateId, Task task) throws InvalidInputException {
-		if (isLessThanMinId(dateId) || hasNullConditionalDates(task)
-				|| isIdOutsideConditionalDatesRange(dateId, task)) {
+	static void confirmEvent(int dateId, Task event)
+			throws InvalidInputException {
+		if (isLessThanMinId(dateId) || hasNullConditionalDates(event)
+				|| isIdOutsideConditionalDatesRange(dateId, event)) {
 			throw new InvalidInputException(INVALID_CONDITIONAL_DATE_ID_MESSAGE);
-		} else if (task.isConfirmed()) {
+		} else if (event.isConfirmed()) {
 			throw new InvalidInputException(INVALID_CONFIRMED_TASK_MESSAGE);
 		} else {
-			StartDueDatePair conditionalDatesToConfirm = task
+			StartDueDatePair conditionalDatesToConfirm = event
 					.getConditionalDates().get(dateId);
 			Calendar startDate = conditionalDatesToConfirm.getStartDate();
-			task.setDateStart(startDate);
-			Calendar dueDate = conditionalDatesToConfirm.getDueDate();
-			task.setDateDue(dueDate);
+			event.setDateStart(startDate);
+			Calendar endDate = conditionalDatesToConfirm.getDueDate();
+			event.setDateEnd(endDate);
 		}
 	}
 
@@ -78,14 +93,14 @@ public class TaskModifier {
 			Hashtable<ParamEnum, ArrayList<String>> param, Task task)
 			throws InvalidDateFormatException {
 		ArrayList<String> startDates = param.get(ParamEnum.START_DATE);
-		ArrayList<String> dueDates = param.get(ParamEnum.DUE_DATE);
+		ArrayList<String> endDates = param.get(ParamEnum.END_DATE);
 		ArrayList<StartDueDatePair> conditionalDates = new ArrayList<StartDueDatePair>();
 		for (int i = 0; i < startDates.size(); i++) {
 			String startDate = startDates.get(i);
-			String dueDate = dueDates.get(i);
+			String endDate = endDates.get(i);
 			StartDueDatePair datePair = new StartDueDatePair(
 					DateParser.parseString(startDate),
-					DateParser.parseString(dueDate));
+					DateParser.parseString(endDate));
 			conditionalDates.add(datePair);
 		}
 		task.setConditionalDates(conditionalDates);
@@ -105,6 +120,15 @@ public class TaskModifier {
 		Calendar dueDate = DateParser.parseString(param.get(ParamEnum.DUE_DATE)
 				.get(0));
 		task.setDateDue(dueDate);
+	}
+
+	private static void setEndDateFromCommand(
+			Hashtable<ParamEnum, ArrayList<String>> param, Task task)
+			throws InvalidDateFormatException {
+		Calendar endDate = DateParser.parseString(param.get(ParamEnum.END_DATE)
+				.get(0));
+		task.setDateEnd(endDate);
+
 	}
 
 	private static void setStartDateFromCommand(
@@ -145,11 +169,12 @@ public class TaskModifier {
 		}
 	}
 
-	private static boolean hasSameNumberOfDueDates(
+	private static boolean hasSameNumberOfEndDates(
 			Hashtable<ParamEnum, ArrayList<String>> param) {
-		return param.containsKey(ParamEnum.DUE_DATE)
-				&& param.get(ParamEnum.DUE_DATE).size() == param.get(
-						ParamEnum.START_DATE).size();
+		return param.containsKey(ParamEnum.END_DATE)
+				&& param.get(ParamEnum.END_DATE).size() == param.get(
+						ParamEnum.START_DATE).size()
+				&& hasNoNullElements(param.get(ParamEnum.END_DATE));
 	}
 
 	private static boolean hasMultipleStartDates(
@@ -166,6 +191,15 @@ public class TaskModifier {
 	private static boolean hasSingleStartDate(
 			Hashtable<ParamEnum, ArrayList<String>> param) {
 		return param.get(ParamEnum.START_DATE).size() == 1;
+	}
+
+	private static boolean hasNoNullElements(ArrayList<String> arrayList) {
+		for (String s : arrayList) {
+			if (s == null) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private static boolean isIdOutsideConditionalDatesRange(int dateId,

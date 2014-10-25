@@ -15,12 +15,14 @@ import models.History;
 import models.Task;
 import exceptions.FileFormatNotSupportedException;
 import exceptions.HistoryNotFoundException;
+import exceptions.InvalidCommandUseException;
 import exceptions.InvalidDateFormatException;
 import exceptions.InvalidInputException;
 import exceptions.TaskNotFoundException;
 
 //TODO: Throw exceptions when mandatory fields are missing
 public class Logic {
+	private static final String INVALID_DATE_INPUT_MESSAGE = "Date parameters provided are wrong.";
 	private static final String ADD_MESSAGE = "%1$s is successfully added.";
 	private static final String DELETE_MESSAGE = "%1$s is successfully deleted";
 	private static final String EDIT_MESSAGE = "%1$s is successfully edited.";
@@ -49,12 +51,31 @@ public class Logic {
 	 * @throws TaskNotFoundException
 	 * @throws IOException
 	 * @throws InvalidDateFormatException
+	 * @throws InvalidInputException
 	 */
 	Feedback add(Hashtable<ParamEnum, ArrayList<String>> param)
 			throws TaskNotFoundException, IOException,
-			InvalidDateFormatException {
+			InvalidDateFormatException, InvalidInputException {
 		Task task = new Task();
-		TaskModifier.modifyTask(param, task);
+		if (hasFloatingTaskParams(param)) {
+			ApplicationLogger.getApplicationLogger().log(Level.INFO,
+					"Adding floating task.");
+			TaskModifier.modifyFloatingTask(param, task);
+		} else if (hasConditionalTaskParams(param)) {
+			ApplicationLogger.getApplicationLogger().log(Level.INFO,
+					"Adding conditional task.");
+			TaskModifier.modifyConditionalTask(param, task);
+		} else if (hasTimedTaskParams(param)) {
+			ApplicationLogger.getApplicationLogger().log(Level.INFO,
+					"Adding timed task.");
+			TaskModifier.modifyTimedTask(param, task);
+		} else if (hasDeadlineTaskParam(param)) {
+			ApplicationLogger.getApplicationLogger().log(Level.INFO,
+					"Adding deadline task.");
+			TaskModifier.modifyDeadlineTask(param, task);
+		} else {
+			throw new InvalidInputException(INVALID_DATE_INPUT_MESSAGE);
+		}
 		storage.writeTaskToFile(task);
 		String name = task.getName();
 		Task clonedTask = cloner.deepClone(task);
@@ -74,20 +95,26 @@ public class Logic {
 	 * @throws TaskNotFoundException
 	 * @throws IOException
 	 * @throws InvalidDateFormatException
+	 * @throws InvalidCommandUseException
 	 */
 	Feedback complete(Hashtable<ParamEnum, ArrayList<String>> param)
 			throws TaskNotFoundException, IOException,
-			InvalidDateFormatException {
+			InvalidDateFormatException, InvalidCommandUseException {
 		int taskId = getTaskId(param);
 		Task task = getTaskFromStorage(taskId);
-		TaskModifier.completeTask(param, task);
-		String name = task.getName();
-		storage.writeTaskToFile(task);
-		Task clonedTask = cloner.deepClone(task);
-		logicUndo.pushCompleteCommandToHistory(clonedTask);
-		ArrayList<Task> taskList = storage.getAllTasks();
-		return createTaskListFeedback(
-				createMessage(COMPLETE_MESSAGE, name, null), taskList);
+		if (task.getDateEnd() == null) {
+			TaskModifier.completeTask(param, task);
+			String name = task.getName();
+			storage.writeTaskToFile(task);
+			Task clonedTask = cloner.deepClone(task);
+			logicUndo.pushCompleteCommandToHistory(clonedTask);
+			ArrayList<Task> taskList = storage.getAllTasks();
+			return createTaskListFeedback(
+					createMessage(COMPLETE_MESSAGE, name, null), taskList);
+		} else {
+			throw new InvalidCommandUseException(
+					"Only uncompleted tasks without an end date before can be completed");
+		}
 	}
 
 	Feedback confirm(Hashtable<ParamEnum, ArrayList<String>> param)
@@ -95,15 +122,15 @@ public class Logic {
 		int taskId = getTaskId(param);
 		String dateIdString = param.get(ParamEnum.ID).get(0);
 		int dateId = Integer.parseInt(dateIdString);
-		Task task = getTaskFromStorage(taskId);
-		TaskModifier.confirmTask(dateId, task);
-		storage.writeTaskToFile(task);
-		Task clonedTask = cloner.deepClone(task);
+		Task event = getTaskFromStorage(taskId);
+		TaskModifier.confirmEvent(dateId, event);
+		storage.writeTaskToFile(event);
+		Task clonedTask = cloner.deepClone(event);
 		logicUndo.pushConfirmCommandToHistory(clonedTask);
-		String taskName = task.getName();
+		String taskName = event.getName();
 		return createTaskAndTaskListFeedback(
 				createMessage(CONFIRM_MESSAGE, taskName, null),
-				storage.getAllTasks(), task);
+				storage.getAllTasks(), event);
 	}
 
 	private String createMessage(String message, String variableText1,
@@ -210,6 +237,66 @@ public class Logic {
 		return Integer.parseInt(param.get(ParamEnum.KEYWORD).get(0));
 	}
 
+	private boolean hasConditionalTaskParams(
+			Hashtable<ParamEnum, ArrayList<String>> param) {
+		return hasMultipleEntries(param, ParamEnum.START_DATE)
+				&& hasMultipleEntries(param, ParamEnum.END_DATE)
+				&& hasEqualStartAndEndDates(param)
+				&& !param.containsKey(ParamEnum.DUE_DATE);
+	}
+
+	private boolean hasDeadlineTaskParam(
+			Hashtable<ParamEnum, ArrayList<String>> param) {
+		return !param.containsKey(ParamEnum.START_DATE)
+				&& param.containsKey(ParamEnum.DUE_DATE)
+				&& param.get(ParamEnum.DUE_DATE).size() == 1
+				&& !param.containsKey(ParamEnum.END_DATE);
+	}
+
+	private boolean hasEmptyElements(ArrayList<String> arrayList) {
+		for (String s : arrayList) {
+			if (s.isEmpty()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean hasEqualStartAndEndDates(
+			Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.get(ParamEnum.START_DATE).size() == param.get(
+				ParamEnum.END_DATE).size();
+	}
+
+	private boolean hasFloatingTaskParams(
+			Hashtable<ParamEnum, ArrayList<String>> param) {
+		return !param.containsKey(ParamEnum.START_DATE)
+				&& !param.containsKey(ParamEnum.DUE_DATE)
+				&& !param.containsKey(ParamEnum.END_DATE);
+	}
+
+	private boolean hasMultipleEntries(
+			Hashtable<ParamEnum, ArrayList<String>> param, ParamEnum type) {
+		return param.containsKey(type) && param.get(type).size() > 1
+				&& !hasEmptyElements(param.get(type));
+	}
+
+	private boolean hasTimedTaskParams(
+			Hashtable<ParamEnum, ArrayList<String>> param) {
+		if (param.containsKey(ParamEnum.START_DATE)
+				&& param.containsKey(ParamEnum.END_DATE)
+				&& !param.containsKey(ParamEnum.DUE_DATE)) {
+			assert (param.get(ParamEnum.START_DATE) != null);
+			assert (param.get(ParamEnum.END_DATE) != null);
+			return param.get(ParamEnum.START_DATE).size() == 1
+					&& !param.get(ParamEnum.START_DATE).get(0).isEmpty()
+					&& param.get(ParamEnum.END_DATE).size() == 1
+					&& !param.get(ParamEnum.END_DATE).get(0).isEmpty();
+		} else {
+			return false;
+		}
+	}
+
 	Feedback initialize() {
 		try {
 			ApplicationLogger.getApplicationLogger().log(Level.INFO,
@@ -246,7 +333,7 @@ public class Logic {
 	// Hiccup: undo add will not update the task (make it disappear) if it is
 	// displayed
 	Feedback undo() throws HistoryNotFoundException, TaskNotFoundException,
-	IOException {
+			IOException {
 		History lastAction = logicUndo.getLastAction();
 		if (lastAction == null) {
 			throw new HistoryNotFoundException("Not supported yet. :( ");
@@ -259,12 +346,12 @@ public class Logic {
 				return createTaskAndTaskListFeedback(
 						createMessage(UNDO_MESSAGE, lastAction.getCommand()
 								.regex(), task.getName()),
-								storage.getAllTasks(), null);
+						storage.getAllTasks(), null);
 			} else {
 				return createTaskAndTaskListFeedback(
 						createMessage(UNDO_MESSAGE, lastAction.getCommand()
 								.regex(), task.getName()),
-								storage.getAllTasks(), lastAction.getTask());
+						storage.getAllTasks(), lastAction.getTask());
 			}
 		}
 	}
@@ -280,14 +367,15 @@ public class Logic {
 	 * @throws TaskNotFoundException
 	 * @throws IOException
 	 * @throws InvalidDateFormatException
+	 * @throws InvalidInputException
 	 */
 	Feedback update(Hashtable<ParamEnum, ArrayList<String>> param)
 			throws TaskNotFoundException, IOException,
-			InvalidDateFormatException {
+			InvalidDateFormatException, InvalidInputException {
 		int taskId = getTaskId(param);
 		Task oldTask = getTaskFromStorage(taskId);
 		Task task = cloner.deepClone(oldTask);
-		TaskModifier.modifyTask(param, task);
+		TaskModifier.modifyTimedTask(param, task);
 		storage.writeTaskToFile(task);
 		String name = task.getName();
 		ArrayList<Task> taskList = storage.getAllTasks();

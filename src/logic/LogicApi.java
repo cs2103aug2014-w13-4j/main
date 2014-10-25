@@ -10,6 +10,7 @@ import models.Command;
 import models.Feedback;
 import command.*;
 import exceptions.HistoryNotFoundException;
+import exceptions.InvalidCommandUseException;
 import exceptions.InvalidDateFormatException;
 import exceptions.InvalidInputException;
 import exceptions.TaskNotFoundException;
@@ -70,11 +71,12 @@ public class LogicApi {
 	 * @throws TaskNotFoundException
 	 * @throws InvalidInputException
 	 * @throws HistoryNotFoundException
+	 * @throws InvalidCommandUseException 
 	 */
 	public Feedback executeCommand(Command command)
 			throws TaskNotFoundException, IOException,
 			InvalidDateFormatException, InvalidInputException,
-			HistoryNotFoundException {
+			HistoryNotFoundException, InvalidCommandUseException {
 		if (logic.storage == null) {
 			throw new IOException();
 		} else {
