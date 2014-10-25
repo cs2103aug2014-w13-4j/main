@@ -39,62 +39,29 @@ public class Logic {
 	Logic() {
 	}
 
-	Feedback initialize() {
-		try {
-			ApplicationLogger.getApplicationLogger().log(Level.INFO, "Initializing Logic Backend.");
-			storage = new Storage();
-			return displayAll();
-		} catch (IOException | FileFormatNotSupportedException e) {
-			ApplicationLogger.getApplicationLogger().log(Level.SEVERE, e.getMessage());
-			return createTaskListFeedback(ERROR_STORAGE_MESSAGE, null);
-		}
-	}
-
-	Feedback display(Hashtable<ParamEnum, ArrayList<String>> param)
-			throws NumberFormatException, TaskNotFoundException {
-		String idString = param.get(ParamEnum.KEYWORD).get(0);
-		logicUndo.pushNullCommandToHistory();
-		if (idString.isEmpty()) {
-			return displayAll();
-		} else {
-			int id = Integer.parseInt(idString);
-			return displayTask(id);
-		}
-	}
-
-	Feedback confirm(Hashtable<ParamEnum, ArrayList<String>> param)
-			throws InvalidInputException, TaskNotFoundException, IOException {
-		int taskId = getTaskId(param);
-		String dateIdString = param.get(ParamEnum.ID).get(0);
-		int dateId = Integer.parseInt(dateIdString);
-		Task task = getTaskFromStorage(taskId);
-		TaskModifier.confirmTask(dateId, task);
-		storage.writeTaskToFile(task);
-		Task clonedTask = cloner.deepClone(task);
-		logicUndo.pushConfirmCommandToHistory(clonedTask);
-		String taskName = task.getName();
-		return createTaskAndTaskListFeedback(
-				createMessage(CONFIRM_MESSAGE, taskName, null),
-				storage.getAllTasks(), task);
-	}
-
 	/**
-	 * Search for tasks that contain the keyword in the name, description or
-	 * tags
+	 * Adds a new task to the file
 	 *
-	 * @param command
-	 *            : the command created by CommandParser
-	 * @return feedback containing all the tasks in the file, and the message
-	 * @throws InvalidInputException 
-	 * @throws InvalidDateFormatException 
+	 * @param param
+	 *            : the command created by commandParser
+	 * @return feedback containing the updated list of tasks in the file, and
+	 *         the message.
+	 * @throws TaskNotFoundException
+	 * @throws IOException
+	 * @throws InvalidDateFormatException
 	 */
-
-	Feedback search(Hashtable<ParamEnum, ArrayList<String>> param) throws InvalidDateFormatException, InvalidInputException {
-		ArrayList<Task> taskList = storage.searchTask(param);
-		logicUndo.pushNullCommandToHistory();
-		return createTaskListFeedback(
-				createMessage(SEARCH_MESSAGE, String.valueOf(taskList.size()),
-						null), taskList);
+	Feedback add(Hashtable<ParamEnum, ArrayList<String>> param)
+			throws TaskNotFoundException, IOException,
+			InvalidDateFormatException {
+		Task task = new Task();
+		TaskModifier.modifyTask(param, task);
+		storage.writeTaskToFile(task);
+		String name = task.getName();
+		Task clonedTask = cloner.deepClone(task);
+		logicUndo.pushAddCommandToHistory(clonedTask);
+		ArrayList<Task> taskList = storage.getAllTasks();
+		return createTaskListFeedback(createMessage(ADD_MESSAGE, name, null),
+				taskList);
 	}
 
 	/**
@@ -123,29 +90,39 @@ public class Logic {
 				createMessage(COMPLETE_MESSAGE, name, null), taskList);
 	}
 
-	/**
-	 * Adds a new task to the file
-	 *
-	 * @param param
-	 *            : the command created by commandParser
-	 * @return feedback containing the updated list of tasks in the file, and
-	 *         the message.
-	 * @throws TaskNotFoundException
-	 * @throws IOException
-	 * @throws InvalidDateFormatException
-	 */
-	Feedback add(Hashtable<ParamEnum, ArrayList<String>> param)
-			throws TaskNotFoundException, IOException,
-			InvalidDateFormatException {
-		Task task = new Task();
-		TaskModifier.modifyTask(param, task);
+	Feedback confirm(Hashtable<ParamEnum, ArrayList<String>> param)
+			throws InvalidInputException, TaskNotFoundException, IOException {
+		int taskId = getTaskId(param);
+		String dateIdString = param.get(ParamEnum.ID).get(0);
+		int dateId = Integer.parseInt(dateIdString);
+		Task task = getTaskFromStorage(taskId);
+		TaskModifier.confirmTask(dateId, task);
 		storage.writeTaskToFile(task);
-		String name = task.getName();
 		Task clonedTask = cloner.deepClone(task);
-		logicUndo.pushAddCommandToHistory(clonedTask);
-		ArrayList<Task> taskList = storage.getAllTasks();
-		return createTaskListFeedback(createMessage(ADD_MESSAGE, name, null),
-				taskList);
+		logicUndo.pushConfirmCommandToHistory(clonedTask);
+		String taskName = task.getName();
+		return createTaskAndTaskListFeedback(
+				createMessage(CONFIRM_MESSAGE, taskName, null),
+				storage.getAllTasks(), task);
+	}
+
+	private String createMessage(String message, String variableText1,
+			String variableText2) {
+		return String.format(message, variableText1, variableText2);
+	}
+
+	private Feedback createTaskAndTaskListFeedback(String message,
+			ArrayList<Task> taskList, Task task) {
+		return new Feedback(message, taskList, task);
+	}
+
+	private Feedback createTaskFeedback(String message, Task task) {
+		return new Feedback(message, null, task);
+	}
+
+	private Feedback createTaskListFeedback(String message,
+			ArrayList<Task> taskList) {
+		return new Feedback(message, taskList, null);
 	}
 
 	/**
@@ -170,6 +147,126 @@ public class Logic {
 		ArrayList<Task> taskList = storage.getAllTasks();
 		return createTaskListFeedback(
 				createMessage(DELETE_MESSAGE, name, null), taskList);
+	}
+
+	Feedback display(Hashtable<ParamEnum, ArrayList<String>> param)
+			throws NumberFormatException, TaskNotFoundException {
+		String idString = param.get(ParamEnum.KEYWORD).get(0);
+		logicUndo.pushNullCommandToHistory();
+		if (idString.isEmpty()) {
+			return displayAll();
+		} else {
+			int id = Integer.parseInt(idString);
+			return displayTask(id);
+		}
+	}
+
+	/**
+	 * Display all tasks in the list
+	 *
+	 * @return feedback containing all the tasks in the file, and the message.
+	 */
+	private Feedback displayAll() {
+		ArrayList<Task> taskList = storage.getAllTasks();
+		return createTaskListFeedback(
+				createMessage(DISPLAY_MESSAGE, null, null), taskList);
+	}
+
+	/**
+	 * Displays the individual task
+	 *
+	 * @param id
+	 *            : task id
+	 * @return feedback containing the task and the message
+	 * @throws TaskNotFoundException
+	 *             : if the id is invalid or if it is deleted
+	 */
+
+	private Feedback displayTask(int id) throws TaskNotFoundException {
+		Task task = getTaskFromStorage(id);
+		return createTaskFeedback(createMessage(DISPLAY_MESSAGE, null, null),
+				task);
+	}
+
+	/**
+	 * Gets the task from storage
+	 *
+	 * @param id
+	 *            : id of task
+	 * @return task corresponding to the id
+	 * @throws TaskNotFoundException
+	 *             : if task is already deleted, or if id is invalid
+	 */
+	private Task getTaskFromStorage(int id) throws TaskNotFoundException {
+		Task task = storage.getTask(id);
+		if (task.isDeleted()) {
+			throw new TaskNotFoundException(createMessage(
+					ERROR_ALREADY_DELETED_MESSAGE, Integer.toString(id), null));
+		}
+		return task;
+	}
+
+	private int getTaskId(Hashtable<ParamEnum, ArrayList<String>> param) {
+		return Integer.parseInt(param.get(ParamEnum.KEYWORD).get(0));
+	}
+
+	Feedback initialize() {
+		try {
+			ApplicationLogger.getApplicationLogger().log(Level.INFO,
+					"Initializing Logic Backend.");
+			storage = new Storage();
+			return displayAll();
+		} catch (IOException | FileFormatNotSupportedException e) {
+			ApplicationLogger.getApplicationLogger().log(Level.SEVERE,
+					e.getMessage());
+			return createTaskListFeedback(ERROR_STORAGE_MESSAGE, null);
+		}
+	}
+
+	/**
+	 * Search for tasks that contain the keyword in the name, description or
+	 * tags
+	 *
+	 * @param command
+	 *            : the command created by CommandParser
+	 * @return feedback containing all the tasks in the file, and the message
+	 * @throws InvalidInputException
+	 * @throws InvalidDateFormatException
+	 */
+
+	Feedback search(Hashtable<ParamEnum, ArrayList<String>> param)
+			throws InvalidDateFormatException, InvalidInputException {
+		ArrayList<Task> taskList = storage.searchTask(param);
+		logicUndo.pushNullCommandToHistory();
+		return createTaskListFeedback(
+				createMessage(SEARCH_MESSAGE, String.valueOf(taskList.size()),
+						null), taskList);
+	}
+
+	// Hiccup: undo add will not update the task (make it disappear) if it is
+	// displayed
+	Feedback undo() throws HistoryNotFoundException, TaskNotFoundException,
+	IOException {
+		History lastAction = logicUndo.getLastAction();
+		if (lastAction == null) {
+			throw new HistoryNotFoundException("Not supported yet. :( ");
+		} else {
+			Task task = lastAction.getTask();
+			storage.writeTaskToFile(task);
+			// TODO: Find better way. Is there a way to generalise such that the
+			// task detail is not shown if it is deleted?
+			if (task.isDeleted()) {
+				return createTaskAndTaskListFeedback(
+						createMessage(UNDO_MESSAGE, lastAction.getCommand()
+								.regex(), task.getName()),
+								storage.getAllTasks(), null);
+			} else {
+				return createTaskAndTaskListFeedback(
+						createMessage(UNDO_MESSAGE, lastAction.getCommand()
+								.regex(), task.getName()),
+								storage.getAllTasks(), lastAction.getTask());
+			}
+		}
 	}
 
 	/**
@@ -197,99 +294,5 @@ public class Logic {
 		logicUndo.pushUpdateCommandToHistory(oldTask);
 		return createTaskListFeedback(createMessage(EDIT_MESSAGE, name, null),
 				taskList);
-	}
-
-	// Hiccup: undo add will not update the task (make it disappear) if it is
-	// displayed
-	Feedback undo() throws HistoryNotFoundException, TaskNotFoundException,
-			IOException {
-		History lastAction = logicUndo.getLastAction();
-		if (lastAction == null) {
-			throw new HistoryNotFoundException("Not supported yet. :( ");
-		} else {
-			Task task = lastAction.getTask();
-			storage.writeTaskToFile(task);
-			// TODO: Find better way. Is there a way to generalise such that the
-			// task detail is not shown if it is deleted?
-			if (task.isDeleted()) {
-				return createTaskAndTaskListFeedback(
-						createMessage(UNDO_MESSAGE, lastAction.getCommand()
-								.regex(), task.getName()),
-						storage.getAllTasks(), null);
-			} else {
-				return createTaskAndTaskListFeedback(
-						createMessage(UNDO_MESSAGE, lastAction.getCommand()
-								.regex(), task.getName()),
-						storage.getAllTasks(), lastAction.getTask());
-			}
-		}
-	}
-
-	/**
-	 * Display all tasks in the list
-	 *
-	 * @return feedback containing all the tasks in the file, and the message.
-	 */
-	private Feedback displayAll() {
-		ArrayList<Task> taskList = storage.getAllTasks();
-		return createTaskListFeedback(
-				createMessage(DISPLAY_MESSAGE, null, null), taskList);
-	}
-
-	/**
-	 * Displays the individual task
-	 * 
-	 * @param id
-	 *            : task id
-	 * @return feedback containing the task and the message
-	 * @throws TaskNotFoundException
-	 *             : if the id is invalid or if it is deleted
-	 */
-
-	private Feedback displayTask(int id) throws TaskNotFoundException {
-		Task task = getTaskFromStorage(id);
-		return createTaskFeedback(createMessage(DISPLAY_MESSAGE, null, null),
-				task);
-	}
-
-	/**
-	 * Gets the task from storage
-	 * 
-	 * @param id
-	 *            : id of task
-	 * @return task corresponding to the id
-	 * @throws TaskNotFoundException
-	 *             : if task is already deleted, or if id is invalid
-	 */
-	private Task getTaskFromStorage(int id) throws TaskNotFoundException {
-		Task task = storage.getTask(id);
-		if (task.isDeleted()) {
-			throw new TaskNotFoundException(createMessage(
-					ERROR_ALREADY_DELETED_MESSAGE, Integer.toString(id), null));
-		}
-		return task;
-	}
-
-	private String createMessage(String message, String variableText1,
-			String variableText2) {
-		return String.format(message, variableText1, variableText2);
-	}
-
-	private Feedback createTaskListFeedback(String message,
-			ArrayList<Task> taskList) {
-		return new Feedback(message, taskList, null);
-	}
-
-	private Feedback createTaskFeedback(String message, Task task) {
-		return new Feedback(message, null, task);
-	}
-
-	private Feedback createTaskAndTaskListFeedback(String message,
-			ArrayList<Task> taskList, Task task) {
-		return new Feedback(message, taskList, task);
-	}
-
-	private int getTaskId(Hashtable<ParamEnum, ArrayList<String>> param) {
-		return Integer.parseInt(param.get(ParamEnum.KEYWORD).get(0));
 	}
 }
