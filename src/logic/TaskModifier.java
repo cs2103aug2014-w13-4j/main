@@ -185,7 +185,6 @@ public class TaskModifier {
 	public static void undeleteTask(Task task) {
 		assert (task.isDeleted());
 		task.setDeleted(false);
-
 	}
 
 	public static void uncompleteTask(Task task) {
@@ -194,9 +193,9 @@ public class TaskModifier {
 	}
 
 	public static void unconfirmTask(Task task) {
-		assert (task.getDateStart() != null || task.getDateDue() != null);
+		assert (task.getDateStart() != null || task.getDateEnd() != null);
 		task.setDateStart(null);
-		task.setDateDue(null);
+		task.setDateEnd(null);
 
 	}
 
