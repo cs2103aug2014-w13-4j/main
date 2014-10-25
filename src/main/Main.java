@@ -30,10 +30,6 @@ public class Main extends Application{
 		initRootLayout();
 		initTaskList();
 
-//		Parent root = FXMLLoader.load(getClass().getResource("main.fxml"));
-//		primaryStage.setTitle("Awesome Task Manager");
-//		primaryStage.setScene(new Scene(root));
-//		primaryStage.show();
 	}
 
 	private void initPrimaryStage(Stage primaryStage) {
