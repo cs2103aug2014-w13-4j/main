@@ -120,6 +120,19 @@ public class Logic {
 		}
 	}
 
+	/**
+	 * Confirms a particular conditional date pair in the conditional task to be
+	 * used as the start and end date
+	 * 
+	 * @param param
+	 *            : the command created by commandParser
+	 * @return feedback containing the updated list of tasks in the file, and
+	 *         the message.
+	 * @throws InvalidInputException
+	 * @throws TaskNotFoundException
+	 * @throws IOException
+	 */
+
 	Feedback confirm(Hashtable<ParamEnum, ArrayList<String>> param)
 			throws InvalidInputException, TaskNotFoundException, IOException {
 		int taskId = getTaskId(param);
@@ -159,6 +172,17 @@ public class Logic {
 		return createTaskListFeedback(
 				createMessage(DELETE_MESSAGE, name, null), taskList);
 	}
+
+	/**
+	 * Displays the task if the id is provided, or all the tasks otherwise
+	 * 
+	 * @param param
+	 *            : the command created by commandParser
+	 * @return feedback containing the list of all tasks in the file/the task to
+	 *         be displayed, and the message.
+	 * @throws NumberFormatException
+	 * @throws TaskNotFoundException
+	 */
 
 	Feedback display(Hashtable<ParamEnum, ArrayList<String>> param)
 			throws NumberFormatException, TaskNotFoundException {
@@ -205,8 +229,15 @@ public class Logic {
 						null), taskList);
 	}
 
-	// Hiccup: undo add will not update the task (make it disappear) if it is
-	// displayed
+	/**
+	 * Undo the last action taken
+	 * 
+	 * @return feedback containing the list of updated tasks in the file, and
+	 *         the message.
+	 * @throws HistoryNotFoundException
+	 * @throws TaskNotFoundException
+	 * @throws IOException
+	 */
 	Feedback undo() throws HistoryNotFoundException, TaskNotFoundException,
 			IOException {
 		History lastAction = logicUndo.getLastAction();
