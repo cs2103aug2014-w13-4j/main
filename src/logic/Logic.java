@@ -22,6 +22,9 @@ import exceptions.TaskNotFoundException;
 
 //TODO: Throw exceptions when mandatory fields are missing
 public class Logic {
+	private static final String ERROR_UPDATE_DEADLINE_TASK_MESSAGE = "Task %1$s is a deadline task, so it should not contain start or end date";
+	private static final String ERROR_UPDATE_TIMED_TASK_MESSAGE = "Task %1$s is a timed task, so it should not contain due dates";
+	private static final String ERROR_UPDATE_CONDITIONAL_TASK_MESSAGE = "Task %1$s is a conditional task, so it should contain multiple start and end dates";
 	private static final String ERROR_COMPLETE_MESSAGE = "Only uncompleted tasks without an end date before can be completed";
 	private static final String ERROR_DATE_INPUT_MESSAGE = "The date parameters provided are invalid.";
 	private static final String ADD_MESSAGE = "%1$s is successfully added.";
@@ -205,7 +208,7 @@ public class Logic {
 	// Hiccup: undo add will not update the task (make it disappear) if it is
 	// displayed
 	Feedback undo() throws HistoryNotFoundException, TaskNotFoundException,
-	IOException {
+			IOException {
 		History lastAction = logicUndo.getLastAction();
 		if (lastAction == null) {
 			throw new HistoryNotFoundException("Not supported yet. :( ");
@@ -218,12 +221,12 @@ public class Logic {
 				return createTaskAndTaskListFeedback(
 						createMessage(UNDO_MESSAGE, lastAction.getCommand()
 								.regex(), task.getName()),
-								storage.getAllTasks(), null);
+						storage.getAllTasks(), null);
 			} else {
 				return createTaskAndTaskListFeedback(
 						createMessage(UNDO_MESSAGE, lastAction.getCommand()
 								.regex(), task.getName()),
-								storage.getAllTasks(), lastAction.getTask());
+						storage.getAllTasks(), lastAction.getTask());
 			}
 		}
 	}
@@ -246,26 +249,50 @@ public class Logic {
 		int taskId = getTaskId(param);
 		Task task = getTaskFromStorage(taskId);
 		Task clonedTask = cloner.deepClone(task);
-		if ((task.isConditionalTask() && !hasInvalidConditionalTaskParams(param))
-				|| (task.isFloatingTask() && hasConditionalTaskParams(param))) {
-			TaskModifier.modifyConditionalTask(param, task);
-		} else if ((task.isTimedTask() && !hasInvalidTimedTaskParams(param))
-				|| (task.isFloatingTask() && hasTimedTaskParams(param))) {
-			TaskModifier.modifyTimedTask(param, task);
-		} else if ((task.isDeadlineTask() && !hasInvalidDeadlineTaskParams(param))
-				|| (task.isFloatingTask() && hasDeadlineTaskParams(param))) {
-			TaskModifier.modifyDeadlineTask(param, task);
-		} else if (task.isFloatingTask() && hasFloatingTaskParams(param)) {
-			TaskModifier.modifyFloatingTask(param, task);
+		if (task.isConditionalTask()) {
+			if (hasInvalidConditionalTaskParams(param)) {
+				throw new InvalidInputException(createMessage(
+						ERROR_UPDATE_CONDITIONAL_TASK_MESSAGE,
+						Integer.toString(taskId), null));
+			} else {
+				TaskModifier.modifyConditionalTask(param, task);
+			}
+		} else if (task.isTimedTask()) {
+			if (hasInvalidTimedTaskParams(param)) {
+				throw new InvalidInputException(createMessage(
+						ERROR_UPDATE_TIMED_TASK_MESSAGE,
+						Integer.toString(taskId), null));
+			} else {
+				TaskModifier.modifyTimedTask(param, task);
+			}
+		} else if (task.isDeadlineTask()) {
+			if (hasInvalidDeadlineTaskParams(param)) {
+				throw new InvalidInputException(createMessage(
+						ERROR_UPDATE_DEADLINE_TASK_MESSAGE,
+						Integer.toString(taskId), null));
+			} else {
+				TaskModifier.modifyDeadlineTask(param, task);
+			}
 		} else {
-			throw new InvalidInputException(ERROR_DATE_INPUT_MESSAGE);
+			assert task.isFloatingTask();
+			if (hasConditionalTaskParams(param)) {
+				TaskModifier.modifyConditionalTask(param, task);
+			} else if (hasTimedTaskParams(param)) {
+				TaskModifier.modifyTimedTask(param, task);
+			} else if (hasDeadlineTaskParams(param)) {
+				TaskModifier.modifyDeadlineTask(param, task);
+			} else if (hasFloatingTaskParams(param)) {
+				TaskModifier.modifyFloatingTask(param, task);
+			} else {
+				throw new InvalidInputException(ERROR_DATE_INPUT_MESSAGE);
+			}
 		}
 		storage.writeTaskToFile(task);
 		String name = task.getName();
 		ArrayList<Task> taskList = storage.getAllTasks();
 		logicUndo.pushUpdateCommandToHistory(clonedTask);
-		return createTaskListFeedback(createMessage(EDIT_MESSAGE, name, null),
-				taskList);
+		return createTaskAndTaskListFeedback(
+				createMessage(EDIT_MESSAGE, name, null), taskList, task);
 	}
 
 	private String createMessage(String message, String variableText1,
