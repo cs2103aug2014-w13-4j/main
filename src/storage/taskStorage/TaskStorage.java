@@ -67,8 +67,8 @@ public class TaskStorage {
 			task = TaskConverter.stringToTask(fileScanner.nextLine());
 			taskBuffer.add(task);
 			// add in interval tree
-			dateStart = task.getDateStart();
-			if (dateStart != null) {
+			if (task.isEvent()) {
+				dateStart = task.getDateStart();
 				dateDue = task.getDateDue();
 				if (intervalTree.isValid(dateStart, dateDue)) {
 					intervalTree.add(dateStart, dateDue, task.getId());
@@ -78,6 +78,15 @@ public class TaskStorage {
 			}
 			nextTaskIndex ++;
 		}
+	}
+
+	/**
+	 * Return an interval tree for the whole list of tasks
+	 *
+	 * @return IntervalSearch: the interval tree for the whole list of tasks
+	 */
+	public IntervalSearch getIntervalTree() {
+		return intervalTree;
 	}
 
 	/**
@@ -95,7 +104,14 @@ public class TaskStorage {
 			nextTaskIndex ++;
 			addTask(task);
 			// Add new task to task buffer
-			taskBuffer.add(task);
+			taskBuffer.add(task);dateStart = task.getDateStart();
+				dateDue = task.getDateDue();
+			// Add new task to Interval Tree
+			if (task.isEvent()) {
+				dateStart = task.getDateStart();
+				dateDue = task.getDateDue();
+				intervalTree.add(dateStart, dateDue, task.getId());
+			}
 		} else {
 			if (isTaskExist(taskID)) {
 				// Update task to task buffer
