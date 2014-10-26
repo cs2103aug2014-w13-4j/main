@@ -98,14 +98,14 @@ public class TaskStorage {
 	 */
 	public void writeTaskToFile(Task task) throws TaskNotFoundException, IOException {
 		int taskID = task.getId();
+		Calendar dateStart, dateDue, oldStart, oldEnd;
 		if (taskID == ID_FOR_NEW_TASK) {
 			// Add new task to task file
 			task.setId(nextTaskIndex);
 			nextTaskIndex ++;
 			addTask(task);
 			// Add new task to task buffer
-			taskBuffer.add(task);dateStart = task.getDateStart();
-				dateDue = task.getDateDue();
+			taskBuffer.add(task);
 			// Add new task to Interval Tree
 			if (task.isEvent()) {
 				dateStart = task.getDateStart();
@@ -118,6 +118,14 @@ public class TaskStorage {
 				taskBuffer.set(taskID, task);
 				// Update task to task file
 				updateTask();
+				// Update task to Interval Tree
+				if (task.isEvent()) {
+					dateStart = task.getDateStart();
+					dateDue = task.getDateDue();
+					oldStart = intervalTree.getDateStart(task.getId());
+					oldEnd = intervalTree.getDateDue(task.getId());
+					intervalTree.update(oldStart, oldEnd, dateStart, dateDue);
+				}
 			} else {
 				throw new TaskNotFoundException("Cannot update task since the current task doesn't exist");
 			}
