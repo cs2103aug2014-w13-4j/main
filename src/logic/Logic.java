@@ -12,6 +12,7 @@ import storage.Storage;
 import command.ParamEnum;
 import models.Feedback;
 import models.History;
+import models.IntervalSearch;
 import models.Task;
 import exceptions.FileFormatNotSupportedException;
 import exceptions.HistoryNotFoundException;
@@ -80,6 +81,7 @@ public class Logic {
 		} else {
 			throw new InvalidInputException(ERROR_DATE_INPUT_MESSAGE);
 		}
+		checkIfTimeAvailable(task);
 		storage.writeTaskToFile(task);
 		String name = task.getName();
 		Task clonedTask = cloner.deepClone(task);
@@ -208,7 +210,7 @@ public class Logic {
 	// Hiccup: undo add will not update the task (make it disappear) if it is
 	// displayed
 	Feedback undo() throws HistoryNotFoundException, TaskNotFoundException,
-			IOException {
+	IOException {
 		History lastAction = logicUndo.getLastAction();
 		if (lastAction == null) {
 			throw new HistoryNotFoundException("Not supported yet. :( ");
@@ -221,12 +223,12 @@ public class Logic {
 				return createTaskAndTaskListFeedback(
 						createMessage(UNDO_MESSAGE, lastAction.getCommand()
 								.regex(), task.getName()),
-						storage.getAllTasks(), null);
+								storage.getAllTasks(), null);
 			} else {
 				return createTaskAndTaskListFeedback(
 						createMessage(UNDO_MESSAGE, lastAction.getCommand()
 								.regex(), task.getName()),
-						storage.getAllTasks(), lastAction.getTask());
+								storage.getAllTasks(), lastAction.getTask());
 			}
 		}
 	}
@@ -287,12 +289,19 @@ public class Logic {
 				throw new InvalidInputException(ERROR_DATE_INPUT_MESSAGE);
 			}
 		}
+		checkIfTimeAvailable(task);
 		storage.writeTaskToFile(task);
 		String name = task.getName();
 		ArrayList<Task> taskList = storage.getAllTasks();
 		logicUndo.pushUpdateCommandToHistory(clonedTask);
 		return createTaskAndTaskListFeedback(
 				createMessage(EDIT_MESSAGE, name, null), taskList, task);
+	}
+
+	private void checkIfTimeAvailable(Task task) throws InvalidInputException {
+		if (task.isTimedTask() && !isTimeIntervalAvailable(task)) {
+			throw new InvalidInputException("Time interval is already taken up");
+		}
 	}
 
 	private String createMessage(String message, String variableText1,
@@ -446,5 +455,13 @@ public class Logic {
 		} else {
 			return false;
 		}
+	}
+
+	private boolean isTimeIntervalAvailable(Task task) {
+		assert task.getDateStart() != null;
+		assert task.getDateEnd() != null;
+		IntervalSearch intervalTree = storage.getIntervalTree();
+		return intervalTree.getTasksWithinInterval(task.getDateStart(),
+				task.getDateEnd()).isEmpty();
 	}
 }
