@@ -84,17 +84,15 @@ public class Task {
 	}
 
 	public boolean isCompleted() {
-		Boolean isEventCompleted = isNull(dateDue) && isDateEndOver();
-		Boolean isTaskCompleted = !isNull(dateDue) && !isNull(dateEnd);
-		return isEventCompleted || isTaskCompleted;
+		Boolean isTimedTaskCompleted = this.isTimedTask() && isDateEndOver();
+		Boolean isDeadlineTaskCompleted = this.isDeadlineTask()
+				&& dateEnd != null;
+		return isTimedTaskCompleted || isDeadlineTaskCompleted;
 	}
 
-	private boolean isNull(Calendar date) {
-		return date == null;
-	}
-
-	private boolean isDateEndOver() {
-		return dateEnd.compareTo(Calendar.getInstance()) <= 0;
+	public boolean isConditionalTask() {
+		return dateDue == null && dateStart == null && dateEnd == null
+				&& !conditionalDates.isEmpty();
 	}
 
 	public boolean isConfirmed() {
@@ -105,8 +103,26 @@ public class Task {
 		}
 	}
 
+	private boolean isDateEndOver() {
+		return dateEnd.compareTo(Calendar.getInstance()) <= 0;
+	}
+
+	public boolean isDeadlineTask() {
+		return dateDue != null && dateStart == null
+				&& conditionalDates.isEmpty();
+	}
+
 	public boolean isDeleted() {
 		return isDeleted;
+	}
+
+	public boolean isFloatingTask() {
+		return dateDue == null && dateStart == null && dateEnd == null
+				&& conditionalDates.isEmpty();
+	}
+
+	public boolean isTimedTask() {
+		return dateDue == null && dateStart != null && dateEnd != null;
 	}
 
 	public void setChildTasks(ArrayList<Integer> childTasks) {

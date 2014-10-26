@@ -69,7 +69,7 @@ public class Logic {
 			ApplicationLogger.getApplicationLogger().log(Level.INFO,
 					"Adding timed task.");
 			TaskModifier.modifyTimedTask(param, task);
-		} else if (hasDeadlineTaskParam(param)) {
+		} else if (hasDeadlineTaskParams(param)) {
 			ApplicationLogger.getApplicationLogger().log(Level.INFO,
 					"Adding deadline task.");
 			TaskModifier.modifyDeadlineTask(param, task);
@@ -122,34 +122,15 @@ public class Logic {
 		int taskId = getTaskId(param);
 		String dateIdString = param.get(ParamEnum.ID).get(0);
 		int dateId = Integer.parseInt(dateIdString);
-		Task event = getTaskFromStorage(taskId);
-		TaskModifier.confirmEvent(dateId, event);
-		storage.writeTaskToFile(event);
-		Task clonedTask = cloner.deepClone(event);
+		Task task = getTaskFromStorage(taskId);
+		TaskModifier.confirmEvent(dateId, task);
+		storage.writeTaskToFile(task);
+		Task clonedTask = cloner.deepClone(task);
 		logicUndo.pushConfirmCommandToHistory(clonedTask);
-		String taskName = event.getName();
+		String taskName = task.getName();
 		return createTaskAndTaskListFeedback(
 				createMessage(CONFIRM_MESSAGE, taskName, null),
-				storage.getAllTasks(), event);
-	}
-
-	private String createMessage(String message, String variableText1,
-			String variableText2) {
-		return String.format(message, variableText1, variableText2);
-	}
-
-	private Feedback createTaskAndTaskListFeedback(String message,
-			ArrayList<Task> taskList, Task task) {
-		return new Feedback(message, taskList, task);
-	}
-
-	private Feedback createTaskFeedback(String message, Task task) {
-		return new Feedback(message, null, task);
-	}
-
-	private Feedback createTaskListFeedback(String message,
-			ArrayList<Task> taskList) {
-		return new Feedback(message, taskList, null);
+				storage.getAllTasks(), task);
 	}
 
 	/**
@@ -185,115 +166,6 @@ public class Logic {
 		} else {
 			int id = Integer.parseInt(idString);
 			return displayTask(id);
-		}
-	}
-
-	/**
-	 * Display all tasks in the list
-	 *
-	 * @return feedback containing all the tasks in the file, and the message.
-	 */
-	private Feedback displayAll() {
-		ArrayList<Task> taskList = storage.getAllTasks();
-		return createTaskListFeedback(
-				createMessage(DISPLAY_MESSAGE, null, null), taskList);
-	}
-
-	/**
-	 * Displays the individual task
-	 *
-	 * @param id
-	 *            : task id
-	 * @return feedback containing the task and the message
-	 * @throws TaskNotFoundException
-	 *             : if the id is invalid or if it is deleted
-	 */
-
-	private Feedback displayTask(int id) throws TaskNotFoundException {
-		Task task = getTaskFromStorage(id);
-		return createTaskFeedback(createMessage(DISPLAY_MESSAGE, null, null),
-				task);
-	}
-
-	/**
-	 * Gets the task from storage
-	 *
-	 * @param id
-	 *            : id of task
-	 * @return task corresponding to the id
-	 * @throws TaskNotFoundException
-	 *             : if task is already deleted, or if id is invalid
-	 */
-	private Task getTaskFromStorage(int id) throws TaskNotFoundException {
-		Task task = storage.getTask(id);
-		if (task.isDeleted()) {
-			throw new TaskNotFoundException(createMessage(
-					ERROR_ALREADY_DELETED_MESSAGE, Integer.toString(id), null));
-		}
-		return task;
-	}
-
-	private int getTaskId(Hashtable<ParamEnum, ArrayList<String>> param) {
-		return Integer.parseInt(param.get(ParamEnum.KEYWORD).get(0));
-	}
-
-	private boolean hasConditionalTaskParams(
-			Hashtable<ParamEnum, ArrayList<String>> param) {
-		return hasMultipleEntries(param, ParamEnum.START_DATE)
-				&& hasMultipleEntries(param, ParamEnum.END_DATE)
-				&& hasEqualStartAndEndDates(param)
-				&& !param.containsKey(ParamEnum.DUE_DATE);
-	}
-
-	private boolean hasDeadlineTaskParam(
-			Hashtable<ParamEnum, ArrayList<String>> param) {
-		return !param.containsKey(ParamEnum.START_DATE)
-				&& param.containsKey(ParamEnum.DUE_DATE)
-				&& param.get(ParamEnum.DUE_DATE).size() == 1
-				&& !param.containsKey(ParamEnum.END_DATE);
-	}
-
-	private boolean hasEmptyElements(ArrayList<String> arrayList) {
-		for (String s : arrayList) {
-			if (s.isEmpty()) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private boolean hasEqualStartAndEndDates(
-			Hashtable<ParamEnum, ArrayList<String>> param) {
-		return param.get(ParamEnum.START_DATE).size() == param.get(
-				ParamEnum.END_DATE).size();
-	}
-
-	private boolean hasFloatingTaskParams(
-			Hashtable<ParamEnum, ArrayList<String>> param) {
-		return !param.containsKey(ParamEnum.START_DATE)
-				&& !param.containsKey(ParamEnum.DUE_DATE)
-				&& !param.containsKey(ParamEnum.END_DATE);
-	}
-
-	private boolean hasMultipleEntries(
-			Hashtable<ParamEnum, ArrayList<String>> param, ParamEnum type) {
-		return param.containsKey(type) && param.get(type).size() > 1
-				&& !hasEmptyElements(param.get(type));
-	}
-
-	private boolean hasTimedTaskParams(
-			Hashtable<ParamEnum, ArrayList<String>> param) {
-		if (param.containsKey(ParamEnum.START_DATE)
-				&& param.containsKey(ParamEnum.END_DATE)
-				&& !param.containsKey(ParamEnum.DUE_DATE)) {
-			assert (param.get(ParamEnum.START_DATE) != null);
-			assert (param.get(ParamEnum.END_DATE) != null);
-			return param.get(ParamEnum.START_DATE).size() == 1
-					&& !param.get(ParamEnum.START_DATE).get(0).isEmpty()
-					&& param.get(ParamEnum.END_DATE).size() == 1
-					&& !param.get(ParamEnum.END_DATE).get(0).isEmpty();
-		} else {
-			return false;
 		}
 	}
 
@@ -357,8 +229,7 @@ public class Logic {
 	}
 
 	/**
-	 * Updates the task in the file. It can currently only update due date and
-	 * name.
+	 * Updates the task in the file.
 	 *
 	 * @param param
 	 *            : the command created by commandParser
@@ -373,14 +244,154 @@ public class Logic {
 			throws TaskNotFoundException, IOException,
 			InvalidDateFormatException, InvalidInputException {
 		int taskId = getTaskId(param);
-		Task oldTask = getTaskFromStorage(taskId);
-		Task task = cloner.deepClone(oldTask);
-		TaskModifier.modifyTimedTask(param, task);
+		Task task = getTaskFromStorage(taskId);
+		Task clonedTask = cloner.deepClone(task);
+		if (task.isConditionalTask()
+				|| (task.isFloatingTask() && hasConditionalTaskParams(param))) {
+			TaskModifier.modifyConditionalTask(param, task);
+		} else if (task.isTimedTask()
+				|| (task.isFloatingTask() && hasTimedTaskParams(param))) {
+			TaskModifier.modifyTimedTask(param, task);
+		} else if (task.isDeadlineTask()
+				|| (task.isFloatingTask() && hasDeadlineTaskParams(param))) {
+			TaskModifier.modifyDeadlineTask(param, task);
+		} else {
+			assert task.isFloatingTask();
+			TaskModifier.modifyFloatingTask(param, task);
+		}
 		storage.writeTaskToFile(task);
 		String name = task.getName();
 		ArrayList<Task> taskList = storage.getAllTasks();
-		logicUndo.pushUpdateCommandToHistory(oldTask);
+		logicUndo.pushUpdateCommandToHistory(clonedTask);
 		return createTaskListFeedback(createMessage(EDIT_MESSAGE, name, null),
 				taskList);
+	}
+
+	private String createMessage(String message, String variableText1,
+			String variableText2) {
+		return String.format(message, variableText1, variableText2);
+	}
+
+	private Feedback createTaskAndTaskListFeedback(String message,
+			ArrayList<Task> taskList, Task task) {
+		return new Feedback(message, taskList, task);
+	}
+
+	private Feedback createTaskFeedback(String message, Task task) {
+		return new Feedback(message, null, task);
+	}
+
+	private Feedback createTaskListFeedback(String message,
+			ArrayList<Task> taskList) {
+		return new Feedback(message, taskList, null);
+	}
+
+	/**
+	 * Display all tasks in the list
+	 *
+	 * @return feedback containing all the tasks in the file, and the message.
+	 */
+	private Feedback displayAll() {
+		ArrayList<Task> taskList = storage.getAllTasks();
+		return createTaskListFeedback(
+				createMessage(DISPLAY_MESSAGE, null, null), taskList);
+	}
+
+	/**
+	 * Displays the individual task
+	 *
+	 * @param id
+	 *            : task id
+	 * @return feedback containing the task and the message
+	 * @throws TaskNotFoundException
+	 *             : if the id is invalid or if it is deleted
+	 */
+
+	private Feedback displayTask(int id) throws TaskNotFoundException {
+		Task task = getTaskFromStorage(id);
+		return createTaskFeedback(createMessage(DISPLAY_MESSAGE, null, null),
+				task);
+	}
+
+	/**
+	 * Gets the task from storage
+	 *
+	 * @param id
+	 *            : id of task
+	 * @return task corresponding to the id
+	 * @throws TaskNotFoundException
+	 *             : if task is already deleted, or if id is invalid
+	 */
+	private Task getTaskFromStorage(int id) throws TaskNotFoundException {
+		Task task = storage.getTask(id);
+		if (task.isDeleted()) {
+			throw new TaskNotFoundException(createMessage(
+					ERROR_ALREADY_DELETED_MESSAGE, Integer.toString(id), null));
+		}
+		return task;
+	}
+
+	private int getTaskId(Hashtable<ParamEnum, ArrayList<String>> param) {
+		return Integer.parseInt(param.get(ParamEnum.KEYWORD).get(0));
+	}
+
+	private boolean hasConditionalTaskParams(
+			Hashtable<ParamEnum, ArrayList<String>> param) {
+		return hasMultipleEntries(param, ParamEnum.START_DATE)
+				&& hasMultipleEntries(param, ParamEnum.END_DATE)
+				&& hasEqualStartAndEndDates(param)
+				&& !param.containsKey(ParamEnum.DUE_DATE);
+	}
+
+	private boolean hasDeadlineTaskParams(
+			Hashtable<ParamEnum, ArrayList<String>> param) {
+		return !param.containsKey(ParamEnum.START_DATE)
+				&& param.containsKey(ParamEnum.DUE_DATE)
+				&& param.get(ParamEnum.DUE_DATE).size() == 1
+				&& !param.containsKey(ParamEnum.END_DATE);
+	}
+
+	private boolean hasEmptyElements(ArrayList<String> arrayList) {
+		for (String s : arrayList) {
+			if (s.isEmpty()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean hasEqualStartAndEndDates(
+			Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.get(ParamEnum.START_DATE).size() == param.get(
+				ParamEnum.END_DATE).size();
+	}
+
+	private boolean hasFloatingTaskParams(
+			Hashtable<ParamEnum, ArrayList<String>> param) {
+		return !param.containsKey(ParamEnum.START_DATE)
+				&& !param.containsKey(ParamEnum.DUE_DATE)
+				&& !param.containsKey(ParamEnum.END_DATE);
+	}
+
+	private boolean hasMultipleEntries(
+			Hashtable<ParamEnum, ArrayList<String>> param, ParamEnum type) {
+		return param.containsKey(type) && param.get(type).size() > 1
+				&& !hasEmptyElements(param.get(type));
+	}
+
+	private boolean hasTimedTaskParams(
+			Hashtable<ParamEnum, ArrayList<String>> param) {
+		if (param.containsKey(ParamEnum.START_DATE)
+				&& param.containsKey(ParamEnum.END_DATE)
+				&& !param.containsKey(ParamEnum.DUE_DATE)) {
+			assert (param.get(ParamEnum.START_DATE) != null);
+			assert (param.get(ParamEnum.END_DATE) != null);
+			return param.get(ParamEnum.START_DATE).size() == 1
+					&& !param.get(ParamEnum.START_DATE).get(0).isEmpty()
+					&& param.get(ParamEnum.END_DATE).size() == 1
+					&& !param.get(ParamEnum.END_DATE).get(0).isEmpty();
+		} else {
+			return false;
+		}
 	}
 }

@@ -47,19 +47,6 @@ public class LogicApi {
 	 **/
 
 	/**
-	 * Initialises the logic object by creating its corresponding storage object
-	 * It also catches the exceptions that can be thrown
-	 *
-	 * @return the feedback indicating whether the storage has been successfully
-	 *         loaded.
-	 */
-	public Feedback initialize() {
-		ApplicationLogger.getApplicationLogger().log(Level.INFO, "Initializing Logic API.");
-		logic = new Logic();
-		return logic.initialize();
-	}
-
-	/**
 	 * Main function to call to execute command
 	 *
 	 * @param the
@@ -71,7 +58,7 @@ public class LogicApi {
 	 * @throws TaskNotFoundException
 	 * @throws InvalidInputException
 	 * @throws HistoryNotFoundException
-	 * @throws InvalidCommandUseException 
+	 * @throws InvalidCommandUseException
 	 */
 	public Feedback executeCommand(Command command)
 			throws TaskNotFoundException, IOException,
@@ -80,7 +67,10 @@ public class LogicApi {
 		if (logic.storage == null) {
 			throw new IOException();
 		} else {
-			ApplicationLogger.getApplicationLogger().log(Level.INFO, "Executing command: " + command.getCommand() + " " + command.getParam());
+			ApplicationLogger.getApplicationLogger().log(
+					Level.INFO,
+					"Executing command: " + command.getCommand() + " "
+							+ command.getParam());
 			CommandEnum commandType = command.getCommand();
 			Hashtable<ParamEnum, ArrayList<String>> param = command.getParam();
 			assert hasKeywordParam(param);
@@ -105,7 +95,8 @@ public class LogicApi {
 				return logic.undo();
 			case DISPLAY:
 				return logic.display(param);
-			case DONE: case COMPLETE:
+			case DONE:
+			case COMPLETE:
 				if (!isKeywordParamEmpty(param)) {
 					return logic.complete(param);
 				}
@@ -114,7 +105,7 @@ public class LogicApi {
 				return null;
 			case SEARCH:
 				// to add: !isKeywordParamEmpty(param) after search in multiple
-				//To add: Date param
+				// To add: Date param
 				// fields is supported in storage
 				if (hasNameParam(param) || hasNoteParam(param)
 						|| hasTagParam(param) || hasStatusParam(param)) {
@@ -135,8 +126,22 @@ public class LogicApi {
 		}
 	}
 
-	private boolean hasStatusParam(Hashtable<ParamEnum, ArrayList<String>> param) {
-		return param.containsKey(ParamEnum.STATUS);
+	/**
+	 * Initialises the logic object by creating its corresponding storage object
+	 * It also catches the exceptions that can be thrown
+	 *
+	 * @return the feedback indicating whether the storage has been successfully
+	 *         loaded.
+	 */
+	public Feedback initialize() {
+		ApplicationLogger.getApplicationLogger().log(Level.INFO,
+				"Initializing Logic API.");
+		logic = new Logic();
+		return logic.initialize();
+	}
+
+	private boolean hasIdParam(Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.containsKey(ParamEnum.ID);
 	}
 
 	private boolean hasKeywordParam(
@@ -144,30 +149,30 @@ public class LogicApi {
 		return param.containsKey(ParamEnum.KEYWORD);
 	}
 
-	private boolean hasTagParam(Hashtable<ParamEnum, ArrayList<String>> param) {
-		return param.containsKey(ParamEnum.TAG);
+	private boolean hasNameParam(Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.containsKey(ParamEnum.NAME);
 	}
 
 	private boolean hasNoteParam(Hashtable<ParamEnum, ArrayList<String>> param) {
 		return param.containsKey(ParamEnum.NOTE);
 	}
 
-	private boolean hasNameParam(Hashtable<ParamEnum, ArrayList<String>> param) {
-		return param.containsKey(ParamEnum.NAME);
+	private boolean hasStatusParam(Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.containsKey(ParamEnum.STATUS);
 	}
 
-	private boolean isNameParamEmpty(
-			Hashtable<ParamEnum, ArrayList<String>> param) {
-		return param.get(ParamEnum.NAME).get(0).isEmpty();
-	}
-
-	private boolean hasIdParam(Hashtable<ParamEnum, ArrayList<String>> param) {
-		return param.containsKey(ParamEnum.ID);
+	private boolean hasTagParam(Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.containsKey(ParamEnum.TAG);
 	}
 
 	private boolean isKeywordParamEmpty(
 			Hashtable<ParamEnum, ArrayList<String>> param) {
 		return param.get(ParamEnum.KEYWORD).get(0).isEmpty();
+	}
+
+	private boolean isNameParamEmpty(
+			Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.get(ParamEnum.NAME).get(0).isEmpty();
 	}
 
 }
