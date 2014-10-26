@@ -20,6 +20,7 @@ import exceptions.InvalidDateFormatException;
 import exceptions.InvalidInputException;
 import exceptions.TaskNotFoundException;
 import models.DateParser;
+import models.IntervalSearch;
 import models.PriorityLevelEnum;
 import models.Task;
 
@@ -30,10 +31,12 @@ import models.Task;
  * It also supports power search.
  */
 public class TaskStorage {
+
 	private static final int MIN_INDEX = 0;
 	private ArrayList<Task> taskBuffer;
 	private int nextTaskIndex;
 	private File dataFile;
+	private IntervalSearch intervalTree;
 
 	private static final int ID_FOR_NEW_TASK = -1;
 	private static final int ID_FOR_FIRST_TASK = 0;
@@ -48,6 +51,8 @@ public class TaskStorage {
 	 */
 	public TaskStorage(String fileName) throws IOException, FileFormatNotSupportedException{
 		Task task;
+		Calendar dateStart;
+		Calendar dateDue;
 		dataFile = new File(fileName);
 
 		if (!dataFile.exists()) {
@@ -56,10 +61,21 @@ public class TaskStorage {
 
 		Scanner fileScanner = new Scanner(dataFile);
 		taskBuffer =  new ArrayList<Task>();
+		intervalTree = new IntervalSearch();
 		nextTaskIndex = ID_FOR_FIRST_TASK;
 		while (fileScanner.hasNextLine()) {
 			task = TaskConverter.stringToTask(fileScanner.nextLine());
 			taskBuffer.add(task);
+			// add in interval tree
+			dateStart = task.getDateStart();
+			if (dateStart != null) {
+				dateDue = task.getDateDue();
+				if (intervalTree.isValid(dateStart, dateDue)) {
+					intervalTree.add(dateStart, dateDue, task.getId());
+				} else {
+					throw new FileFormatNotSupportedException("Events are overlapping");
+				}
+			}
 			nextTaskIndex ++;
 		}
 	}
