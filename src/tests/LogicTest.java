@@ -516,5 +516,20 @@ public class LogicTest {
 		assertEquals(1999, newTask.getDateEnd().get(Calendar.YEAR));
 		assertEquals(feedback.getTaskList().get(0), newTask);
 	}
+	
+	@Test (expected= InvalidInputException.class)
+	/**
+	 * Tests that task can be updated
+	 * Some code is commented out due to bug in command parser
+	 * @throws Exception
+	 */
+	public final void testErrorUpdateTask() throws Exception {
+		Command addCommand = parser
+				.parseCommand("add eat my pet dog from 20-02-1999 to 21-02-1999 note I don't know why I want that? level 2");
+		logicApiObject.executeCommand(addCommand);
+		Command updateCommand = parser
+				.parseCommand("update 0 due 10.10.2013");
+		logicApiObject.executeCommand(updateCommand);
+	}
 
 }

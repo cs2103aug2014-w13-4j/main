@@ -22,7 +22,8 @@ import exceptions.TaskNotFoundException;
 
 //TODO: Throw exceptions when mandatory fields are missing
 public class Logic {
-	private static final String INVALID_DATE_INPUT_MESSAGE = "Date parameters provided are wrong.";
+	private static final String ERROR_COMPLETE_MESSAGE = "Only uncompleted tasks without an end date before can be completed";
+	private static final String ERROR_DATE_INPUT_MESSAGE = "The date parameters provided are invalid.";
 	private static final String ADD_MESSAGE = "%1$s is successfully added.";
 	private static final String DELETE_MESSAGE = "%1$s is successfully deleted";
 	private static final String EDIT_MESSAGE = "%1$s is successfully edited.";
@@ -74,7 +75,7 @@ public class Logic {
 					"Adding deadline task.");
 			TaskModifier.modifyDeadlineTask(param, task);
 		} else {
-			throw new InvalidInputException(INVALID_DATE_INPUT_MESSAGE);
+			throw new InvalidInputException(ERROR_DATE_INPUT_MESSAGE);
 		}
 		storage.writeTaskToFile(task);
 		String name = task.getName();
@@ -112,8 +113,7 @@ public class Logic {
 			return createTaskListFeedback(
 					createMessage(COMPLETE_MESSAGE, name, null), taskList);
 		} else {
-			throw new InvalidCommandUseException(
-					"Only uncompleted tasks without an end date before can be completed");
+			throw new InvalidCommandUseException(ERROR_COMPLETE_MESSAGE);
 		}
 	}
 
@@ -205,7 +205,7 @@ public class Logic {
 	// Hiccup: undo add will not update the task (make it disappear) if it is
 	// displayed
 	Feedback undo() throws HistoryNotFoundException, TaskNotFoundException,
-			IOException {
+	IOException {
 		History lastAction = logicUndo.getLastAction();
 		if (lastAction == null) {
 			throw new HistoryNotFoundException("Not supported yet. :( ");
@@ -218,12 +218,12 @@ public class Logic {
 				return createTaskAndTaskListFeedback(
 						createMessage(UNDO_MESSAGE, lastAction.getCommand()
 								.regex(), task.getName()),
-						storage.getAllTasks(), null);
+								storage.getAllTasks(), null);
 			} else {
 				return createTaskAndTaskListFeedback(
 						createMessage(UNDO_MESSAGE, lastAction.getCommand()
 								.regex(), task.getName()),
-						storage.getAllTasks(), lastAction.getTask());
+								storage.getAllTasks(), lastAction.getTask());
 			}
 		}
 	}
@@ -246,18 +246,19 @@ public class Logic {
 		int taskId = getTaskId(param);
 		Task task = getTaskFromStorage(taskId);
 		Task clonedTask = cloner.deepClone(task);
-		if (task.isConditionalTask()
+		if ((task.isConditionalTask() && !hasInvalidConditionalTaskParams(param))
 				|| (task.isFloatingTask() && hasConditionalTaskParams(param))) {
 			TaskModifier.modifyConditionalTask(param, task);
-		} else if (task.isTimedTask()
+		} else if ((task.isTimedTask() && !hasInvalidTimedTaskParams(param))
 				|| (task.isFloatingTask() && hasTimedTaskParams(param))) {
 			TaskModifier.modifyTimedTask(param, task);
-		} else if (task.isDeadlineTask()
+		} else if ((task.isDeadlineTask() && !hasInvalidDeadlineTaskParams(param))
 				|| (task.isFloatingTask() && hasDeadlineTaskParams(param))) {
 			TaskModifier.modifyDeadlineTask(param, task);
-		} else {
-			assert task.isFloatingTask();
+		} else if (task.isFloatingTask() && hasFloatingTaskParams(param)) {
 			TaskModifier.modifyFloatingTask(param, task);
+		} else {
+			throw new InvalidInputException(ERROR_DATE_INPUT_MESSAGE);
 		}
 		storage.writeTaskToFile(task);
 		String name = task.getName();
@@ -373,10 +374,35 @@ public class Logic {
 				&& !param.containsKey(ParamEnum.END_DATE);
 	}
 
+	private boolean hasInvalidConditionalTaskParams(
+			Hashtable<ParamEnum, ArrayList<String>> param) {
+		return hasSingleEntry(param, ParamEnum.START_DATE)
+				|| hasSingleEntry(param, ParamEnum.END_DATE)
+				|| param.containsKey(ParamEnum.DUE_DATE);
+	}
+
+	private boolean hasInvalidDeadlineTaskParams(
+			Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.containsKey(ParamEnum.START_DATE)
+				|| param.containsKey(ParamEnum.END_DATE);
+	}
+
+	private boolean hasInvalidTimedTaskParams(
+			Hashtable<ParamEnum, ArrayList<String>> param) {
+		return param.containsKey(ParamEnum.DUE_DATE);
+	}
+
 	private boolean hasMultipleEntries(
 			Hashtable<ParamEnum, ArrayList<String>> param, ParamEnum type) {
 		return param.containsKey(type) && param.get(type).size() > 1
 				&& !hasEmptyElements(param.get(type));
+	}
+
+	private boolean hasSingleEntry(
+			Hashtable<ParamEnum, ArrayList<String>> param, ParamEnum type) {
+		return param.containsKey(type)
+				&& (param.get(type).size() == 1 || hasEmptyElements(param
+						.get(type)));
 	}
 
 	private boolean hasTimedTaskParams(
