@@ -488,7 +488,7 @@ public class LogicTest {
 		logicApiObject.executeCommand(updateCommand);
 		Command undoCommand = parser.parseCommand("undo");
 		logicApiObject.executeCommand(undoCommand);
-		assertEquals(oldTask, storageObject.getTask(0));
+		assertEquals("blah", storageObject.getTask(0).getName());
 	}
 
 	@Test
@@ -502,18 +502,18 @@ public class LogicTest {
 				.parseCommand("add eat my pet dog from 20-02-1999 to 21-02-1999 note I don't know why I want that? level 2");
 		logicApiObject.executeCommand(addCommand);
 		Command updateCommand = parser
-				.parseCommand("update 0 name changed from 01-01-1999 to 01-02-1999 note changed description level 1");
+				.parseCommand("update 0 name changed from 01-01-1999 note changed description level 1");
 		Feedback feedback = logicApiObject.executeCommand(updateCommand);
 		Task newTask = storageObject.getTask(0);
 		assertEquals("changed", newTask.getName());
 		assertEquals("changed description", newTask.getNote());
 		assertEquals(PriorityLevelEnum.ORANGE, newTask.getPriorityLevel());
-		// assertEquals(1, newTask.getDateStart().get(Calendar.DAY_OF_MONTH));
-		// assertEquals(1, newTask.getDateStart().get(Calendar.MONTH) + 1);
-		// assertEquals(1999, newTask.getDateStart().get(Calendar.YEAR));
-		// assertEquals(1, newTask.getDateDue().get(Calendar.DAY_OF_MONTH));
-		// assertEquals(2, newTask.getDateDue().get(Calendar.MONTH) + 1);
-		// assertEquals(1999, newTask.getDateDue().get(Calendar.YEAR));
+		assertEquals(1, newTask.getDateStart().get(Calendar.DAY_OF_MONTH));
+		assertEquals(1, newTask.getDateStart().get(Calendar.MONTH) + 1);
+		assertEquals(1999, newTask.getDateStart().get(Calendar.YEAR));
+		assertEquals(21, newTask.getDateEnd().get(Calendar.DAY_OF_MONTH));
+		assertEquals(2, newTask.getDateEnd().get(Calendar.MONTH) + 1);
+		assertEquals(1999, newTask.getDateEnd().get(Calendar.YEAR));
 		assertEquals(feedback.getTaskList().get(0), newTask);
 	}
 
