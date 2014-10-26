@@ -169,6 +169,14 @@ public class Task {
 		this.priorityLevel = priorityLevel;
 	}
 
+	public boolean isEvent() {
+		if (dateStart != null) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	public void setStartDueDateFromConditional(int id) {
 		// conditional dates must be present to set start and due date
 		// assume id starts counting from 1

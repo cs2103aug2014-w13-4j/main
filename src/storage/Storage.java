@@ -72,4 +72,8 @@ public class Storage {
 			throws InvalidDateFormatException, InvalidInputException {
 		return taskFile.searchTask(keyWordTable, getAllTasks());
 	}
+
+	public IntervalSearch getIntervalTree() {
+		return taskFile.getIntervalTree();
+	}
 }

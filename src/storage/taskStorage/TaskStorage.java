@@ -20,6 +20,7 @@ import exceptions.InvalidDateFormatException;
 import exceptions.InvalidInputException;
 import exceptions.TaskNotFoundException;
 import models.DateParser;
+import models.IntervalSearch;
 import models.PriorityLevelEnum;
 import models.Task;
 
@@ -30,10 +31,12 @@ import models.Task;
  * It also supports power search.
  */
 public class TaskStorage {
+
 	private static final int MIN_INDEX = 0;
 	private ArrayList<Task> taskBuffer;
 	private int nextTaskIndex;
 	private File dataFile;
+	private IntervalSearch intervalTree;
 
 	private static final int ID_FOR_NEW_TASK = -1;
 	private static final int ID_FOR_FIRST_TASK = 0;
@@ -48,6 +51,8 @@ public class TaskStorage {
 	 */
 	public TaskStorage(String fileName) throws IOException, FileFormatNotSupportedException{
 		Task task;
+		Calendar dateStart;
+		Calendar dateDue;
 		dataFile = new File(fileName);
 
 		if (!dataFile.exists()) {
@@ -56,12 +61,32 @@ public class TaskStorage {
 
 		Scanner fileScanner = new Scanner(dataFile);
 		taskBuffer =  new ArrayList<Task>();
+		intervalTree = new IntervalSearch();
 		nextTaskIndex = ID_FOR_FIRST_TASK;
 		while (fileScanner.hasNextLine()) {
 			task = TaskConverter.stringToTask(fileScanner.nextLine());
 			taskBuffer.add(task);
+			// add in interval tree
+			if (task.isEvent()) {
+				dateStart = task.getDateStart();
+				dateDue = task.getDateDue();
+				if (intervalTree.isValid(dateStart, dateDue)) {
+					intervalTree.add(dateStart, dateDue, task.getId());
+				} else {
+					throw new FileFormatNotSupportedException("Events are overlapping");
+				}
+			}
 			nextTaskIndex ++;
 		}
+	}
+
+	/**
+	 * Return an interval tree for the whole list of tasks
+	 *
+	 * @return IntervalSearch: the interval tree for the whole list of tasks
+	 */
+	public IntervalSearch getIntervalTree() {
+		return intervalTree;
 	}
 
 	/**
@@ -73,6 +98,7 @@ public class TaskStorage {
 	 */
 	public void writeTaskToFile(Task task) throws TaskNotFoundException, IOException {
 		int taskID = task.getId();
+		Calendar dateStart, dateDue, oldStart, oldEnd;
 		if (taskID == ID_FOR_NEW_TASK) {
 			// Add new task to task file
 			task.setId(nextTaskIndex);
@@ -80,12 +106,26 @@ public class TaskStorage {
 			addTask(task);
 			// Add new task to task buffer
 			taskBuffer.add(task);
+			// Add new task to Interval Tree
+			if (task.isEvent()) {
+				dateStart = task.getDateStart();
+				dateDue = task.getDateDue();
+				intervalTree.add(dateStart, dateDue, task.getId());
+			}
 		} else {
 			if (isTaskExist(taskID)) {
 				// Update task to task buffer
 				taskBuffer.set(taskID, task);
 				// Update task to task file
 				updateTask();
+				// Update task to Interval Tree
+				if (task.isEvent()) {
+					dateStart = task.getDateStart();
+					dateDue = task.getDateDue();
+					oldStart = intervalTree.getDateStart(task.getId());
+					oldEnd = intervalTree.getDateDue(task.getId());
+					intervalTree.update(oldStart, oldEnd, dateStart, dateDue);
+				}
 			} else {
 				throw new TaskNotFoundException("Cannot update task since the current task doesn't exist");
 			}
