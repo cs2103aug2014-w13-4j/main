@@ -1,15 +1,21 @@
 package main;
 
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import logic.LogicApi;
 import models.ApplicationLogger;
+import models.Feedback;
+import models.Task;
 
 import java.io.IOException;
+import java.util.Observable;
 import java.util.logging.Level;
 
 /**
@@ -17,9 +23,12 @@ import java.util.logging.Level;
  * @author szhlibrary
  */
 public class Main extends Application{
+	LogicApi logic;
 
 	private Stage primaryStage;
 	private BorderPane rootLayout;
+
+	private TaskListViewController taskListViewController;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -62,6 +71,14 @@ public class Main extends Application{
 		AnchorPane taskList = loader.load();
 
 		rootLayout.setCenter(taskList);
+		taskListViewController = loader.getController();
+		taskListViewController.initialize(initLogicAndGetAllActiveTasks());
+	}
+
+	private Feedback initLogicAndGetAllActiveTasks() {
+		ApplicationLogger.getApplicationLogger().log(Level.INFO, "Initializing Logic.");
+		logic = new LogicApi();
+		return logic.initialize();
 	}
 
 	public void initTaskDisplayView() throws IOException {
