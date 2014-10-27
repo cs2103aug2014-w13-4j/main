@@ -25,7 +25,7 @@ public class Logic {
 	private static final String ERROR_UPDATE_DEADLINE_TASK_MESSAGE = "Task %1$s is a deadline task, so it should not contain start or end date";
 	private static final String ERROR_UPDATE_TIMED_TASK_MESSAGE = "Task %1$s is a timed task, so it should not contain due dates";
 	private static final String ERROR_UPDATE_CONDITIONAL_TASK_MESSAGE = "Task %1$s is a conditional task, so it should contain multiple start and end dates";
-	private static final String ERROR_COMPLETE_MESSAGE = "Only uncompleted tasks without an end date before can be completed";
+	private static final String ERROR_COMPLETE_MESSAGE = "Only confirmed and uncompleted tasks without an end date before can be completed";
 	private static final String ERROR_DATE_INPUT_MESSAGE = "The date parameters provided are invalid.";
 	private static final String ADD_MESSAGE = "%1$s is successfully added.";
 	private static final String DELETE_MESSAGE = "%1$s is successfully deleted";
@@ -106,7 +106,7 @@ public class Logic {
 			InvalidDateFormatException, InvalidCommandUseException {
 		int taskId = getTaskId(param);
 		Task task = getTaskFromStorage(taskId);
-		if (task.getDateEnd() == null) {
+		if (task.isConfirmed() && task.getDateEnd() == null) {
 			TaskModifier.completeTask(param, task);
 			String name = task.getName();
 			storage.writeTaskToFile(task);
