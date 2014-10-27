@@ -32,6 +32,10 @@ public class TaskDisplayViewController {
 	final StringProperty noteLabelValue = new SimpleStringProperty("-");
 	final StringProperty conditionalDateLabelValue = new SimpleStringProperty("-");
 
+	public void initialize() {
+		initializeGuiLabelBindings();
+	}
+
 	private void initializeGuiLabelBindings() {
 		idLabel.textProperty().bind(idLabelValue);
 		taskNameLabel.textProperty().bind(taskNameLabelValue);
@@ -54,10 +58,6 @@ public class TaskDisplayViewController {
 		updateTaskPanelForConditionalDates(taskToDisplay);
 	}
 
-	private void setLabelValueInGui(StringProperty labelValue, String value){
-		labelValue.setValue(value != null && !value.isEmpty() ? value : "-");
-	}
-
 	private void updateTaskPanelForConditionalDates(Task taskToDisplay){
 		ArrayList<StartDueDatePair> conditionalDateList = taskToDisplay.getConditionalDates();
 		String conditionalDates = "";
@@ -71,6 +71,10 @@ public class TaskDisplayViewController {
 			}
 			setLabelValueInGui(conditionalDateLabelValue, conditionalDates);
 		}
+	}
+
+	private void setLabelValueInGui(StringProperty labelValue, String value){
+		labelValue.setValue(value != null && !value.isEmpty() ? value : "-");
 	}
 }
 

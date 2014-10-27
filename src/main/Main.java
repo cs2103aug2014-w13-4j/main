@@ -29,6 +29,7 @@ public class Main extends Application{
 	private BorderPane rootLayout;
 
 	private TaskListViewController taskListViewController;
+	private TaskDisplayViewController taskDisplayViewController;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -89,7 +90,7 @@ public class Main extends Application{
 
 		rootLayout.setRight(taskDisplay);
 
-		TaskDisplayViewController taskDisplayViewController = loader.getController();
+		taskDisplayViewController = loader.getController();
 		taskDisplayViewController.initialize();
 	}
 
