@@ -2,11 +2,10 @@ package main;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.SplitPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import models.ApplicationLogger;
 
@@ -38,7 +37,6 @@ public class Main extends Application{
 	public void initLayouts(){
 		try {
 			initRootLayout();
-			initTaskList();
 			initTaskListView();
 			initTaskDisplayView();
 			initUserInputView();
