@@ -71,6 +71,7 @@ public class Main extends Application{
 		AnchorPane taskList = loader.load();
 
 		rootLayout.setCenter(taskList);
+
 		taskListViewController = loader.getController();
 		taskListViewController.initialize(initLogicAndGetAllActiveTasks());
 	}
@@ -87,6 +88,9 @@ public class Main extends Application{
 		AnchorPane taskDisplay = loader.load();
 
 		rootLayout.setRight(taskDisplay);
+
+		TaskDisplayViewController taskDisplayViewController = loader.getController();
+		taskDisplayViewController.initialize();
 	}
 
 	public void initUserInputView() throws IOException {
