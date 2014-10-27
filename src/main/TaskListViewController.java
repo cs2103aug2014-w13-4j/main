@@ -19,9 +19,19 @@ public class TaskListViewController {
 	public TableColumn dueDateTableColumn;
 
 	public void initialize(Feedback initialTasks){
+		initializeGuiTaskList(initialTasks);
+	}
+
+	private void initializeGuiTaskList(Feedback initialTasks) {
 		ArrayList<Task> taskList = initialTasks.getTaskList();
 		ObservableList<Task> observableList = FXCollections.observableArrayList(taskList);
 		taskTableView.getItems().addAll(observableList);
+		sortTaskListByDueDate();
+	}
+
+	private void sortTaskListByDueDate() {
+		dueDateTableColumn.setSortType(TableColumn.SortType.ASCENDING);
+		taskTableView.getSortOrder().add(dueDateTableColumn);
 	}
 
 	private void updateTaskList(ArrayList<Task> taskList) {
