@@ -6,14 +6,18 @@ public enum ParamEnum {
 	NOTE ("note", ""),
 	LEVEL ("level", ""),
 	TAG ("\\+", ""),
-	START_DATE ("from", "(?<from>\\S+)( due)?(?<due>.*)?$", "from", "due"),
-	DUE_DATE ("due", "(?<due>.*)(?<from>.*?)?$", "from", "due"),
+	DUE_DATE ("due", ""),
+	START_DATE ("from", "(?<from>\\S+)( to)?(?<to>.*)?$", "from", "to"),
+	END_DATE ("to", "(?<to>.*)(?<from>.*?)?$", "from", "to"),
 	ORDER_BY ("order by", ""),
-	OR_FROM ("or from", "(?<from>\\S+)( due)?(?<due>.*)?$", "from", "due"),
-	OR_DUE ("or due", "(?<due>.*)(?<from>.*?)?$", "from", "due"),
+	OR_FROM ("or from", "(?<from>\\S+)( to)?(?<to>.*)?$", "from", "to"),
+	OR_END ("or to", "(?<to>.*)(?<from>.*?)?$", "from", "to"),
 	NAME ("name", ""),
 	ID ("id", ""),
-	STATUS ("status", "");
+	STATUS ("status", ""),
+	BEFORE ("before", ""),
+	AFTER ("after", ""),
+	ON ("on", "");
 	
 	private final String regex;
 	private final String deepRegex;
