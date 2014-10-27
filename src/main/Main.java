@@ -40,6 +40,7 @@ public class Main extends Application{
 			initRootLayout();
 			initTaskList();
 			initTaskListView();
+			initTaskDisplayView();
 		} catch (IOException e) {
 			ApplicationLogger.getApplicationLogger().log(Level.SEVERE, e.getMessage());
 		}
@@ -62,6 +63,14 @@ public class Main extends Application{
 		AnchorPane taskList = loader.load();
 
 		rootLayout.setCenter(taskList);
+	}
+
+	public void initTaskDisplayView() throws IOException {
+		FXMLLoader loader = new FXMLLoader();
+		loader.setLocation(Main.class.getResource("views/TaskDisplayView.fxml"));
+		AnchorPane taskDisplay = loader.load();
+
+		rootLayout.setRight(taskDisplay);
 	}
 
 	public static void main(String[] args) {
