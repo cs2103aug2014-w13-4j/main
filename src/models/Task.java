@@ -1,12 +1,7 @@
 package models;
 
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.TreeMap;
-
-import exceptions.InvalidDateFormatException;
 import models.PriorityLevelEnum;
 
 public class Task {
@@ -26,44 +21,9 @@ public class Task {
 	public Task() {
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public void setDateDue(Calendar dateDue) {
-		this.dateDue = dateDue;
-	}
-
-	public void setDateStart(Calendar dateStart) {
-		this.dateStart = dateStart;
-	}
-
-	public void setPriorityLevel(PriorityLevelEnum priorityLevel) {
-		this.priorityLevel = priorityLevel;
-	}
-
-	public void setDateEnd(Calendar dateEnd) {
-		this.dateEnd = dateEnd;
-	}
-
-	public void setNote(String note) {
-		this.note = note;
-	}
-
-	public void setTags(ArrayList<String> tags) {
-		this.tags = tags;
-	}
-
-	public void setParentTasks(ArrayList<Integer> parentTasks) {
-		this.parentTasks = parentTasks;
-	}
-
-	public void setChildTasks(ArrayList<Integer> childTasks) {
-		this.childTasks = childTasks;
-	}
-
-	public void setConditionalDates(ArrayList<StartDueDatePair> conditionalDates) {
-		this.conditionalDates = conditionalDates;
+	public void addTags(ArrayList<String> newTags) {
+		newTags.removeAll(this.tags);
+		this.tags.addAll(newTags);
 	}
 
 	public void appendConditionalDates(
@@ -71,32 +31,40 @@ public class Task {
 		this.conditionalDates.addAll(conditionalDates);
 	}
 
-	public void setDeleted(boolean isDeleted) {
-		this.isDeleted = isDeleted;
+	public ArrayList<Integer> getChildTasks() {
+		return childTasks;
 	}
 
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
+	public ArrayList<StartDueDatePair> getConditionalDates() {
+		return conditionalDates;
 	}
 
 	public Calendar getDateDue() {
 		return dateDue;
 	}
 
-	public Calendar getDateStart() {
-		return dateStart;
-	}
-
 	public Calendar getDateEnd() {
 		return dateEnd;
 	}
 
+	public Calendar getDateStart() {
+		return dateStart;
+	}
+
 	public int getId() {
 		return id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public ArrayList<Integer> getParentTasks() {
+		return parentTasks;
 	}
 
 	public PriorityLevelEnum getPriorityLevel() {
@@ -111,36 +79,94 @@ public class Task {
 		}
 	}
 
-	public String getNote() {
-		return note;
-	}
-
 	public ArrayList<String> getTags() {
 		return tags;
 	}
 
-	public ArrayList<Integer> getParentTasks() {
-		return parentTasks;
+	public boolean isCompleted() {
+		Boolean isTimedTaskCompleted = this.isTimedTask() && isDateEndOver();
+		Boolean isDeadlineTaskCompleted = this.isDeadlineTask()
+				&& dateEnd != null;
+		return isTimedTaskCompleted || isDeadlineTaskCompleted;
 	}
 
-	public ArrayList<Integer> getChildTasks() {
-		return childTasks;
+	public boolean isConditionalTask() {
+		return dateDue == null && dateStart == null && dateEnd == null
+				&& !conditionalDates.isEmpty();
 	}
 
-	public ArrayList<StartDueDatePair> getConditionalDates() {
-		return conditionalDates;
+	public boolean isConfirmed() {
+		if (conditionalDates != null && !conditionalDates.isEmpty()) {
+			return (dateStart != null || dateEnd != null);
+		} else {
+			return true;
+		}
+	}
+
+	private boolean isDateEndOver() {
+		return dateEnd.compareTo(Calendar.getInstance()) <= 0;
+	}
+
+	public boolean isDeadlineTask() {
+		return dateDue != null && dateStart == null
+				&& conditionalDates.isEmpty();
 	}
 
 	public boolean isDeleted() {
 		return isDeleted;
 	}
 
-	public boolean isConfirmed() {
-		if (conditionalDates != null && !conditionalDates.isEmpty()) {
-			return (dateStart != null || dateDue != null);
-		} else {
-			return true;
-		}
+	public boolean isFloatingTask() {
+		return dateDue == null && dateStart == null && dateEnd == null
+				&& conditionalDates.isEmpty();
+	}
+
+	public boolean isTimedTask() {
+		return dateDue == null && dateStart != null && dateEnd != null;
+	}
+
+	public void setChildTasks(ArrayList<Integer> childTasks) {
+		this.childTasks = childTasks;
+	}
+
+	public void setConditionalDates(ArrayList<StartDueDatePair> conditionalDates) {
+		this.conditionalDates = conditionalDates;
+	}
+
+	public void setDateDue(Calendar dateDue) {
+		this.dateDue = dateDue;
+	}
+
+	public void setDateEnd(Calendar dateEnd) {
+		this.dateEnd = dateEnd;
+	}
+
+	public void setDateStart(Calendar dateStart) {
+		this.dateStart = dateStart;
+	}
+
+	public void setDeleted(boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
+	}
+
+	public void setParentTasks(ArrayList<Integer> parentTasks) {
+		this.parentTasks = parentTasks;
+	}
+
+	public void setPriorityLevel(PriorityLevelEnum priorityLevel) {
+		this.priorityLevel = priorityLevel;
 	}
 
 	public boolean isEvent() {
@@ -159,8 +185,7 @@ public class Task {
 		dateEnd = conditionalDates.get(id - 1).getDueDate();
 	}
 
-	public void addTags(ArrayList<String> newTags) {
-		newTags.removeAll(this.tags);
-		this.tags.addAll(newTags);
+	public void setTags(ArrayList<String> tags) {
+		this.tags = tags;
 	}
 }
