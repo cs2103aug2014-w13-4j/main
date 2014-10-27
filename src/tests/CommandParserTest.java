@@ -35,19 +35,19 @@ public class CommandParserTest {
                 oneDateResult.getParam().get(ParamEnum.DUE_DATE));
 
         // This is the boundary for a single case of date pair
-        String fromDueDate = "add test2 from 11-11-11 due 11-11-12";
+        String fromDueDate = "add test2 from 11-11-11 to 11-11-12";
         Command fromDueDateResult = cp.parseCommand(fromDueDate);
         ArrayList<String> dueDateArray = new ArrayList<String>();
         dueDateArray.add("11-11-12");
         ArrayList<String> fromDateArray = new ArrayList<String>();
         fromDateArray.add("11-11-11");
         assertEquals(dueDateArray,
-                fromDueDateResult.getParam().get(ParamEnum.DUE_DATE));
+                fromDueDateResult.getParam().get(ParamEnum.END_DATE));
         assertEquals(fromDateArray,
                 fromDueDateResult.getParam().get(ParamEnum.START_DATE));
 
         // This is the boundary for a multiple case of date pair
-        String multipleDate = "add test2 from 11-11-11 due 11-11-12 or from 12-12-11 due 12-12-12";
+        String multipleDate = "add test2 from 11-11-11 to 11-11-12 or from 12-12-11 to 12-12-12";
         Command mutipleDateResult = cp.parseCommand(multipleDate);
         ArrayList<String> multipleDueDateArray = new ArrayList<String>();
         multipleDueDateArray.add("11-11-12");
@@ -56,7 +56,7 @@ public class CommandParserTest {
         multipleFromDateArray.add("11-11-11");
         multipleFromDateArray.add("12-12-11");
         assertEquals(multipleDueDateArray,
-                mutipleDateResult.getParam().get(ParamEnum.DUE_DATE));
+                mutipleDateResult.getParam().get(ParamEnum.END_DATE));
         assertEquals(multipleFromDateArray,
                 mutipleDateResult.getParam().get(ParamEnum.START_DATE));
     }

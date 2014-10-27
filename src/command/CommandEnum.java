@@ -4,10 +4,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public enum CommandEnum {
-	ADD ("add", ParamEnum.NAME, ParamEnum.DUE_DATE, ParamEnum.OR_DUE, ParamEnum.OR_FROM, ParamEnum.DATE, ParamEnum.START_DATE,
+	ADD ("add", ParamEnum.NAME, ParamEnum.END_DATE, ParamEnum.DUE_DATE, ParamEnum.OR_END, ParamEnum.OR_FROM, ParamEnum.DATE, ParamEnum.START_DATE,
 			ParamEnum.LEVEL, ParamEnum.NOTE, ParamEnum.TAG),
 	DELETE ("delete", ParamEnum.KEYWORD, null),
-	UPDATE ("update", ParamEnum.KEYWORD, ParamEnum.DUE_DATE, ParamEnum.OR_DUE, ParamEnum.OR_FROM, ParamEnum.DATE, ParamEnum.START_DATE,
+	UPDATE ("update", ParamEnum.KEYWORD, ParamEnum.END_DATE, ParamEnum.DUE_DATE, ParamEnum.OR_END, ParamEnum.OR_FROM, ParamEnum.DATE, ParamEnum.START_DATE,
             ParamEnum.LEVEL, ParamEnum.NOTE, ParamEnum.TAG, ParamEnum.NAME),
 	UNDO ("undo", ParamEnum.KEYWORD, null),
 	FILTER ("filter", ParamEnum.KEYWORD, null, ParamEnum.STATUS),
