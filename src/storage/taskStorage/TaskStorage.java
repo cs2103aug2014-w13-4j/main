@@ -258,225 +258,155 @@ public class TaskStorage {
 		return activeTaskList;
 	}
 
-	/**
-	 * Return search result by given tags
-	 *
-	 * @param tags: A list of given tags as key words
-	 * @param searchRange: The range of tasks
-	 * @return a list of tasks as search result
-	 */
-	private ArrayList<Task> searchTaskByTags(ArrayList<String> tags, ArrayList<Task> searchRange) {
-		ArrayList<Task> taskList = new ArrayList<Task>();
-		boolean hasTags;
+	private boolean isSearchTargetByName(Task task, String name) {
+		return task.getName().contains(name);
+	}
 
-		// exit if nothing to search
-		if (searchRange == null) {
-			return null;
-		}
+	private boolean isSearchTargetByNote(Task task, String note) {
+		return task.getNote().contains(note);
+	}
 
+	private boolean isSearchTargetByTag(Task task, ArrayList<String> tags) {
 		// check whether the keyword is null
 		if (tags == null) {
-			return searchRange;
+			return true;
 		}
-
-		for (Task task: searchRange) {
-			hasTags = true;
-			for (String tag: tags) {
-				if (task.getTags().contains(tag)) {
+		for (String tag: tags) {
+			if (task.getTags().contains(tag)) {
 					continue;
 				} else {
-					hasTags = false;
-					break;
+					return false;
 				}
-			}
-			if (hasTags) {
-				taskList.add(task);
-			}
 		}
-		return taskList;
+		return true;
 	}
 
-	/**
-	 * Return search result by given name string; 
-	 * The return tasks' name should include given name string
-	 *
-	 * @param name: a string of given name
-	 * @param searchRange: The range of tasks
-	 * @return a list of tasks as search result
-	 */
-	private ArrayList<Task> searchTaskByName(String name, ArrayList<Task> searchRange) {
-		ArrayList<Task> taskList = new ArrayList<Task>();
-
-		// exit if nothing to search
-		if (searchRange == null) {
-			return null;
-		}
-
-		for (Task task : searchRange) {
-			if (!task.isDeleted()){
-				if (task.getName().contains(name)) {
-					taskList.add(task);
-				}
-			}
-		}
-		return taskList;
+	private boolean isSearchTargetByPriorityLevel(Task task, String priorityLevel) {
+		int priorityLevelInteger = Integer.valueOf(priorityLevel);
+		return task.getPriorityLevelInteger().equals(priorityLevelInteger);
 	}
 
-	/**
-	 * Return search result by given note string; 
-	 * The return tasks' note should include given note string
-	 *
-	 * @param note: a string of given note
-	 * @param searchRange: The range of tasks
-	 * @return a list of tasks as search result
-	 */
-	private ArrayList<Task> searchTaskByNote(String note, ArrayList<Task> searchRange) {
-		ArrayList<Task> taskList = new ArrayList<Task>();
-
-		// exit if nothing to search
-		if (searchRange == null) {
-			return null;
+	private boolean isSearchTargetByPriorityStatus(Task task, String status) throws InvalidInputException {
+		status = status.toLowerCase();
+		if (status.equals(COMPLETED)) {
+			return task.isCompleted() && !task.isDeleted();
+		} else if (status.equals(ACTIVE)) {
+			// need double check
+			return !task.isDeleted();
+		} else {
+			throw new InvalidInputException("Filter keyword is wrong.");
 		}
-
-		for (Task task : searchRange) {
-			if (!task.isDeleted()){
-				if (task.getNote().contains(note)) {
-					taskList.add(task);
-				}
-			}
-		}
-		return taskList;
 	}
 
-	/**
-	 * Return search result by given priority level
-	 *
-	 * @param priorityLevel: given priorityLevel
-	 * @param searchRange: The range of tasks
-	 * @return a list of tasks as search result
-	 */
-	private ArrayList<Task> searchTaskByPriorityLevel(Integer priorityLevel, ArrayList<Task> searchRange) {
-		ArrayList<Task> taskList = new ArrayList<Task>();
-
-		// exit if nothing to search
-		if (searchRange == null) {
-			return null;
+	private boolean isSearchTargetByBefore(Task task, String dateString) throws InvalidDateFormatException {
+		Calendar date = DateParser.parseString(dateString);
+		if (task.isConditionalTask() || task.isFloatingTask()) {
+			return false;
+		} else if (task.isDeadlineTask()) {
+			// Is this considered as magic number?
+			return task.getDateDue().compareTo(date) != 1;
+		} else {
+			return intervalTree.getTasksBefore(date).contains(task.getId());
 		}
-
-		for (Task task : searchRange) {
-			if (!task.isDeleted()){
-				if (task.getPriorityLevelInteger().equals(priorityLevel)) {
-					taskList.add(task);
-				}
-			}
-		}
-		return taskList;
 	}
 
-	private ArrayList<Task> searchTaskByDateStart(Calendar dateStart, ArrayList<Task> searchRange) {
-		ArrayList<Task> taskList = new ArrayList<Task>();
-
-		// exit if nothing to search
-		if (searchRange == null) {
-			return null;
+	private boolean isSearchTargetByAfter(Task task, String dateString) throws InvalidDateFormatException {
+		Calendar date = DateParser.parseString(dateString);
+		if (task.isConditionalTask() || task.isFloatingTask()) {
+			return false;
+		} else if (task.isDeadlineTask()) {
+			// Is this considered as magic number?
+			return task.getDateDue().compareTo(date) != -1;
+		} else {
+			return intervalTree.getTasksFrom(date).contains(task.getId());
 		}
-
-		for (Task task : searchRange) {
-			if (!task.isDeleted()){
-				if (task.getDateStart().equals(dateStart)) {
-					taskList.add(task);
-				}
-			}
-		}
-		return taskList;
 	}
 
-	private ArrayList<Task> searchTaskByDateDue(Calendar dateDue, ArrayList<Task> searchRange) {
-		ArrayList<Task> taskList = new ArrayList<Task>();
-
-		// exit if nothing to search
-		if (searchRange == null) {
-			return null;
+	private boolean isSearchTargetByInterval(
+			Task task, String dateStartString, String dateEndString) throws InvalidDateFormatException {
+		Calendar dateStart = DateParser.parseString(dateStartString);
+		Calendar dateEnd = DateParser.parseString(dateEndString);
+		if (task.isTimedTask()) {
+			return task.getDateStart().compareTo(dateStart) != -1 && 
+					task.getDateEnd().compareTo(dateEnd) != 1;
+		} else {
+			return false;
 		}
-
-		for (Task task : searchRange) {
-			if (!task.isDeleted()){
-				if (task.getDateDue().equals(dateDue)) {
-					taskList.add(task);
-				}
-			}
-		}
-		return taskList;
 	}
 
-
-	// Search a list of tasks with certain key words
-	// String operations
 	public ArrayList<Task> searchTask(
 			Hashtable<ParamEnum, ArrayList<String>> keyWordTable, ArrayList<Task> searchRange) 
 			throws InvalidDateFormatException, InvalidInputException {
-		boolean isTarget;
+		ArrayList<Task> taskList = (ArrayList<Task>) searchRange.clone();
+		ArrayList<String> params;
+		String firstParamElement, dateEnd;
 
-		// exit if nothing to search
-		if (searchRange == null) {
-			return null;
+		// exit if there is no keyword table
+		if (keyWordTable == null) {
+			return taskList;
 		}
 
-		// search tasks with the given name string
-		String name = null;
-		if (keyWordTable.get(ParamEnum.NAME) != null) {
-			name = keyWordTable.get(ParamEnum.NAME).get(0);
-			searchRange = searchTaskByName(name, searchRange);
-		}
-
-		// search tasks with the given note string 
-		String note = null;
-		if (keyWordTable.get(ParamEnum.NOTE) != null) {
-			note = keyWordTable.get(ParamEnum.NOTE).get(0);
-			searchRange = searchTaskByNote(note, searchRange);
-		}
-
-		// search tasks with the given tags
-		ArrayList<String> tags;
-		if (keyWordTable.get(ParamEnum.TAG) != null) {
-			tags = keyWordTable.get(ParamEnum.TAG);
-			searchRange = searchTaskByTags(tags, searchRange);
-		}
-
-		// search tasks with the given priority level
-		int priorityLevel;
-		if (keyWordTable.get(ParamEnum.LEVEL) != null) {
-			priorityLevel = Integer.valueOf(keyWordTable.get(ParamEnum.LEVEL).get(0));
-			searchRange = searchTaskByPriorityLevel(priorityLevel, searchRange);
-		}
-
-		// search tasks with the given start date
-		Calendar dateStart;
-		if (keyWordTable.get(ParamEnum.START_DATE) != null) {
-			dateStart = DateParser.parseString(keyWordTable.get(ParamEnum.START_DATE).get(0));
-			searchRange = searchTaskByDateStart(dateStart, searchRange);
-		}
-		
-		// search tasks with the given due date
-		Calendar dateDue;
-		if (keyWordTable.get(ParamEnum.DUE_DATE) != null) {
-			dateDue = DateParser.parseString(keyWordTable.get(ParamEnum.DUE_DATE).get(0));
-			searchRange = searchTaskByDateDue(dateDue, searchRange);
-		}
-
-		// filter out tasks with different status
-		String status;
-		if (keyWordTable.get(ParamEnum.STATUS) != null) {
-			status = keyWordTable.get(ParamEnum.STATUS).get(0).toLowerCase();
-			if (status.equals(COMPLETED)) {
-				searchRange = getCompletedTasks(searchRange);
-			} else if (status.equals(ACTIVE)) {
-				searchRange = getActiveTasks(searchRange);
-			} else {
-				throw new InvalidInputException("Filter keyword is wrong.");
+		for (ParamEnum key : keyWordTable.keySet()) {
+			// exit if nothing to search
+			if (searchRange == null) {
+				return null;
 			}
+			params = keyWordTable.get(key);
+			firstParamElement = params.get(0);
+			for (Task task : searchRange) {
+				switch (key) {
+					case NAME:
+						if (!isSearchTargetByName(task, firstParamElement)) {
+							taskList.remove(task);
+						}
+						break;
+					case NOTE:
+						if (!isSearchTargetByNote(task, firstParamElement)) {
+							taskList.remove(task);
+						}
+						break;
+					case TAG:
+						if (!isSearchTargetByTag(task, params)) {
+							taskList.remove(task);
+						}
+						break;
+					case LEVEL:
+						if (!isSearchTargetByPriorityLevel(task, firstParamElement)) {
+							taskList.remove(task);
+						}
+						break;
+					case STATUS:
+						if (!isSearchTargetByPriorityStatus(task, firstParamElement)) {
+							taskList.remove(task);
+						}
+						break;
+					case BEFORE:
+						if (!isSearchTargetByBefore(task, firstParamElement)) {
+							taskList.remove(task);
+						}
+						break;
+					case AFTER:
+						if (!isSearchTargetByAfter(task, firstParamElement)) {
+							taskList.remove(task);
+						}
+						break;
+					case START_DATE:
+						if (keyWordTable.get(ParamEnum.END_DATE) == null) {
+							throw new InvalidInputException("Search start date without end date");
+						} else {
+							dateEnd = keyWordTable.get(ParamEnum.END_DATE).get(0);
+						}
+						if (!isSearchTargetByInterval(task, firstParamElement, dateEnd)) {
+							taskList.remove(task);
+						}
+						break;
+					default:
+						break;
+				}
+			}
+			// update search range to reduce repeated work
+			searchRange = (ArrayList<Task>) taskList.clone();
 		}
-
-		return searchRange;
+		return searchRange;		
 	}
 }
