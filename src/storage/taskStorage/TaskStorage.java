@@ -41,7 +41,6 @@ public class TaskStorage {
 	private static final int ID_FOR_NEW_TASK = -1;
 	private static final int ID_FOR_FIRST_TASK = 0;
 
-
 	private static final String COMPLETED = "completed";
 	private static final String ACTIVE = "active";
 
@@ -67,7 +66,7 @@ public class TaskStorage {
 			task = TaskConverter.stringToTask(fileScanner.nextLine());
 			taskBuffer.add(task);
 			// add in interval tree
-			if (task.isEvent()) {
+			if (task.isTimedTask()) {
 				dateStart = task.getDateStart();
 				dateDue = task.getDateDue();
 				if (intervalTree.isValid(dateStart, dateDue)) {
@@ -98,47 +97,74 @@ public class TaskStorage {
 	 */
 	public void writeTaskToFile(Task task) throws TaskNotFoundException, IOException {
 		int taskID = task.getId();
-		Calendar dateStart, dateDue, oldStart, oldEnd;
 		if (taskID == ID_FOR_NEW_TASK) {
-			// Add new task to task file
-			task.setId(nextTaskIndex);
-			nextTaskIndex ++;
 			addTask(task);
-			// Add new task to task buffer
-			taskBuffer.add(task);
-			// Add new task to Interval Tree
-			if (task.isEvent()) {
-				dateStart = task.getDateStart();
-				dateDue = task.getDateDue();
-				intervalTree.add(dateStart, dateDue, task.getId());
-			}
 		} else {
 			if (isTaskExist(taskID)) {
-				// Update task to task buffer
-				taskBuffer.set(taskID, task);
-				// Update task to task file
-				updateTask();
-				// Update task to Interval Tree
-				if (task.isEvent()) {
-					dateStart = task.getDateStart();
-					dateDue = task.getDateDue();
-					oldStart = intervalTree.getDateStart(task.getId());
-					oldEnd = intervalTree.getDateDue(task.getId());
-					intervalTree.update(oldStart, oldEnd, dateStart, dateDue);
-				}
+				updateTask(task);
 			} else {
 				throw new TaskNotFoundException("Cannot update task since the current task doesn't exist");
 			}
 		}
 	}
 
-	// Check whether the current task exists or not
+	/**
+	 * Check whether a task is existing or not
+	 *
+	 * @param taskID: the task id to be checked
+	 * @return boolean: whether a task is existing or not
+	 */
 	private boolean isTaskExist(int taskID) {
 		return taskID >= MIN_INDEX && taskID < nextTaskIndex;
 	}
 
-	// append task string to the end of the file
+	/**
+	 * Add a task
+	 *
+	 * @param task: task to be added
+	 * @throws IOException: wrong IO operations
+	 */
 	private void addTask(Task task) throws IOException {
+		Calendar dateStart, dateDue;
+		// Add new task to task file
+		task.setId(nextTaskIndex);
+		nextTaskIndex ++;
+		addTaskToStorage(task);
+		// Add new task to task buffer
+		taskBuffer.add(task);
+		// Add new task to Interval Tree
+		if (task.isTimedTask()) {
+			dateStart = task.getDateStart();
+			dateDue = task.getDateDue();
+			intervalTree.add(dateStart, dateDue, task.getId());
+		}
+	}
+
+	/**
+	 * Update a task
+	 *
+	 * @param task: task to be updated
+	 * @throws IOException: wrong IO operations
+	 */
+	private void updateTask(Task task) throws IOException {	
+		int taskID = task.getId();	
+		Calendar dateStart, dateDue, oldStart, oldEnd;
+		// Update task to task buffer
+		taskBuffer.set(taskID, task);
+		// Update task to task file
+		updateTaskToStorage();
+		// Update task to Interval Tree
+		if (task.isTimedTask()) {
+			dateStart = task.getDateStart();
+			dateDue = task.getDateDue();
+			oldStart = intervalTree.getDateStart(task.getId());
+			oldEnd = intervalTree.getDateDue(task.getId());
+			intervalTree.update(oldStart, oldEnd, dateStart, dateDue, taskID);
+		}
+	}
+
+	// append task string to the end of the file
+	private void addTaskToStorage(Task task) throws IOException {
 		BufferedWriter bufferedWriter = null;
 		String taskString = TaskConverter.taskToString(task);
 		bufferedWriter = new BufferedWriter(new FileWriter(dataFile, true));
@@ -146,7 +172,7 @@ public class TaskStorage {
 		bufferedWriter.close();
 	}
 
-	private void updateTask() throws IOException {
+	private void updateTaskToStorage() throws IOException {
 		BufferedWriter bufferedWriter = null;
 		String taskString;
 		bufferedWriter = new BufferedWriter(new FileWriter(dataFile));
