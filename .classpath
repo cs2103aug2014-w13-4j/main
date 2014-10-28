@@ -9,5 +9,6 @@
 	<classpathentry kind="lib" path="lib/cloning-1.8.5/objenesis-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/natty-0.9.jar"/>
 	<classpathentry kind="lib" path="lib/antlr-runtime-3.2.jar"/>
+	<classpathentry kind="lib" path="lib/gson-2.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -14,7 +14,10 @@ public enum ParamEnum {
 	OR_END ("or to ", "to"),
 	NAME ("name", ""),
 	ID ("id", ""),
-	STATUS ("status", "");
+	STATUS ("status", ""),
+	BEFORE ("before", ""),
+	AFTER ("after", ""),
+	ON ("on", "");
 	
 	private final String regex;
 	private final String groupName;
