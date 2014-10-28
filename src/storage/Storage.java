@@ -7,7 +7,6 @@ import java.util.Hashtable;
 import java.util.logging.Level;
 
 import command.ParamEnum;
-import exceptions.EmptySearchResultException;
 import exceptions.FileFormatNotSupportedException;
 import exceptions.InvalidDateFormatException;
 import exceptions.InvalidInputException;
@@ -69,7 +68,7 @@ public class Storage {
 	// Search a list of tasks with certain key words
 	// Assume keywords of name and note is only one string
 	public ArrayList<Task> searchTask(Hashtable<ParamEnum, ArrayList<String>> keyWordTable) 
-			throws InvalidDateFormatException, InvalidInputException, EmptySearchResultException {
+			throws InvalidDateFormatException, InvalidInputException {
 		return taskFile.searchTask(keyWordTable, getAllTasks());
 	}
 }

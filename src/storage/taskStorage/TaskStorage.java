@@ -16,7 +16,6 @@ import java.util.Scanner;
 import org.apache.commons.lang3.StringUtils;
 
 import command.ParamEnum;
-import exceptions.EmptySearchResultException;
 import exceptions.FileFormatNotSupportedException;
 import exceptions.InvalidDateFormatException;
 import exceptions.InvalidInputException;
@@ -256,7 +255,7 @@ public class TaskStorage {
 	 * @throws EmptySearchResultException
 	 */
 	private ArrayList<Task> searchTaskByName(String name,
-			ArrayList<Task> searchRange) throws EmptySearchResultException {
+			ArrayList<Task> searchRange) {
 		ArrayList<Task> taskList = new ArrayList<Task>();
 		ArrayList<Task> suggestedTaskList = new ArrayList<Task>();
 		// exit if nothing to search
@@ -294,7 +293,7 @@ public class TaskStorage {
 	 * @throws EmptySearchResultException
 	 */
 	private ArrayList<Task> searchTaskByNote(String note,
-			ArrayList<Task> searchRange) throws EmptySearchResultException {
+			ArrayList<Task> searchRange) {
 		ArrayList<Task> taskList = new ArrayList<Task>();
 		ArrayList<Task> suggestedTaskList = new ArrayList<Task>();
 		// exit if nothing to search
@@ -431,7 +430,7 @@ public class TaskStorage {
 	public ArrayList<Task> searchTask(
 			Hashtable<ParamEnum, ArrayList<String>> keyWordTable,
 			ArrayList<Task> searchRange) throws InvalidDateFormatException,
-			InvalidInputException, EmptySearchResultException {
+			InvalidInputException {
 		boolean isTarget;
 
 		// exit if nothing to search

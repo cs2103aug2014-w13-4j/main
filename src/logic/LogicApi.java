@@ -9,7 +9,6 @@ import models.ApplicationLogger;
 import models.Command;
 import models.Feedback;
 import command.*;
-import exceptions.EmptySearchResultException;
 import exceptions.HistoryNotFoundException;
 import exceptions.InvalidCommandUseException;
 import exceptions.InvalidDateFormatException;
@@ -65,7 +64,7 @@ public class LogicApi {
 	public Feedback executeCommand(Command command)
 			throws TaskNotFoundException, IOException,
 			InvalidDateFormatException, InvalidInputException,
-			HistoryNotFoundException, InvalidCommandUseException, EmptySearchResultException {
+			HistoryNotFoundException, InvalidCommandUseException {
 		if (logic.storage == null) {
 			throw new IOException();
 		} else {
