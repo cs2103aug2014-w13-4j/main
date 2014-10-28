@@ -26,11 +26,8 @@ public class Main extends Application{
 	LogicApi logic;
 
 	private Stage primaryStage;
-	private BorderPane rootLayout;
 
-	private TaskListViewController taskListViewController;
-	private TaskDisplayViewController taskDisplayViewController;
-	private UserInputViewController userInputViewController;
+	private RootLayoutController rootLayoutController;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -46,65 +43,21 @@ public class Main extends Application{
 	}
 
 	public void initLayouts(){
+		assert(primaryStage != null);
 		try {
 			Feedback allActiveTasks = initLogicAndGetAllActiveTasks();
-			initRootLayout();
-			initTaskListView(allActiveTasks);
-			initTaskDisplayView();
-			initUserInputView(allActiveTasks);
+
+			rootLayoutController = new RootLayoutController();
+			rootLayoutController.initialize(primaryStage, allActiveTasks);
 		} catch (IOException e) {
 			ApplicationLogger.getApplicationLogger().log(Level.SEVERE, e.getMessage());
 		}
-	}
-
-	public void initRootLayout() throws IOException {
-		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(Main.class.getResource("views/RootLayout.fxml"));
-		rootLayout = loader.load();
-
-		Scene scene = new Scene(rootLayout);
-		primaryStage.setScene(scene);
-		primaryStage.show();
-	}
-
-	public void initTaskListView(Feedback allActiveTasks) throws IOException {
-		FXMLLoader loader = new FXMLLoader();
-		//loader.setLocation(Main.class.getResource("main.fxml"));
-		loader.setLocation(Main.class.getResource("views/TaskListView.fxml"));
-		AnchorPane taskList = loader.load();
-
-		rootLayout.setCenter(taskList);
-
-		taskListViewController = loader.getController();
-		taskListViewController.initialize(allActiveTasks);
 	}
 
 	private Feedback initLogicAndGetAllActiveTasks() {
 		ApplicationLogger.getApplicationLogger().log(Level.INFO, "Initializing Logic.");
 		logic = new LogicApi();
 		return logic.initialize();
-	}
-
-	public void initTaskDisplayView() throws IOException {
-		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(Main.class.getResource("views/TaskDisplayView.fxml"));
-		AnchorPane taskDisplay = loader.load();
-
-		rootLayout.setRight(taskDisplay);
-
-		taskDisplayViewController = loader.getController();
-		taskDisplayViewController.initialize();
-	}
-
-	public void initUserInputView(Feedback allActiveTasks) throws IOException {
-		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(Main.class.getResource("views/UserInputView.fxml"));
-		AnchorPane userInput = loader.load();
-
-		rootLayout.setBottom(userInput);
-
-		userInputViewController = loader.getController();
-		userInputViewController.initialize(allActiveTasks);
 	}
 
 	public static void main(String[] args) {
