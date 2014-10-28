@@ -259,7 +259,8 @@ public class TaskStorage {
 	private ArrayList<Task> searchTaskByName(String name,
 			ArrayList<Task> searchRange) throws EmptySearchResultException {
 		ArrayList<Task> taskList = new ArrayList<Task>();
-		String wordSuggestion = "";
+		ArrayList<Task> suggestedTaskList = new ArrayList<Task>();
+		//String wordSuggestion = "";
 		int maxDistance = MAX_DIFF_BETWEEN_WORDS;
 		// exit if nothing to search
 		if (searchRange == null) {
@@ -270,22 +271,21 @@ public class TaskStorage {
 			if (!task.isDeleted()) {
 				if (task.getName().contains(name)) {
 					taskList.add(task);
-				} else {
+				} else if (taskList.isEmpty()){
 					int distBetweenWords = StringUtils.getLevenshteinDistance(
-							task.getName(), name);
+							task.getName().substring(0, Integer.min(task.getName().length(), name.length())), name);
 					if (distBetweenWords < maxDistance) {
-						wordSuggestion = task.getName();
+						suggestedTaskList.add(task);
 						maxDistance = distBetweenWords;
 					}
 				}
 			}
 		}
-
-		if (taskList.isEmpty() && !wordSuggestion.isEmpty()) {
-			throw new EmptySearchResultException("Do you mean "
-					+ wordSuggestion);
+		if (taskList.isEmpty()) {
+			return suggestedTaskList;
+		} else {
+			return taskList;
 		}
-		return taskList;
 	}
 
 	/**
@@ -302,8 +302,7 @@ public class TaskStorage {
 	private ArrayList<Task> searchTaskByNote(String note,
 			ArrayList<Task> searchRange) throws EmptySearchResultException {
 		ArrayList<Task> taskList = new ArrayList<Task>();
-
-		String wordSuggestion = "";
+		ArrayList<Task> suggestedTaskList = new ArrayList<Task>();
 		int maxDistance = MAX_DIFF_BETWEEN_WORDS;
 		// exit if nothing to search
 		if (searchRange == null) {
@@ -314,22 +313,21 @@ public class TaskStorage {
 			if (!task.isDeleted()) {
 				if (task.getNote().contains(note)) {
 					taskList.add(task);
-				} else {
+				} else if (taskList.isEmpty()){
 					int distBetweenWords = StringUtils.getLevenshteinDistance(
-							task.getNote(), note);
-					if (distBetweenWords <= maxDistance) {
-						wordSuggestion = task.getNote();
-						maxDistance = StringUtils.getLevenshteinDistance(
-								task.getNote(), note);
+							task.getNote().substring(0, Integer.min(task.getNote().length(), note.length())), note);
+					if (distBetweenWords < maxDistance) {
+						suggestedTaskList.add(task);
+						maxDistance = distBetweenWords;
 					}
 				}
 			}
 		}
-		if (taskList.isEmpty() && !wordSuggestion.isEmpty()) {
-			throw new EmptySearchResultException("Do you mean "
-					+ wordSuggestion);
+		if (taskList.isEmpty()) {
+			return suggestedTaskList;
+		} else {
+			return taskList;
 		}
-		return taskList;
 	}
 
 	/**
