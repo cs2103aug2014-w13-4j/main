@@ -25,7 +25,8 @@
                 <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
                 <RowConstraints minHeight="80.0" prefHeight="80.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="ALWAYS" />
+                <RowConstraints minHeight="50.0" prefHeight="50.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
             </rowConstraints>
             <children>
                 <Label text="ID:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
@@ -42,8 +43,10 @@
                 <Label fx:id="priorityLevelLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                 <Label text="Description:" GridPane.columnIndex="0" GridPane.rowIndex="6" GridPane.valignment="TOP" />
                 <Label fx:id="noteLabel" text="-" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="6" GridPane.valignment="TOP" />
-                <Label text="Conditional Dates:" GridPane.columnIndex="0" GridPane.rowIndex="7" />
-                <Label fx:id="conditionalDateLabel" minHeight="60" minWidth="250" text="-" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                <Label text="Conditional Dates:" GridPane.columnIndex="0" GridPane.rowIndex="7" GridPane.valignment="TOP" />
+                <Label fx:id="conditionalDateLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="7" GridPane.valignment="TOP"/>
+                <Label text="Tags:" GridPane.columnIndex="0" GridPane.rowIndex="8" />
+                <Label fx:id="tagLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
             </children>
         </GridPane>
     </children>

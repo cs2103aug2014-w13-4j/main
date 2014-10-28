@@ -96,7 +96,7 @@ public class RootLayoutController {
 		userInputViewController.initialize(allActiveTasks, this);
 	}
 
-	protected void executeCommand(String userInput){
+	protected void executeCommand(String userInput) {
 		CommandParser commandParser = new CommandParser();
 		if (validateUserInput(userInput)) {
 			try {
@@ -104,26 +104,29 @@ public class RootLayoutController {
 				Feedback userCommandFeedback = logicApi.executeCommand(userCommand);
 				String feedbackMessage = userCommandFeedback.getFeedbackMessage();
 
-				notificationPane.setText(feedbackMessage);
-				notificationPane.show();
+				showNotification(feedbackMessage);
 
 				ApplicationLogger.getApplicationLogger().log(Level.INFO, "Message shown: " + feedbackMessage);
 
 				ArrayList<Task> taskList = userCommandFeedback.getTaskList();
-				if (taskList != null){
+				if (taskList != null) {
 					taskListViewController.updateTaskList(taskList);
 				}
 
 				Task taskToDisplay = userCommandFeedback.getTaskDisplay();
-				if (taskToDisplay != null){
+				if (taskToDisplay != null) {
 					taskDisplayViewController.updateTaskPanel(taskToDisplay);
 				}
 			} catch (Exception e) {
-				notificationPane.setText(e.getMessage());
-				notificationPane.show();
+				showNotification(e.getMessage());
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private void showNotification(String feedbackMessage) {
+		notificationPane.setText(feedbackMessage);
+		notificationPane.show();
 	}
 
 	private boolean validateUserInput(String userInput){
