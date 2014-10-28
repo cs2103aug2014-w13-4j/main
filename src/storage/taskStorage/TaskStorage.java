@@ -217,6 +217,7 @@ public class TaskStorage {
 			ArrayList<Task> searchRange) {
 		ArrayList<Task> taskList = new ArrayList<Task>();
 		boolean hasTags;
+		boolean hasNearMatchTags;
 
 		// exit if nothing to search
 		if (searchRange == null) {
@@ -229,20 +230,23 @@ public class TaskStorage {
 		}
 
 		for (Task task : searchRange) {
-			hasTags = true;
-			for (String tag : tags) {
-				if (task.getTags().contains(tag)) {
-					continue;
-				} else {
-					hasTags = false;
-					break;
-				}
-			}
-			if (hasTags) {
+			if(task.getTags().containsAll(tags)) {
 				taskList.add(task);
 			}
 		}
 		return taskList;
+	}
+
+	private boolean isNearMatchTag(ArrayList<String> tagsInTask, String tagToMatch) {
+		for (String tagInTask : tagsInTask) {
+			if (StringUtils.getLevenshteinDistance(
+					tagInTask.substring(0,
+							Integer.min(tagInTask.length(), tagToMatch.length())),
+					tagToMatch) < MAX_DIFF_BETWEEN_WORDS) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -260,7 +264,7 @@ public class TaskStorage {
 			ArrayList<Task> searchRange) throws EmptySearchResultException {
 		ArrayList<Task> taskList = new ArrayList<Task>();
 		ArrayList<Task> suggestedTaskList = new ArrayList<Task>();
-		//String wordSuggestion = "";
+		// String wordSuggestion = "";
 		int maxDistance = MAX_DIFF_BETWEEN_WORDS;
 		// exit if nothing to search
 		if (searchRange == null) {
@@ -271,9 +275,12 @@ public class TaskStorage {
 			if (!task.isDeleted()) {
 				if (task.getName().contains(name)) {
 					taskList.add(task);
-				} else if (taskList.isEmpty()){
+				} else if (taskList.isEmpty()) {
 					int distBetweenWords = StringUtils.getLevenshteinDistance(
-							task.getName().substring(0, Integer.min(task.getName().length(), name.length())), name);
+							task.getName().substring(
+									0,
+									Integer.min(task.getName().length(),
+											name.length())), name);
 					if (distBetweenWords < maxDistance) {
 						suggestedTaskList.add(task);
 						maxDistance = distBetweenWords;
@@ -313,9 +320,12 @@ public class TaskStorage {
 			if (!task.isDeleted()) {
 				if (task.getNote().contains(note)) {
 					taskList.add(task);
-				} else if (taskList.isEmpty()){
+				} else if (taskList.isEmpty()) {
 					int distBetweenWords = StringUtils.getLevenshteinDistance(
-							task.getNote().substring(0, Integer.min(task.getNote().length(), note.length())), note);
+							task.getNote().substring(
+									0,
+									Integer.min(task.getNote().length(),
+											note.length())), note);
 					if (distBetweenWords < maxDistance) {
 						suggestedTaskList.add(task);
 						maxDistance = distBetweenWords;
