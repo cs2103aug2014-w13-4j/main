@@ -13,6 +13,7 @@ import command.ParamEnum;
 import models.Feedback;
 import models.History;
 import models.Task;
+import exceptions.EmptySearchResultException;
 import exceptions.FileFormatNotSupportedException;
 import exceptions.HistoryNotFoundException;
 import exceptions.InvalidCommandUseException;
@@ -218,10 +219,11 @@ public class Logic {
 	 * @return feedback containing all the tasks in the file, and the message
 	 * @throws InvalidInputException
 	 * @throws InvalidDateFormatException
+	 * @throws EmptySearchResultException 
 	 */
 
 	Feedback search(Hashtable<ParamEnum, ArrayList<String>> param)
-			throws InvalidDateFormatException, InvalidInputException {
+			throws InvalidDateFormatException, InvalidInputException, EmptySearchResultException {
 		ArrayList<Task> taskList = storage.searchTask(param);
 		logicUndo.pushNullCommandToHistory();
 		return createTaskListFeedback(
