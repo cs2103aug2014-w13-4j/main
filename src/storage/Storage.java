@@ -9,6 +9,8 @@ import java.util.logging.Level;
 import command.ParamEnum;
 
 import exceptions.FileFormatNotSupportedException;
+import exceptions.InvalidDateFormatException;
+import exceptions.InvalidInputException;
 import exceptions.TaskNotFoundException;
 import models.ApplicationLogger;
 import storage.tagStorage.TagStorage;
@@ -49,12 +51,6 @@ public class Storage {
 		tagFile.updateTagToFile(tags);
 	}
 
-	// Delete a task from file
-	// delete this function later
-	public void deleteTaskFromFile(int taskID) throws TaskNotFoundException, IOException {
-		taskFile.deleteTaskFromFile(taskID);
-	}
-
 	// Get a task by task ID
 	public Task getTask(int taskID) throws TaskNotFoundException {
 		return taskFile.getTask(taskID);
@@ -65,29 +61,15 @@ public class Storage {
 		return taskFile.getAllTasks();
 	}
 
-	// Get a list of tasks that are done
-	public ArrayList<Task> getCompletedTasks(ArrayList<Task> searchRange) {
-		return taskFile.getCompletedTasks(searchRange);
-	}
-
-	// Get a list of tasks that are not completed
-	public ArrayList<Task> getActiveTasks(ArrayList<Task> searchRange) {
-		return taskFile.getActiveTasks(searchRange);
-	}
-
 	// Get a list of tags
 	public ArrayList<String> getAllTags() {
 		return tagFile.getAllTags();
 	}
 
-	// Search a list of tasks with certain tags
-	public ArrayList<Task> searchTask(ArrayList<String> tags) {
-		return taskFile.searchTask(tags, getAllTasks());
-	}
-
 	// Search a list of tasks with certain key words
 	// Assume keywords of name and note is only one string
-	public ArrayList<Task> searchTask(Hashtable<ParamEnum, ArrayList<String>> keyWordTable) {
+	public ArrayList<Task> searchTask(Hashtable<ParamEnum, ArrayList<String>> keyWordTable) 
+			throws InvalidDateFormatException, InvalidInputException {
 		return taskFile.searchTask(keyWordTable, getAllTasks());
 	}
 }
