@@ -1,5 +1,6 @@
 package main;
 
+import command.CommandParser;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
@@ -7,16 +8,19 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import logic.LogicApi;
 import models.ApplicationLogger;
+import models.Command;
 import models.Feedback;
+import models.Task;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 /**
  * @author szhlibrary
  */
 public class RootLayoutController {
-	LogicApi logic;
+	LogicApi logicApi;
 
 	private BorderPane rootLayout;
 
@@ -24,14 +28,19 @@ public class RootLayoutController {
 	private TaskDisplayViewController taskDisplayViewController;
 	private UserInputViewController userInputViewController;
 
-	public void initialize(Stage primaryStage, Feedback allActiveTasks) throws IOException {
+	public void initialize(Stage primaryStage, Feedback allActiveTasks, LogicApi logicApi) throws IOException {
+		setLogic(logicApi);
 		initRootLayout(primaryStage);
 		initTaskListView(allActiveTasks);
 		initTaskDisplayView();
 		initUserInputView(allActiveTasks);
 	}
 
-	public void initRootLayout(Stage primaryStage) throws IOException {
+	private void setLogic(LogicApi logicApi) {
+		this.logicApi = logicApi;
+	}
+
+	private void initRootLayout(Stage primaryStage) throws IOException {
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(Main.class.getResource("views/RootLayout.fxml"));
 		rootLayout = loader.load();
@@ -41,7 +50,7 @@ public class RootLayoutController {
 		primaryStage.show();
 	}
 
-	public void initTaskListView(Feedback allActiveTasks) throws IOException {
+	private void initTaskListView(Feedback allActiveTasks) throws IOException {
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(Main.class.getResource("views/TaskListView.fxml"));
 		AnchorPane taskList = loader.load();
@@ -52,7 +61,7 @@ public class RootLayoutController {
 		taskListViewController.initialize(allActiveTasks);
 	}
 
-	public void initTaskDisplayView() throws IOException {
+	private void initTaskDisplayView() throws IOException {
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(Main.class.getResource("views/TaskDisplayView.fxml"));
 		AnchorPane taskDisplay = loader.load();
@@ -63,7 +72,7 @@ public class RootLayoutController {
 		taskDisplayViewController.initialize();
 	}
 
-	public void initUserInputView(Feedback allActiveTasks) throws IOException {
+	private void initUserInputView(Feedback allActiveTasks) throws IOException {
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(Main.class.getResource("views/UserInputView.fxml"));
 		AnchorPane userInput = loader.load();
@@ -71,6 +80,35 @@ public class RootLayoutController {
 		rootLayout.setBottom(userInput);
 
 		userInputViewController = loader.getController();
-		userInputViewController.initialize(allActiveTasks);
+		userInputViewController.initialize(allActiveTasks, this);
+	}
+
+	protected void executeCommand(String userInput){
+		CommandParser commandParser = new CommandParser();
+		if (validateUserInput(userInput)) {
+			try {
+				Command userCommand = commandParser.parseCommand(userInput);
+				Feedback userCommandFeedback = logicApi.executeCommand(userCommand);
+				String feedbackMessage = userCommandFeedback.getFeedbackMessage();
+
+				ApplicationLogger.getApplicationLogger().log(Level.INFO, "Message shown: " + feedbackMessage);
+
+				ArrayList<Task> taskList = userCommandFeedback.getTaskList();
+				if (taskList != null){
+					taskListViewController.updateTaskList(taskList);
+				}
+
+				Task taskToDisplay = userCommandFeedback.getTaskDisplay();
+				if (taskToDisplay != null){
+					taskDisplayViewController.updateTaskPanel(taskToDisplay);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private boolean validateUserInput(String userInput){
+		return (userInput != null && !userInput.isEmpty());
 	}
 }

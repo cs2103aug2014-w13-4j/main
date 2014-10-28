@@ -1,21 +1,12 @@
 package main;
 
 import javafx.application.Application;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.scene.control.SplitPane;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import logic.LogicApi;
 import models.ApplicationLogger;
 import models.Feedback;
-import models.Task;
 
 import java.io.IOException;
-import java.util.Observable;
 import java.util.logging.Level;
 
 /**
@@ -42,13 +33,12 @@ public class Main extends Application{
 		this.primaryStage.setTitle("Awesome Task Manager");
 	}
 
-	public void initLayouts(){
+	private void initLayouts(){
 		assert(primaryStage != null);
 		try {
 			Feedback allActiveTasks = initLogicAndGetAllActiveTasks();
-
 			rootLayoutController = new RootLayoutController();
-			rootLayoutController.initialize(primaryStage, allActiveTasks);
+			rootLayoutController.initialize(primaryStage, allActiveTasks, logic);
 		} catch (IOException e) {
 			ApplicationLogger.getApplicationLogger().log(Level.SEVERE, e.getMessage());
 		}
