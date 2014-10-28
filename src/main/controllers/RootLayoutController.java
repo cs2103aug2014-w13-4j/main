@@ -96,7 +96,7 @@ public class RootLayoutController {
 		userInputViewController.initialize(allActiveTasks, this);
 	}
 
-	protected void executeCommand(String userInput){
+	protected void executeCommand(String userInput) {
 		CommandParser commandParser = new CommandParser();
 		if (validateUserInput(userInput)) {
 			try {
@@ -109,12 +109,12 @@ public class RootLayoutController {
 				ApplicationLogger.getApplicationLogger().log(Level.INFO, "Message shown: " + feedbackMessage);
 
 				ArrayList<Task> taskList = userCommandFeedback.getTaskList();
-				if (taskList != null){
+				if (taskList != null) {
 					taskListViewController.updateTaskList(taskList);
 				}
 
 				Task taskToDisplay = userCommandFeedback.getTaskDisplay();
-				if (taskToDisplay != null){
+				if (taskToDisplay != null) {
 					taskDisplayViewController.updateTaskPanel(taskToDisplay);
 				}
 			} catch (Exception e) {
