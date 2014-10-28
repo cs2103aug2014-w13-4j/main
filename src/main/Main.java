@@ -30,6 +30,7 @@ public class Main extends Application{
 
 	private TaskListViewController taskListViewController;
 	private TaskDisplayViewController taskDisplayViewController;
+	private UserInputViewController userInputViewController;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -46,10 +47,11 @@ public class Main extends Application{
 
 	public void initLayouts(){
 		try {
+			Feedback allActiveTasks = initLogicAndGetAllActiveTasks();
 			initRootLayout();
-			initTaskListView();
+			initTaskListView(allActiveTasks);
 			initTaskDisplayView();
-			initUserInputView();
+			initUserInputView(allActiveTasks);
 		} catch (IOException e) {
 			ApplicationLogger.getApplicationLogger().log(Level.SEVERE, e.getMessage());
 		}
@@ -65,7 +67,7 @@ public class Main extends Application{
 		primaryStage.show();
 	}
 
-	public void initTaskListView() throws IOException {
+	public void initTaskListView(Feedback allActiveTasks) throws IOException {
 		FXMLLoader loader = new FXMLLoader();
 		//loader.setLocation(Main.class.getResource("main.fxml"));
 		loader.setLocation(Main.class.getResource("views/TaskListView.fxml"));
@@ -74,7 +76,7 @@ public class Main extends Application{
 		rootLayout.setCenter(taskList);
 
 		taskListViewController = loader.getController();
-		taskListViewController.initialize(initLogicAndGetAllActiveTasks());
+		taskListViewController.initialize(allActiveTasks);
 	}
 
 	private Feedback initLogicAndGetAllActiveTasks() {
@@ -94,12 +96,15 @@ public class Main extends Application{
 		taskDisplayViewController.initialize();
 	}
 
-	public void initUserInputView() throws IOException {
+	public void initUserInputView(Feedback allActiveTasks) throws IOException {
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(Main.class.getResource("views/UserInputView.fxml"));
 		AnchorPane userInput = loader.load();
 
 		rootLayout.setBottom(userInput);
+
+		userInputViewController = loader.getController();
+		userInputViewController.initialize(allActiveTasks);
 	}
 
 	public static void main(String[] args) {
