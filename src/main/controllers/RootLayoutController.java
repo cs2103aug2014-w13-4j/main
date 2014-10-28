@@ -120,6 +120,7 @@ public class RootLayoutController {
 				}
 			} catch (Exception e) {
 				notificationPane.setText(e.getMessage());
+				notificationPane.show();
 				e.printStackTrace();
 			}
 		}
