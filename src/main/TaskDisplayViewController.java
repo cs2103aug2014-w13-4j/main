@@ -47,7 +47,7 @@ public class TaskDisplayViewController {
 		conditionalDateLabel.textProperty().bind(conditionalDateLabelValue);
 	}
 
-	private void updateTaskPanel(Task taskToDisplay) {
+	protected void updateTaskPanel(Task taskToDisplay) {
 		setLabelValueInGui(idLabelValue, Integer.toString(taskToDisplay.getId()));
 		setLabelValueInGui(taskNameLabelValue, taskToDisplay.getName());
 		setLabelValueInGui(dueDateLabelValue, DateParser.parseCalendar(taskToDisplay.getDateDue()));

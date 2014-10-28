@@ -34,7 +34,7 @@ public class TaskListViewController {
 		taskTableView.getSortOrder().add(dueDateTableColumn);
 	}
 
-	private void updateTaskList(ArrayList<Task> taskList) {
+	protected void updateTaskList(ArrayList<Task> taskList) {
 		assert(taskList != null && taskList.size() >= 0);
 
 		taskTableView.getItems().clear();
