@@ -20,7 +20,7 @@ import java.util.logging.Level;
 public class UserInputViewController {
 
 	public TextField userInputField;
-	public RootLayoutController rootLayoutController;
+	private RootLayoutController rootLayoutController;
 
 	private AutoCompletionBinding<String> autoCompletionBinding;
 	private boolean autoCompleteCommandInitialized = false;

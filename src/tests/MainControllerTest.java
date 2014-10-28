@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
 
 public class MainControllerTest {
 
-	Class<MainController> MainControllerClass = MainController.class;
+	private Class<MainController> MainControllerClass = MainController.class;
 	//Method setFocusToUserInputField = MainControllerClass.getDeclaredMethod("setFocusToUserInputField");
 	Method validateUserInput = MainControllerClass.
 			getDeclaredMethod("validateUserInput", String.class);

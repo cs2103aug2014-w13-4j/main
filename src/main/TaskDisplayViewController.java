@@ -23,14 +23,14 @@ public class TaskDisplayViewController {
 	public Label noteLabel;
 	public Label conditionalDateLabel;
 
-	final StringProperty idLabelValue = new SimpleStringProperty("-");
-	final StringProperty taskNameLabelValue = new SimpleStringProperty("-");
-	final StringProperty dueDateLabelValue = new SimpleStringProperty("-");
-	final StringProperty startDateLabelValue = new SimpleStringProperty("-");
-	final StringProperty endDateLabelValue = new SimpleStringProperty("-");
-	final StringProperty priorityLevelLabelValue = new SimpleStringProperty("-");
-	final StringProperty noteLabelValue = new SimpleStringProperty("-");
-	final StringProperty conditionalDateLabelValue = new SimpleStringProperty("-");
+	private final StringProperty idLabelValue = new SimpleStringProperty("-");
+	private final StringProperty taskNameLabelValue = new SimpleStringProperty("-");
+	private final StringProperty dueDateLabelValue = new SimpleStringProperty("-");
+	private final StringProperty startDateLabelValue = new SimpleStringProperty("-");
+	private final StringProperty endDateLabelValue = new SimpleStringProperty("-");
+	private final StringProperty priorityLevelLabelValue = new SimpleStringProperty("-");
+	private final StringProperty noteLabelValue = new SimpleStringProperty("-");
+	private final StringProperty conditionalDateLabelValue = new SimpleStringProperty("-");
 
 	public void initialize() {
 		initializeGuiLabelBindings();

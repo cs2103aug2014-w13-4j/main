@@ -9,8 +9,8 @@ import static org.junit.Assert.*;
 
 public class RootLayoutControllerTest {
 
-	Class<RootLayoutController> rootLayoutControllerClass = RootLayoutController.class;
-	Method validateUserInput = rootLayoutControllerClass.
+	private Class<RootLayoutController> rootLayoutControllerClass = RootLayoutController.class;
+	private Method validateUserInput = rootLayoutControllerClass.
 			getDeclaredMethod("validateUserInput", String.class);
 
 	public RootLayoutControllerTest() throws NoSuchMethodException {
