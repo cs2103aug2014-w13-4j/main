@@ -40,5 +40,6 @@ public class TaskListViewController {
 		taskTableView.getItems().clear();
 		ObservableList<Task> observableList = FXCollections.observableArrayList(taskList);
 		taskTableView.getItems().addAll(observableList);
+		sortTaskListByDueDate();
 	}
 }
