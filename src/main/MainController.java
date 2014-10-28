@@ -96,25 +96,6 @@ public class MainController {
 		conditionalDateLabel.textProperty().bind(conditionalDateLabelValue);
 	}
 
-	private void initializeAutoComplete(Feedback displayAllActiveTasks){
-		initializeAutoCompleteForCommands();
-	}
-
-	private void initializeAutoCompleteForCommands(){
-		if (!autoCompleteCommandInitialized) {
-			ArrayList<String> autoCompleteStringList = new ArrayList<String>();
-
-			for (CommandEnum command : CommandEnum.values()) {
-				autoCompleteStringList.add(String.valueOf(command).toLowerCase() + " ");
-			}
-			if (autoCompletionBinding != null) {
-				autoCompletionBinding.dispose();
-			}
-			autoCompletionBinding = TextFields.bindAutoCompletion(userInputField, autoCompleteStringList);
-			autoCompleteCommandInitialized = true;
-		}
-	}
-
 	private void initializeAutoCompleteForSearch(Feedback displayAllActiveTasks){
 		if (!autoCompleteSearchInitialized){
 			ArrayList<String> autoCompleteStringList = new ArrayList<String>();
@@ -140,6 +121,25 @@ public class MainController {
 				userInputField.requestFocus();
 			}
 		});
+	}
+
+	private void initializeAutoComplete(Feedback displayAllActiveTasks){
+		initializeAutoCompleteForCommands();
+	}
+
+	private void initializeAutoCompleteForCommands(){
+		if (!autoCompleteCommandInitialized) {
+			ArrayList<String> autoCompleteStringList = new ArrayList<String>();
+
+			for (CommandEnum command : CommandEnum.values()) {
+				autoCompleteStringList.add(String.valueOf(command).toLowerCase() + " ");
+			}
+			if (autoCompletionBinding != null) {
+				autoCompletionBinding.dispose();
+			}
+			autoCompletionBinding = TextFields.bindAutoCompletion(userInputField, autoCompleteStringList);
+			autoCompleteCommandInitialized = true;
+		}
 	}
 
 	public void handleUserIncrementalInput(){
