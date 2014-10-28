@@ -81,7 +81,7 @@ public class UserInputViewController {
 				//Feedback displayCommandFeedback = logic.executeCommand(displayCommand);
 				//initializeAutoCompleteForSearch(displayCommandFeedback);
 				autoCompleteCommandInitialized = false;
-				//executeCommand();
+				rootLayoutController.executeCommand(userInputField.getText());
 			} catch (Exception e) {
 				ApplicationLogger.getApplicationLogger().log(Level.WARNING, e.getMessage());
 			}
