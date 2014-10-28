@@ -12,6 +12,7 @@ import exceptions.InvalidDateFormatException;
 import exceptions.InvalidInputException;
 import exceptions.TaskNotFoundException;
 import models.ApplicationLogger;
+import models.IntervalSearch;
 import storage.tagStorage.TagStorage;
 import storage.taskStorage.TaskStorage;
 import models.Task;

@@ -4,11 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Scanner;
@@ -22,7 +18,6 @@ import exceptions.InvalidInputException;
 import exceptions.TaskNotFoundException;
 import models.DateParser;
 import models.IntervalSearch;
-import models.PriorityLevelEnum;
 import models.Task;
 
 /**
@@ -54,7 +49,7 @@ public class TaskStorage {
 			FileFormatNotSupportedException {
 		Task task;
 		Calendar dateStart;
-		Calendar dateDue;
+		Calendar dateEnd;
 		dataFile = new File(fileName);
 
 		if (!dataFile.exists()) {
@@ -71,9 +66,9 @@ public class TaskStorage {
 			// add in interval tree
 			if (task.isTimedTask()) {
 				dateStart = task.getDateStart();
-				dateDue = task.getDateDue();
-				if (intervalTree.isValid(dateStart, dateDue)) {
-					intervalTree.add(dateStart, dateDue, task.getId());
+				dateEnd = task.getDateEnd();
+				if (intervalTree.isValid(dateStart, dateEnd)) {
+					intervalTree.add(dateStart, dateEnd, task.getId());
 				} else {
 					throw new FileFormatNotSupportedException("Events are overlapping");
 				}
@@ -235,40 +230,6 @@ public class TaskStorage {
 		return allTaskList;
 	}
 
-	// Get a list of tasks that are done
-	private ArrayList<Task> getCompletedTasks(ArrayList<Task> searchRange) {
-		ArrayList<Task> completedTaskList = new ArrayList<Task>();
-		// check whether there are tasks in storage
-		if (searchRange == null) {
-			return null;
-		}
-		for (Task task : searchRange) {
-			if (task.getDateEnd() == null || task.isDeleted()) {
-				continue;
-			} else {
-				completedTaskList.add(task);
-			}
-		}
-		return completedTaskList;
-	}
-
-	// Get a list of tasks that are not completed
-	private ArrayList<Task> getActiveTasks(ArrayList<Task> searchRange) {
-		ArrayList<Task> activeTaskList = new ArrayList<Task>();
-		// check whether there are tasks in storage
-		if (searchRange == null) {
-			return null;
-		}
-		for (Task task : searchRange) {
-			if (task.getDateEnd() == null && !task.isDeleted()) {
-				activeTaskList.add(task);
-			} else {
-				continue;
-			}
-		}
-		return activeTaskList;
-	}
-
 	private boolean isSearchTargetByName(Task task, String name) {
 		return task.getName().contains(name);
 	}
@@ -321,6 +282,37 @@ public class TaskStorage {
 		}
 	}
 
+	private boolean isLastIndex(ArrayList<String> arrayList, int i) {
+		return i == arrayList.size() - 1;
+	}
+
+	private boolean isNearMatch(String stringToMatch, String stringInTask) {
+		return StringUtils.getLevenshteinDistance(
+				stringInTask.substring(
+						0,
+						Integer.min(stringInTask.length(),
+								stringToMatch.length())), stringToMatch) < MAX_DIFF_BETWEEN_WORDS;
+	}
+
+	private boolean isNearMatchTag(ArrayList<String> tagsInTask,
+			ArrayList<String> tagsToMatch) {
+		if (tagsInTask.size() == 0) {
+			return false;
+		} else {
+			for (String tagToMatch : tagsToMatch) {
+				for (int i = 0; i < tagsInTask.size(); i++) {
+					String tagInTask = tagsInTask.get(i);
+					if (isNearMatch(tagToMatch, tagInTask)) {
+						break;
+					} else if (isLastIndex(tagsInTask, i)) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+	
 	private boolean isSearchTargetByAfter(Task task, String dateString) throws InvalidDateFormatException {
 		Calendar date = DateParser.parseString(dateString);
 		if (task.isConditionalTask() || task.isFloatingTask()) {
@@ -349,6 +341,7 @@ public class TaskStorage {
 			Hashtable<ParamEnum, ArrayList<String>> keyWordTable, ArrayList<Task> searchRange) 
 			throws InvalidDateFormatException, InvalidInputException {
 		ArrayList<Task> taskList = (ArrayList<Task>) searchRange.clone();
+		ArrayList<Task> parallelTaskList = (ArrayList<Task>) searchRange.clone();
 		ArrayList<String> params;
 		String firstParamElement, dateEnd;
 
@@ -358,10 +351,6 @@ public class TaskStorage {
 		}
 
 		for (ParamEnum key : keyWordTable.keySet()) {
-			// exit if nothing to search
-			if (searchRange == null) {
-				return null;
-			}
 			params = keyWordTable.get(key);
 			firstParamElement = params.get(0);
 			for (Task task : searchRange) {
@@ -370,35 +359,48 @@ public class TaskStorage {
 						if (!isSearchTargetByName(task, firstParamElement)) {
 							taskList.remove(task);
 						}
+						if (!isNearMatchSearchTargetByName(task, firstParamElement)) {
+							parallelTaskList.remove(task);
+						}
 						break;
 					case NOTE:
 						if (!isSearchTargetByNote(task, firstParamElement)) {
 							taskList.remove(task);
 						}
+						if (!isNearMatchSearchTargetByNote(task, firstParamElement)) {
+							parallelTaskList.remove(task);
+						}
 						break;
 					case TAG:
 						if (!isSearchTargetByTag(task, params)) {
 							taskList.remove(task);
+						} 
+						if (!isNearMatchSearchTargetByTag(task, params)) {
+							parallelTaskList.remove(task);
 						}
 						break;
 					case LEVEL:
 						if (!isSearchTargetByPriorityLevel(task, firstParamElement)) {
 							taskList.remove(task);
+							parallelTaskList.remove(task);
 						}
 						break;
 					case STATUS:
 						if (!isSearchTargetByPriorityStatus(task, firstParamElement)) {
 							taskList.remove(task);
+							parallelTaskList.remove(task);
 						}
 						break;
 					case BEFORE:
 						if (!isSearchTargetByBefore(task, firstParamElement)) {
 							taskList.remove(task);
+							parallelTaskList.remove(task);
 						}
 						break;
 					case AFTER:
 						if (!isSearchTargetByAfter(task, firstParamElement)) {
 							taskList.remove(task);
+							parallelTaskList.remove(task);
 						}
 						break;
 					case START_DATE:
@@ -409,15 +411,33 @@ public class TaskStorage {
 						}
 						if (!isSearchTargetByInterval(task, firstParamElement, dateEnd)) {
 							taskList.remove(task);
+							parallelTaskList.remove(task);
 						}
 						break;
 					default:
 						break;
 				}
 			}
-			// update search range to reduce repeated work
-			searchRange = (ArrayList<Task>) taskList.clone();
 		}
-		return searchRange;		
+		if (taskList.isEmpty()) {
+			return parallelTaskList;
+		} else {
+			return taskList;
+		}
+	}
+
+	private boolean isNearMatchSearchTargetByTag(Task task,
+			ArrayList<String> params) {
+		return isNearMatchTag(task.getTags(), params);
+	}
+
+	private boolean isNearMatchSearchTargetByNote(Task task,
+			String firstParamElement) {
+		return isNearMatch(firstParamElement, task.getName());
+	}
+
+	private boolean isNearMatchSearchTargetByName(Task task,
+			String firstParamElement) {
+		return isNearMatch(firstParamElement, task.getName());
 	}
 }
