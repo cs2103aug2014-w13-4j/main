@@ -78,8 +78,8 @@ public class UserInputViewController {
 				Command displayCommand = commandParser.parseCommand(String.valueOf(CommandEnum.DISPLAY));
 
 				ApplicationLogger.getApplicationLogger().log(Level.INFO, "Sent to Logic: "+ userInput);
-				//Feedback displayCommandFeedback = logic.executeCommand(displayCommand);
-				//initializeAutoCompleteForSearch(displayCommandFeedback);
+				Feedback displayCommandFeedback = rootLayoutController.logicApi.executeCommand(displayCommand);
+				initializeAutoCompleteForSearch(displayCommandFeedback);
 				autoCompleteCommandInitialized = false;
 				rootLayoutController.executeCommand(userInputField.getText());
 			} catch (Exception e) {

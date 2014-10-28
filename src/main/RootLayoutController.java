@@ -20,7 +20,7 @@ import java.util.logging.Level;
  * @author szhlibrary
  */
 public class RootLayoutController {
-	LogicApi logicApi;
+	protected LogicApi logicApi;
 
 	private BorderPane rootLayout;
 
