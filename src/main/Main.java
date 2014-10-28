@@ -14,7 +14,7 @@ import java.util.logging.Level;
  * @author szhlibrary
  */
 public class Main extends Application{
-	LogicApi logic;
+	private LogicApi logicApi;
 
 	private Stage primaryStage;
 
@@ -38,7 +38,7 @@ public class Main extends Application{
 		try {
 			Feedback allActiveTasks = initLogicAndGetAllActiveTasks();
 			rootLayoutController = new RootLayoutController();
-			rootLayoutController.initialize(primaryStage, allActiveTasks, logic);
+			rootLayoutController.initialize(primaryStage, allActiveTasks, logicApi);
 		} catch (IOException e) {
 			ApplicationLogger.getApplicationLogger().log(Level.SEVERE, e.getMessage());
 		}
@@ -46,8 +46,8 @@ public class Main extends Application{
 
 	private Feedback initLogicAndGetAllActiveTasks() {
 		ApplicationLogger.getApplicationLogger().log(Level.INFO, "Initializing Logic.");
-		logic = new LogicApi();
-		return logic.initialize();
+		logicApi = new LogicApi();
+		return logicApi.initialize();
 	}
 
 	public static void main(String[] args) {
