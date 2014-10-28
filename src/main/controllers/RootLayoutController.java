@@ -104,8 +104,7 @@ public class RootLayoutController {
 				Feedback userCommandFeedback = logicApi.executeCommand(userCommand);
 				String feedbackMessage = userCommandFeedback.getFeedbackMessage();
 
-				notificationPane.setText(feedbackMessage);
-				notificationPane.show();
+				showNotification(feedbackMessage);
 
 				ApplicationLogger.getApplicationLogger().log(Level.INFO, "Message shown: " + feedbackMessage);
 
@@ -119,11 +118,15 @@ public class RootLayoutController {
 					taskDisplayViewController.updateTaskPanel(taskToDisplay);
 				}
 			} catch (Exception e) {
-				notificationPane.setText(e.getMessage());
-				notificationPane.show();
+				showNotification(e.getMessage());
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private void showNotification(String feedbackMessage) {
+		notificationPane.setText(feedbackMessage);
+		notificationPane.show();
 	}
 
 	private boolean validateUserInput(String userInput){
