@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import main.TaskDoneFactory?>
-<?import main.TaskDateFactory?>
+<?import main.factories.TaskDoneFactory?>
+<?import main.factories.TaskDateFactory?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.cell.PropertyValueFactory?>
