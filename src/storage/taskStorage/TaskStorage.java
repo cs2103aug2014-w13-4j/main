@@ -208,20 +208,11 @@ public class TaskStorage {
 	}
 
 	private boolean isNearMatch(String stringToMatch, String stringInTask) {
-		Boolean value = StringUtils.getLevenshteinDistance(
+		return StringUtils.getLevenshteinDistance(
 				stringInTask.substring(
 						0,
 						Integer.min(stringInTask.length(),
 								stringToMatch.length())), stringToMatch) < MAX_DIFF_BETWEEN_WORDS;
-		if (value) {
-			System.out
-					.println(stringInTask.substring(
-							0,
-							Integer.min(stringInTask.length(),
-									stringToMatch.length())));
-			System.out.println(stringToMatch);
-		}
-		return value;
 	}
 
 	private boolean isNearMatchTag(ArrayList<String> tagsInTask,
