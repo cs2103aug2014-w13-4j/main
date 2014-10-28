@@ -59,6 +59,7 @@ public class LogicApi {
 	 * @throws InvalidInputException
 	 * @throws HistoryNotFoundException
 	 * @throws InvalidCommandUseException
+	 * @throws EmptySearchResultException 
 	 */
 	public Feedback executeCommand(Command command)
 			throws TaskNotFoundException, IOException,

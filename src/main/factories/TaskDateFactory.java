@@ -1,4 +1,4 @@
-package main;
+package main.factories;
 
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -10,11 +10,11 @@ import java.util.Calendar;
 
 
 /**
- * This class formats the dateEnd in the GUI TableView to a checkmark, depending on
- * whether the task was completed. If the task was completed, dateEnd would not be null.
+ * This class formats the date in the GUI TableView to a human-readable format using
+ * the methods provided by the models.DateParser class.
  * @author szhlibrary
  */
-public class TaskDoneFactory<T,C>
+public class TaskDateFactory<T,C>
 		implements Callback<TableColumn<Task, Calendar>, TableCell<Task,java.util.Calendar>> {
 
 	@Override
@@ -30,15 +30,18 @@ public class TaskDoneFactory<T,C>
 				}
 
 				if (task != null){
-					if (!task.isCompleted() || item == null || empty) {
-						setText(null);
+					if (task.isConfirmed() && item == null || empty){
+						setText("-");
 						setStyle("");
+					} else if (task.isConfirmed()){
+						setText(DateParser.parseCalendar(item));
 					} else {
-						// dateEnd is not null, therefore task must have been done
-						setText("✓");
+						setText("Unconfirmed");
 					}
+				} else {
+					setText(null);
+					setStyle("");
 				}
-
 			}
 		};
 		return cell;

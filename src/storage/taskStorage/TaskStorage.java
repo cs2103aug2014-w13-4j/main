@@ -13,8 +13,9 @@ import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Scanner;
 
-import command.ParamEnum;
+import org.apache.commons.lang3.StringUtils;
 
+import command.ParamEnum;
 import exceptions.FileFormatNotSupportedException;
 import exceptions.InvalidDateFormatException;
 import exceptions.InvalidInputException;
@@ -26,12 +27,11 @@ import models.Task;
 
 /**
  *
- * @author Chuyu
- * This class reads/writes task to file.
- * It also supports power search.
+ * @author Chuyu This class reads/writes task to file. It also supports power
+ *         search.
  */
 public class TaskStorage {
-
+	private static final int MAX_DIFF_BETWEEN_WORDS = 3;
 	private static final int MIN_INDEX = 0;
 	private ArrayList<Task> taskBuffer;
 	private int nextTaskIndex;
@@ -46,9 +46,12 @@ public class TaskStorage {
 
 	/**
 	 * constructor``
-	 * @throws FileFormatNotSupportedException, IOException
+	 * 
+	 * @throws FileFormatNotSupportedException
+	 *             , IOException
 	 */
-	public TaskStorage(String fileName) throws IOException, FileFormatNotSupportedException{
+	public TaskStorage(String fileName) throws IOException,
+			FileFormatNotSupportedException {
 		Task task;
 		Calendar dateStart;
 		Calendar dateDue;
@@ -91,11 +94,15 @@ public class TaskStorage {
 	/**
 	 * Add or update a task back to storage
 	 *
-	 * @param task: task to be added or updated
-	 * @throws TaskNotFoundException: trying to update a not existing task
-	 * @throws IOException: wrong IO operations
+	 * @param task
+	 *            : task to be added or updated
+	 * @throws TaskNotFoundException
+	 *             : trying to update a not existing task
+	 * @throws IOException
+	 *             : wrong IO operations
 	 */
-	public void writeTaskToFile(Task task) throws TaskNotFoundException, IOException {
+	public void writeTaskToFile(Task task) throws TaskNotFoundException,
+			IOException {
 		int taskID = task.getId();
 		if (taskID == ID_FOR_NEW_TASK) {
 			addTask(task);
@@ -103,7 +110,8 @@ public class TaskStorage {
 			if (isTaskExist(taskID)) {
 				updateTask(task);
 			} else {
-				throw new TaskNotFoundException("Cannot update task since the current task doesn't exist");
+				throw new TaskNotFoundException(
+						"Cannot update task since the current task doesn't exist");
 			}
 		}
 	}
@@ -176,7 +184,7 @@ public class TaskStorage {
 		BufferedWriter bufferedWriter = null;
 		String taskString;
 		bufferedWriter = new BufferedWriter(new FileWriter(dataFile));
-		for (Task task: taskBuffer) {
+		for (Task task : taskBuffer) {
 			taskString = TaskConverter.taskToString(task);
 			bufferedWriter.write(taskString + "\r\n");
 		}
@@ -186,20 +194,23 @@ public class TaskStorage {
 	/**
 	 * Get a task by its id
 	 *
-	 * @param taskID: the id of a task
+	 * @param taskID
+	 *            : the id of a task
 	 * @return a task
-	 * @throws TaskNotFoundException: trying to get a not existing task
+	 * @throws TaskNotFoundException
+	 *             : trying to get a not existing task
 	 */
 	public Task getTask(int taskID) throws TaskNotFoundException {
 		Task requiredTask = null;
 		if (isTaskExist(taskID)) {
-			for (Task task: taskBuffer) {
+			for (Task task : taskBuffer) {
 				if (task.getId() == taskID) {
 					requiredTask = task;
 				}
 			}
 		} else {
-			throw new TaskNotFoundException("Cannot return  task since the current task doesn't exist");
+			throw new TaskNotFoundException(
+					"Cannot return  task since the current task doesn't exist");
 		}
 		return requiredTask;
 	}
@@ -214,7 +225,7 @@ public class TaskStorage {
 		if (taskBuffer == null) {
 			return null;
 		}
-		for (Task task: taskBuffer) {
+		for (Task task : taskBuffer) {
 			if (task.isDeleted()) {
 				continue;
 			} else {
@@ -231,7 +242,7 @@ public class TaskStorage {
 		if (searchRange == null) {
 			return null;
 		}
-		for (Task task: searchRange) {
+		for (Task task : searchRange) {
 			if (task.getDateEnd() == null || task.isDeleted()) {
 				continue;
 			} else {
@@ -248,7 +259,7 @@ public class TaskStorage {
 		if (searchRange == null) {
 			return null;
 		}
-		for (Task task: searchRange) {
+		for (Task task : searchRange) {
 			if (task.getDateEnd() == null && !task.isDeleted()) {
 				activeTaskList.add(task);
 			} else {

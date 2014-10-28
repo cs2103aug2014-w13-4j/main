@@ -1,13 +1,13 @@
 package main;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import logic.LogicApi;
+import main.controllers.RootLayoutController;
 import models.ApplicationLogger;
+import models.Feedback;
 
+import java.io.IOException;
 import java.util.logging.Level;
 
 /**
@@ -15,20 +15,40 @@ import java.util.logging.Level;
  * @author szhlibrary
  */
 public class Main extends Application{
+	private LogicApi logicApi;
+
+	private Stage primaryStage;
+
+	private RootLayoutController rootLayoutController;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		ApplicationLogger.getApplicationLogger().log(Level.INFO, "Initializing JavaFX UI.");
 
-		// Scale window to display's DPI. Should maintain a consistent size
-		// even on different displays. Method from:
-		// http://news.kynosarges.org/2013/08/09/javafx-dpi-scaling/
-		final double rem = Math.rint(new Text("").getLayoutBounds().getHeight());
+		initPrimaryStage(primaryStage);
+		initLayouts();
+	}
 
-		Parent root = FXMLLoader.load(getClass().getResource("main.fxml"));
-		primaryStage.setTitle("Awesome Task Manager");
-		primaryStage.setScene(new Scene(root));
-		primaryStage.show();
+	private void initPrimaryStage(Stage primaryStage) {
+		this.primaryStage = primaryStage;
+		this.primaryStage.setTitle("Awesome Task Manager");
+	}
+
+	private void initLayouts(){
+		assert(primaryStage != null);
+		try {
+			Feedback allActiveTasks = initLogicAndGetAllActiveTasks();
+			rootLayoutController = new RootLayoutController();
+			rootLayoutController.initialize(primaryStage, allActiveTasks, logicApi);
+		} catch (IOException e) {
+			ApplicationLogger.getApplicationLogger().log(Level.SEVERE, e.getMessage());
+		}
+	}
+
+	private Feedback initLogicAndGetAllActiveTasks() {
+		ApplicationLogger.getApplicationLogger().log(Level.INFO, "Initializing Logic.");
+		logicApi = new LogicApi();
+		return logicApi.initialize();
 	}
 
 	public static void main(String[] args) {
