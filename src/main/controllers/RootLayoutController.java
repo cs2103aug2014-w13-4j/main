@@ -3,6 +3,7 @@ package main.controllers;
 import command.CommandParser;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -12,6 +13,7 @@ import models.ApplicationLogger;
 import models.Command;
 import models.Feedback;
 import models.Task;
+import org.controlsfx.control.NotificationPane;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,6 +26,7 @@ public class RootLayoutController {
 	protected LogicApi logicApi;
 
 	private BorderPane rootLayout;
+	private NotificationPane notificationPane;
 
 	private TaskListViewController taskListViewController;
 	private TaskDisplayViewController taskDisplayViewController;
@@ -32,6 +35,7 @@ public class RootLayoutController {
 	public void initialize(Stage primaryStage, Feedback allActiveTasks, LogicApi logicApi) throws IOException {
 		setLogic(logicApi);
 		initRootLayout(primaryStage);
+		initNotificationPane();
 		initTaskListView(allActiveTasks);
 		initTaskDisplayView();
 		initUserInputView(allActiveTasks);
@@ -51,6 +55,13 @@ public class RootLayoutController {
 		primaryStage.show();
 	}
 
+	private void initNotificationPane() throws IOException {
+		FXMLLoader loader = new FXMLLoader();
+		loader.setLocation(Main.class.getResource("views/NotificationPaneWrapper.fxml"));
+		notificationPane = loader.load();
+		notificationPane.setShowFromTop(false);
+	}
+
 	private void initTaskListView(Feedback allActiveTasks) throws IOException {
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(Main.class.getResource("views/TaskListView.fxml"));
@@ -67,7 +78,8 @@ public class RootLayoutController {
 		loader.setLocation(Main.class.getResource("views/TaskDisplayView.fxml"));
 		AnchorPane taskDisplay = loader.load();
 
-		rootLayout.setRight(taskDisplay);
+		notificationPane.setContent(taskDisplay);
+		rootLayout.setRight(notificationPane);
 
 		taskDisplayViewController = loader.getController();
 		taskDisplayViewController.initialize();
@@ -92,6 +104,9 @@ public class RootLayoutController {
 				Feedback userCommandFeedback = logicApi.executeCommand(userCommand);
 				String feedbackMessage = userCommandFeedback.getFeedbackMessage();
 
+				notificationPane.setText(feedbackMessage);
+				notificationPane.show();
+
 				ApplicationLogger.getApplicationLogger().log(Level.INFO, "Message shown: " + feedbackMessage);
 
 				ArrayList<Task> taskList = userCommandFeedback.getTaskList();
@@ -104,6 +119,7 @@ public class RootLayoutController {
 					taskDisplayViewController.updateTaskPanel(taskToDisplay);
 				}
 			} catch (Exception e) {
+				notificationPane.setText(e.getMessage());
 				e.printStackTrace();
 			}
 		}

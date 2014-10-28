@@ -2,7 +2,7 @@
 
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
-
+<?import org.controlsfx.control.NotificationPane?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
             xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
