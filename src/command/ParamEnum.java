@@ -5,7 +5,7 @@ public enum ParamEnum {
 	DATE ("date", ""),
 	NOTE ("note", ""),
 	LEVEL ("level", ""),
-	TAG ("\\+", ""),
+	TAG ("\\+", "+"),
 	DUE_DATE ("due", ""),
 	START_DATE ("from", ""),
 	END_DATE ("to ", ""),
