@@ -28,7 +28,6 @@ public class IntegrationTest {
     
     CommandParser parser;
     LogicApi logicApiObject;
-    Storage storage;
     
     @Before
     public void clearData() throws IOException, FileFormatNotSupportedException {
@@ -98,24 +97,6 @@ public class IntegrationTest {
         logicApiObject.executeCommand(addCommand);
         Command displayCommand = parser.parseCommand("display -1");
         logicApiObject.executeCommand(displayCommand);
-    }
-
-    /**
-     * Tests that tasks cannot be filtered by invalid status
-     *
-     * @throws Exception
-     */
-    @Test(expected = InvalidInputException.class)
-    public final void testCannotFilterInvalidStatus() throws Exception {
-        Command addCommand = parser
-                .parseCommand("Add completed task from 23.12.1992 due 23.12.2002");
-        logicApiObject.executeCommand(addCommand);
-        Command completeCommand = parser.parseCommand("done 0");
-        logicApiObject.executeCommand(completeCommand);
-        addCommand = parser.parseCommand("Add nocompleted task");
-        logicApiObject.executeCommand(addCommand);
-        Command filterCommand = parser.parseCommand("filter status activ");
-        logicApiObject.executeCommand(filterCommand);
     }
 
     @Test
@@ -189,6 +170,7 @@ public class IntegrationTest {
         Command completeCommand = parser.parseCommand("done 0");
         Feedback completedFeedback = logicApiObject.executeCommand(completeCommand);
         assertEquals(1, completedFeedback.getTaskList().size());
+        assertTrue(completedFeedback.getTaskList().get(0).isCompleted());
     }
 
     @Test
@@ -204,6 +186,7 @@ public class IntegrationTest {
         Command completeCommand = parser.parseCommand("done 0 date 30-1-1992");
         Feedback completedFeedback = logicApiObject.executeCommand(completeCommand);
         Task completedTask = completedFeedback.getTaskList().get(0);
+        assertTrue(completedFeedback.getTaskList().get(0).isCompleted());
         assertEquals(30, completedTask.getDateEnd().get(Calendar.DAY_OF_MONTH));
         assertEquals(1, completedTask.getDateEnd().get(Calendar.MONTH) + 1);
         assertEquals(1992, completedTask.getDateEnd().get(Calendar.YEAR));
@@ -444,7 +427,6 @@ public class IntegrationTest {
     @Test
     /**
      * Tests that task can be updated
-     * Some code is commented out due to bug in command parser
      * @throws Exception
      */
     public final void testUpdateTask() throws Exception {
@@ -468,7 +450,7 @@ public class IntegrationTest {
     
     @Test (expected= InvalidInputException.class)
     /**
-     * Tests that task can be updated
+     * Tests that task cannot be changed from a timed task to a deadline task
      * Some code is commented out due to bug in command parser
      * @throws Exception
      */
