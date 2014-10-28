@@ -1,4 +1,4 @@
-package main;
+package main.controllers;
 
 import command.CommandParser;
 import javafx.fxml.FXMLLoader;
@@ -7,6 +7,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import logic.LogicApi;
+import main.Main;
 import models.ApplicationLogger;
 import models.Command;
 import models.Feedback;

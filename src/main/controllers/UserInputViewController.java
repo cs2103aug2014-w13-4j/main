@@ -1,8 +1,7 @@
-package main;
+package main.controllers;
 
 import command.CommandEnum;
 import command.CommandParser;
-import javafx.application.Platform;
 import javafx.scene.control.TextField;
 import models.ApplicationLogger;
 import models.Command;

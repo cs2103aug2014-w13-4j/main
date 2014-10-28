@@ -3,6 +3,7 @@ package main;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import logic.LogicApi;
+import main.controllers.RootLayoutController;
 import models.ApplicationLogger;
 import models.Feedback;
 

@@ -1,12 +1,7 @@
 package tests;
 
-import main.UserInputViewController;
-import org.junit.Before;
+import main.controllers.UserInputViewController;
 import org.junit.Test;
-
-import java.lang.reflect.Method;
-
-import static org.junit.Assert.*;
 
 public class UserInputViewControllerTest {
 

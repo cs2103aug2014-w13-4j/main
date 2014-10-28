@@ -1,6 +1,6 @@
 package tests;
 
-import main.RootLayoutController;
+import main.controllers.RootLayoutController;
 import org.junit.Before;
 import org.junit.Test;
 
