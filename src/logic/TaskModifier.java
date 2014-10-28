@@ -108,18 +108,20 @@ public class TaskModifier {
 	private static void setConditionalDatesFromCommand(
 			Hashtable<ParamEnum, ArrayList<String>> param, Task task)
 			throws InvalidDateFormatException {
-		ArrayList<String> startDates = param.get(ParamEnum.START_DATE);
-		ArrayList<String> endDates = param.get(ParamEnum.END_DATE);
-		ArrayList<StartDueDatePair> conditionalDates = new ArrayList<StartDueDatePair>();
-		for (int i = 0; i < startDates.size(); i++) {
-			String startDate = startDates.get(i);
-			String endDate = endDates.get(i);
-			StartDueDatePair datePair = new StartDueDatePair(
-					DateParser.parseString(startDate),
-					DateParser.parseString(endDate));
-			conditionalDates.add(datePair);
+		if (param.containsKey(ParamEnum.START_DATE) && param.containsKey(ParamEnum.END_DATE)) {
+			ArrayList<String> startDates = param.get(ParamEnum.START_DATE);
+			ArrayList<String> endDates = param.get(ParamEnum.END_DATE);
+			ArrayList<StartDueDatePair> conditionalDates = new ArrayList<StartDueDatePair>();
+			for (int i = 0; i < startDates.size(); i++) {
+				String startDate = startDates.get(i);
+				String endDate = endDates.get(i);
+				StartDueDatePair datePair = new StartDueDatePair(
+						DateParser.parseString(startDate),
+						DateParser.parseString(endDate));
+				conditionalDates.add(datePair);
+			}
+			task.setConditionalDates(conditionalDates);
 		}
-		task.setConditionalDates(conditionalDates);
 	}
 
 	private static void setNameFromCommand(

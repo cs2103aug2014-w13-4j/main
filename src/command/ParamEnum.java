@@ -5,13 +5,13 @@ public enum ParamEnum {
 	DATE ("date", ""),
 	NOTE ("note", ""),
 	LEVEL ("level", ""),
-	TAG ("\\+", ""),
+	TAG ("\\+", "+"),
 	DUE_DATE ("due", ""),
-	START_DATE ("from", "(?<from>\\S+)( to)?(?<to>.*)?$", "from", "to"),
-	END_DATE ("to", "(?<to>.*)(?<from>.*?)?$", "from", "to"),
+	START_DATE ("from", ""),
+	END_DATE ("to ", ""),
 	ORDER_BY ("order by", ""),
-	OR_FROM ("or from", "(?<from>\\S+)( to)?(?<to>.*)?$", "from", "to"),
-	OR_END ("or to", "(?<to>.*)(?<from>.*?)?$", "from", "to"),
+	OR_FROM ("or from", "from"),
+	OR_END ("or to ", "to"),
 	NAME ("name", ""),
 	ID ("id", ""),
 	STATUS ("status", ""),
@@ -20,16 +20,13 @@ public enum ParamEnum {
 	ON ("on", "");
 	
 	private final String regex;
-	private final String deepRegex;
-	private final String[] groupNames;
+	private final String groupName;
 	
-	ParamEnum(String regex, String deepRegex, String... groupNames) {
+	ParamEnum(String regex, String groupName) {
 		this.regex = regex;
-		this.deepRegex = deepRegex;
-		this.groupNames = groupNames;
+		this.groupName = groupName;
 	}
 	
 	public String regex() { return regex; }
-	public String deepRegex() { return deepRegex; }
-	public String[] groupNames() { return groupNames; }
+	public String groupName() { return groupName.isEmpty() ? regex : groupName; }
 }

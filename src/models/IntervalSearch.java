@@ -147,10 +147,10 @@ public class IntervalSearch {
     }
 
     public Calendar getDateStart(int taskId) {
-        Calendar dateStart;
+        Calendar dateStart = Calendar.getInstance();
         for (DateRange key : map.keySet()) {
             if (map.get(key) == taskId) {
-                dateStart = key.getStartDate();
+                dateStart.setTimeInMillis(key.getStartDate());
                 break;
             }
         }
@@ -158,10 +158,10 @@ public class IntervalSearch {
     }
 
     public Calendar getDateDue(int taskId) {
-        Calendar dateDue;
+        Calendar dateDue = Calendar.getInstance();
         for (DateRange key : map.keySet()) {
             if (map.get(key) == taskId) {
-                dateDue = key.getDueDate();
+                dateDue.setTimeInMillis(key.getEndDate());
                 break;
             }
         }
