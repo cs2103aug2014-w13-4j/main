@@ -22,6 +22,7 @@ public class TaskDisplayViewController {
 	public Label priorityLevelLabel;
 	public Label noteLabel;
 	public Label conditionalDateLabel;
+	public Label tagLabel;
 
 	private final StringProperty idLabelValue = new SimpleStringProperty("-");
 	private final StringProperty taskNameLabelValue = new SimpleStringProperty("-");
@@ -31,6 +32,7 @@ public class TaskDisplayViewController {
 	private final StringProperty priorityLevelLabelValue = new SimpleStringProperty("-");
 	private final StringProperty noteLabelValue = new SimpleStringProperty("-");
 	private final StringProperty conditionalDateLabelValue = new SimpleStringProperty("-");
+	private final StringProperty tagLabelValue = new SimpleStringProperty("-");
 
 	public void initialize() {
 		initializeGuiLabelBindings();
@@ -45,6 +47,7 @@ public class TaskDisplayViewController {
 		priorityLevelLabel.textProperty().bind(priorityLevelLabelValue);
 		noteLabel.textProperty().bind(noteLabelValue);
 		conditionalDateLabel.textProperty().bind(conditionalDateLabelValue);
+		tagLabel.textProperty().bind(tagLabelValue);
 	}
 
 	protected void updateTaskPanel(Task taskToDisplay) {
@@ -56,9 +59,10 @@ public class TaskDisplayViewController {
 		setLabelValueInGui(priorityLevelLabelValue, (taskToDisplay.getPriorityLevel() == null ? null : taskToDisplay.getPriorityLevel().name()));
 		setLabelValueInGui(noteLabelValue, taskToDisplay.getNote());
 		updateTaskPanelForConditionalDates(taskToDisplay);
+		updateTaskPanelForTags(taskToDisplay);
 	}
 
-	private void updateTaskPanelForConditionalDates(Task taskToDisplay){
+	private void updateTaskPanelForConditionalDates(Task taskToDisplay) {
 		ArrayList<StartDueDatePair> conditionalDateList = taskToDisplay.getConditionalDates();
 		String conditionalDates = "";
 		if (conditionalDateList != null) {
@@ -70,6 +74,17 @@ public class TaskDisplayViewController {
 				dateId++;
 			}
 			setLabelValueInGui(conditionalDateLabelValue, conditionalDates);
+		}
+	}
+
+	private void updateTaskPanelForTags(Task taskToDisplay) {
+		ArrayList<String> tagList = taskToDisplay.getTags();
+		if (tagList != null) {
+			String tags = "";
+			for (String tag : tagList) {
+				tags += tag + " ";
+			}
+			setLabelValueInGui(tagLabelValue, tags);
 		}
 	}
 
