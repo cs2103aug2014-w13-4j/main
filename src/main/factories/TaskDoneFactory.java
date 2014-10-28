@@ -37,6 +37,9 @@ public class TaskDoneFactory<T,C>
 						// dateEnd is not null, therefore task must have been done
 						setText("✓");
 					}
+				} else {
+					setText(null);
+					setStyle("");
 				}
 
 			}
