@@ -157,14 +157,14 @@ public class IntervalSearch {
         return dateStart;
     }
 
-    public Calendar getDateDue(int taskId) {
-        Calendar dateDue = Calendar.getInstance();
+    public Calendar getDateEnd(int taskId) {
+        Calendar dateEnd = Calendar.getInstance();
         for (DateRange key : map.keySet()) {
             if (map.get(key) == taskId) {
-                dateDue.setTimeInMillis(key.getEndDate());
+                dateEnd.setTimeInMillis(key.getEndDate());
                 break;
             }
         }
-        return dateDue;
+        return dateEnd;
     }
 }

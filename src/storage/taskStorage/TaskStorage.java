@@ -128,7 +128,7 @@ public class TaskStorage {
 	 * @throws IOException: wrong IO operations
 	 */
 	private void addTask(Task task) throws IOException {
-		Calendar dateStart, dateDue;
+		Calendar dateStart, dateEnd;
 		// Add new task to task file
 		task.setId(nextTaskIndex);
 		nextTaskIndex ++;
@@ -138,8 +138,8 @@ public class TaskStorage {
 		// Add new task to Interval Tree
 		if (task.isTimedTask()) {
 			dateStart = task.getDateStart();
-			dateDue = task.getDateDue();
-			intervalTree.add(dateStart, dateDue, task.getId());
+			dateEnd = task.getDateEnd();
+			intervalTree.add(dateStart, dateEnd, task.getId());
 		}
 	}
 
@@ -151,7 +151,7 @@ public class TaskStorage {
 	 */
 	private void updateTask(Task task) throws IOException {	
 		int taskID = task.getId();	
-		Calendar dateStart, dateDue, oldStart, oldEnd;
+		Calendar dateStart, dateEnd, oldStart, oldEnd;
 		// Update task to task buffer
 		taskBuffer.set(taskID, task);
 		// Update task to task file
@@ -159,10 +159,10 @@ public class TaskStorage {
 		// Update task to Interval Tree
 		if (task.isTimedTask()) {
 			dateStart = task.getDateStart();
-			dateDue = task.getDateDue();
+			dateEnd = task.getDateEnd();
 			oldStart = intervalTree.getDateStart(task.getId());
-			oldEnd = intervalTree.getDateDue(task.getId());
-			intervalTree.update(oldStart, oldEnd, dateStart, dateDue, taskID);
+			oldEnd = intervalTree.getDateEnd(task.getId());
+			intervalTree.update(oldStart, oldEnd, dateStart, dateEnd, taskID);
 		}
 	}
 
