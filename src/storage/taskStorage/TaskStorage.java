@@ -204,49 +204,44 @@ public class TaskStorage {
 		return activeTaskList;
 	}
 
-	/**
-	 * Return search result by given tags
-	 *
-	 * @param tags
-	 *            : A list of given tags as key words
-	 * @param searchRange
-	 *            : The range of tasks
-	 * @return a list of tasks as search result
-	 */
-	private ArrayList<Task> searchTaskByTags(ArrayList<String> tags,
-			ArrayList<Task> searchRange) {
-		ArrayList<Task> taskList = new ArrayList<Task>();
-		boolean hasTags;
-		boolean hasNearMatchTags;
-
-		// exit if nothing to search
-		if (searchRange == null) {
-			return null;
-		}
-
-		// check whether the keyword is null
-		if (tags == null) {
-			return searchRange;
-		}
-
-		for (Task task : searchRange) {
-			if(task.getTags().containsAll(tags)) {
-				taskList.add(task);
-			}
-		}
-		return taskList;
+	private boolean isLastIndex(ArrayList<String> arrayList, int i) {
+		return i == arrayList.size() - 1;
 	}
 
-	private boolean isNearMatchTag(ArrayList<String> tagsInTask, String tagToMatch) {
-		for (String tagInTask : tagsInTask) {
-			if (StringUtils.getLevenshteinDistance(
-					tagInTask.substring(0,
-							Integer.min(tagInTask.length(), tagToMatch.length())),
-					tagToMatch) < MAX_DIFF_BETWEEN_WORDS) {
-				return true;
+	private boolean isNearMatch(String stringToMatch, String stringInTask) {
+		Boolean value = StringUtils.getLevenshteinDistance(
+				stringInTask.substring(
+						0,
+						Integer.min(stringInTask.length(),
+								stringToMatch.length())), stringToMatch) < MAX_DIFF_BETWEEN_WORDS;
+		if (value) {
+			System.out
+					.println(stringInTask.substring(
+							0,
+							Integer.min(stringInTask.length(),
+									stringToMatch.length())));
+			System.out.println(stringToMatch);
+		}
+		return value;
+	}
+
+	private boolean isNearMatchTag(ArrayList<String> tagsInTask,
+			ArrayList<String> tagsToMatch) {
+		if (tagsInTask.size() == 0) {
+			return false;
+		} else {
+			for (String tagToMatch : tagsToMatch) {
+				for (int i = 0; i < tagsInTask.size(); i++) {
+					String tagInTask = tagsInTask.get(i);
+					if (isNearMatch(tagToMatch, tagInTask)) {
+						break;
+					} else if (isLastIndex(tagsInTask, i)) {
+						return false;
+					}
+				}
 			}
 		}
-		return false;
+		return true;
 	}
 
 	/**
@@ -264,8 +259,6 @@ public class TaskStorage {
 			ArrayList<Task> searchRange) throws EmptySearchResultException {
 		ArrayList<Task> taskList = new ArrayList<Task>();
 		ArrayList<Task> suggestedTaskList = new ArrayList<Task>();
-		// String wordSuggestion = "";
-		int maxDistance = MAX_DIFF_BETWEEN_WORDS;
 		// exit if nothing to search
 		if (searchRange == null) {
 			return null;
@@ -276,14 +269,8 @@ public class TaskStorage {
 				if (task.getName().contains(name)) {
 					taskList.add(task);
 				} else if (taskList.isEmpty()) {
-					int distBetweenWords = StringUtils.getLevenshteinDistance(
-							task.getName().substring(
-									0,
-									Integer.min(task.getName().length(),
-											name.length())), name);
-					if (distBetweenWords < maxDistance) {
+					if (isNearMatch(name, task.getName())) {
 						suggestedTaskList.add(task);
-						maxDistance = distBetweenWords;
 					}
 				}
 			}
@@ -310,7 +297,6 @@ public class TaskStorage {
 			ArrayList<Task> searchRange) throws EmptySearchResultException {
 		ArrayList<Task> taskList = new ArrayList<Task>();
 		ArrayList<Task> suggestedTaskList = new ArrayList<Task>();
-		int maxDistance = MAX_DIFF_BETWEEN_WORDS;
 		// exit if nothing to search
 		if (searchRange == null) {
 			return null;
@@ -321,15 +307,49 @@ public class TaskStorage {
 				if (task.getNote().contains(note)) {
 					taskList.add(task);
 				} else if (taskList.isEmpty()) {
-					int distBetweenWords = StringUtils.getLevenshteinDistance(
-							task.getNote().substring(
-									0,
-									Integer.min(task.getNote().length(),
-											note.length())), note);
-					if (distBetweenWords < maxDistance) {
+					if (isNearMatch(note, task.getNote())) {
 						suggestedTaskList.add(task);
-						maxDistance = distBetweenWords;
 					}
+				}
+			}
+		}
+		if (taskList.isEmpty()) {
+			return suggestedTaskList;
+		} else {
+			return taskList;
+		}
+	}
+
+	/**
+	 * Return search result by given tags
+	 *
+	 * @param tags
+	 *            : A list of given tags as key words
+	 * @param searchRange
+	 *            : The range of tasks
+	 * @return a list of tasks as search result
+	 */
+	private ArrayList<Task> searchTaskByTags(ArrayList<String> tags,
+			ArrayList<Task> searchRange) {
+		ArrayList<Task> taskList = new ArrayList<Task>();
+		ArrayList<Task> suggestedTaskList = new ArrayList<Task>();
+		// exit if nothing to search
+		if (searchRange == null) {
+			return null;
+		}
+
+		// check whether the keyword is null
+		if (tags == null) {
+			return searchRange;
+		}
+
+		for (Task task : searchRange) {
+			if (task.getTags().containsAll(tags)) {
+				taskList.add(task);
+			} else if (taskList.isEmpty()) {
+				System.out.println(isNearMatchTag(task.getTags(), tags));
+				if (isNearMatchTag(task.getTags(), tags)) {
+					suggestedTaskList.add(task);
 				}
 			}
 		}
