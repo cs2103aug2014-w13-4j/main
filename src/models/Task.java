@@ -87,7 +87,8 @@ public class Task {
 		Boolean isTimedTaskCompleted = this.isTimedTask() && isDateEndOver();
 		Boolean isDeadlineTaskCompleted = this.isDeadlineTask()
 				&& dateEnd != null;
-		return isTimedTaskCompleted || isDeadlineTaskCompleted;
+		Boolean isFloatingTaskCompleted = this.isFloatingTask() && dateEnd != null;
+		return isTimedTaskCompleted || isDeadlineTaskCompleted || isFloatingTaskCompleted;
 	}
 
 	public boolean isConditionalTask() {
@@ -117,7 +118,7 @@ public class Task {
 	}
 
 	public boolean isFloatingTask() {
-		return dateDue == null && dateStart == null && dateEnd == null
+		return dateDue == null && dateStart == null
 				&& conditionalDates.isEmpty();
 	}
 
@@ -167,14 +168,6 @@ public class Task {
 
 	public void setPriorityLevel(PriorityLevelEnum priorityLevel) {
 		this.priorityLevel = priorityLevel;
-	}
-
-	public boolean isEvent() {
-		if (dateStart != null) {
-			return true;
-		} else {
-			return false;
-		}
 	}
 
 	public void setStartDueDateFromConditional(int id) {

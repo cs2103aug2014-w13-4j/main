@@ -65,7 +65,7 @@ public class TaskStorageTest {
 			keyWordTable.put(ParamEnum.LEVEL, taskPriorityLevel);
 			ArrayList<Task> searchResult = taskStorage.searchTask(keyWordTable,
 					taskStorage.getAllTasks());
-			assertEquals(searchResult.size(), taskStorage.getAllTasks().size());
+			assertEquals(taskStorage.getAllTasks().size(), searchResult.size());
 
 			keyWordTable.put(ParamEnum.STATUS, taskStatus);
 			searchResult = taskStorage.searchTask(keyWordTable,

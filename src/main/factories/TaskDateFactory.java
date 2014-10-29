@@ -1,4 +1,4 @@
-package main;
+package main.factories;
 
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;

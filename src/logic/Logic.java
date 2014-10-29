@@ -23,10 +23,12 @@ import exceptions.TaskNotFoundException;
 
 //TODO: Throw exceptions when mandatory fields are missing
 public class Logic {
+	private static final String INVALID_TASK_ID_MESSAGE = "Task ID: %1$s is invalid!";
+	private static final String INVALID_DATE_ID_MESSAGE = "Date ID: %1$s is invalid!";
 	private static final String ERROR_UPDATE_DEADLINE_TASK_MESSAGE = "Task %1$s is a deadline task, so it should not contain start or end date";
 	private static final String ERROR_UPDATE_TIMED_TASK_MESSAGE = "Task %1$s is a timed task, so it should not contain due dates";
 	private static final String ERROR_UPDATE_CONDITIONAL_TASK_MESSAGE = "Task %1$s is a conditional task, so it should contain multiple start and end dates";
-	private static final String ERROR_COMPLETE_MESSAGE = "Only uncompleted tasks without an end date before can be completed";
+	private static final String ERROR_COMPLETE_MESSAGE = "Only confirmed and uncompleted tasks without an end date before can be completed";
 	private static final String ERROR_DATE_INPUT_MESSAGE = "The date parameters provided are invalid.";
 	private static final String ADD_MESSAGE = "%1$s is successfully added.";
 	private static final String DELETE_MESSAGE = "%1$s is successfully deleted";
@@ -102,13 +104,15 @@ public class Logic {
 	 * @throws IOException
 	 * @throws InvalidDateFormatException
 	 * @throws InvalidCommandUseException
+	 * @throws InvalidInputException
 	 */
 	Feedback complete(Hashtable<ParamEnum, ArrayList<String>> param)
 			throws TaskNotFoundException, IOException,
-			InvalidDateFormatException, InvalidCommandUseException {
+			InvalidDateFormatException, InvalidCommandUseException,
+			InvalidInputException {
 		int taskId = getTaskId(param);
 		Task task = getTaskFromStorage(taskId);
-		if (task.getDateEnd() == null) {
+		if (task.isConfirmed() && task.getDateEnd() == null) {
 			TaskModifier.completeTask(param, task);
 			String name = task.getName();
 			storage.writeTaskToFile(task);
@@ -122,11 +126,30 @@ public class Logic {
 		}
 	}
 
+	/**
+	 * Confirms a particular conditional date pair in the conditional task to be
+	 * used as the start and end date
+	 * 
+	 * @param param
+	 *            : the command created by commandParser
+	 * @return feedback containing the updated list of tasks in the file, and
+	 *         the message.
+	 * @throws InvalidInputException
+	 * @throws TaskNotFoundException
+	 * @throws IOException
+	 */
+
 	Feedback confirm(Hashtable<ParamEnum, ArrayList<String>> param)
 			throws InvalidInputException, TaskNotFoundException, IOException {
 		int taskId = getTaskId(param);
 		String dateIdString = param.get(ParamEnum.ID).get(0);
-		int dateId = Integer.parseInt(dateIdString);
+		int dateId;
+		try {
+			dateId = Integer.parseInt(dateIdString);
+		} catch (NumberFormatException e) {
+			throw new InvalidInputException(createMessage(
+					INVALID_DATE_ID_MESSAGE, dateIdString, null));
+		}
 		Task task = getTaskFromStorage(taskId);
 		TaskModifier.confirmEvent(dateId, task);
 		storage.writeTaskToFile(task);
@@ -147,9 +170,10 @@ public class Logic {
 	 *         the message.
 	 * @throws TaskNotFoundException
 	 * @throws IOException
+	 * @throws InvalidInputException
 	 */
 	Feedback delete(Hashtable<ParamEnum, ArrayList<String>> param)
-			throws TaskNotFoundException, IOException {
+			throws TaskNotFoundException, IOException, InvalidInputException {
 		int taskId = getTaskId(param);
 		Task task = getTaskFromStorage(taskId);
 		String name = task.getName();
@@ -161,6 +185,17 @@ public class Logic {
 		return createTaskListFeedback(
 				createMessage(DELETE_MESSAGE, name, null), taskList);
 	}
+
+	/**
+	 * Displays the task if the id is provided, or all the tasks otherwise
+	 * 
+	 * @param param
+	 *            : the command created by commandParser
+	 * @return feedback containing the list of all tasks in the file/the task to
+	 *         be displayed, and the message.
+	 * @throws NumberFormatException
+	 * @throws TaskNotFoundException
+	 */
 
 	Feedback display(Hashtable<ParamEnum, ArrayList<String>> param)
 			throws NumberFormatException, TaskNotFoundException {
@@ -196,6 +231,7 @@ public class Logic {
 	 * @return feedback containing all the tasks in the file, and the message
 	 * @throws InvalidInputException
 	 * @throws InvalidDateFormatException
+	 * @throws EmptySearchResultException
 	 */
 
 	Feedback search(Hashtable<ParamEnum, ArrayList<String>> param)
@@ -207,8 +243,15 @@ public class Logic {
 						null), taskList);
 	}
 
-	// Hiccup: undo add will not update the task (make it disappear) if it is
-	// displayed
+	/**
+	 * Undo the last action taken
+	 * 
+	 * @return feedback containing the list of updated tasks in the file, and
+	 *         the message.
+	 * @throws HistoryNotFoundException
+	 * @throws TaskNotFoundException
+	 * @throws IOException
+	 */
 	Feedback undo() throws HistoryNotFoundException, TaskNotFoundException,
 	IOException {
 		History lastAction = logicUndo.getLastAction();
@@ -368,8 +411,15 @@ public class Logic {
 		return task;
 	}
 
-	private int getTaskId(Hashtable<ParamEnum, ArrayList<String>> param) {
-		return Integer.parseInt(param.get(ParamEnum.KEYWORD).get(0));
+	private int getTaskId(Hashtable<ParamEnum, ArrayList<String>> param)
+			throws InvalidInputException {
+		String taskIdString = param.get(ParamEnum.KEYWORD).get(0);
+		try {
+			return Integer.parseInt(taskIdString);
+		} catch (NumberFormatException e) {
+			throw new InvalidInputException(createMessage(
+					INVALID_TASK_ID_MESSAGE, taskIdString, null));
+		}
 	}
 
 	private boolean hasConditionalTaskParams(

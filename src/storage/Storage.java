@@ -7,12 +7,12 @@ import java.util.Hashtable;
 import java.util.logging.Level;
 
 import command.ParamEnum;
-
 import exceptions.FileFormatNotSupportedException;
 import exceptions.InvalidDateFormatException;
 import exceptions.InvalidInputException;
 import exceptions.TaskNotFoundException;
 import models.ApplicationLogger;
+import models.IntervalSearch;
 import storage.tagStorage.TagStorage;
 import storage.taskStorage.TaskStorage;
 import models.Task;

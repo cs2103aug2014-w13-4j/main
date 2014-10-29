@@ -1,4 +1,4 @@
-package main;
+package main.factories;
 
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -14,7 +14,7 @@ import java.util.Calendar;
  * whether the task was completed. If the task was completed, dateEnd would not be null.
  * @author szhlibrary
  */
-public class TaskDoneFactory<Task,Calendar>
+public class TaskDoneFactory<T,C>
 		implements Callback<TableColumn<Task, Calendar>, TableCell<Task,java.util.Calendar>> {
 
 	@Override
@@ -23,13 +23,25 @@ public class TaskDoneFactory<Task,Calendar>
 			@Override
 			public void updateItem(java.util.Calendar item, boolean empty) {
 				super.updateItem(item, empty);
-				if (item == null || empty) {
+
+				Task task = null;
+				if (getTableRow() != null) {
+					task = (Task) getTableRow().getItem();
+				}
+
+				if (task != null){
+					if (!task.isCompleted() || item == null || empty) {
+						setText(null);
+						setStyle("");
+					} else {
+						// dateEnd is not null, therefore task must have been done
+						setText("\u2713");
+					}
+				} else {
 					setText(null);
 					setStyle("");
-				} else {
-					// dateEnd is not null, therefore task must have been done
-					setText("✓");
 				}
+
 			}
 		};
 		return cell;
