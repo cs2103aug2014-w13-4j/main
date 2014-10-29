@@ -38,6 +38,7 @@ public class Logic {
     private static final String SEARCH_MESSAGE = "%1$s results are found.";
     private static final String ERROR_STORAGE_MESSAGE = "There is an error loading the storage.";
     private static final String DISPLAY_MESSAGE = "All tasks are displayed.";
+    private static final String DISPLAY_TASK_MESSAGE = "Task %1$s: %2$s is displayed.";
     private static final String ERROR_ALREADY_DELETED_MESSAGE = "Task %1$s is already deleted.";
     private static final String CONFIRM_MESSAGE = "%1$s is marked as confirmed.";
     private static final String UNDO_MESSAGE = "%1$s %2$s is undone";
@@ -390,8 +391,9 @@ public class Logic {
 
     private Feedback displayTask(int id) throws TaskNotFoundException {
         Task task = getTaskFromStorage(id);
-        return createTaskFeedback(createMessage(DISPLAY_MESSAGE, null, null),
-                task);
+        return createTaskFeedback(
+                createMessage(DISPLAY_TASK_MESSAGE, String.valueOf(id),
+                        task.getName()), task);
     }
 
     /**
