@@ -2,6 +2,7 @@ package logic;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.logging.Level;
 
@@ -510,7 +511,14 @@ public class Logic {
 	private boolean isTimeIntervalAvailable(Task task) {
 		assert task.getDateStart() != null;
 		assert task.getDateEnd() != null;
-		IntervalSearch intervalTree = storage.getIntervalTree();
+		Cloner cloner = new Cloner();
+		IntervalSearch intervalTree = cloner.deepClone(storage
+				.getIntervalTree());
+		Calendar oldStart = intervalTree.getDateStart(task.getId());
+		Calendar oldEnd = intervalTree.getDateEnd(task.getId());
+		if (oldStart != null && oldEnd != null) {
+			intervalTree.remove(oldStart, oldEnd);
+		}
 		return intervalTree.getTasksWithinInterval(task.getDateStart(),
 				task.getDateEnd()).isEmpty();
 	}

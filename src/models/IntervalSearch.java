@@ -151,10 +151,10 @@ public class IntervalSearch {
         for (DateRange key : map.keySet()) {
             if (map.get(key) == taskId) {
                 dateStart.setTimeInMillis(key.getStartDate());
-                break;
+                return dateStart;
             }
         }
-        return dateStart;
+        return null;
     }
 
     public Calendar getDateEnd(int taskId) {
@@ -162,9 +162,9 @@ public class IntervalSearch {
         for (DateRange key : map.keySet()) {
             if (map.get(key) == taskId) {
                 dateEnd.setTimeInMillis(key.getEndDate());
-                break;
+                return dateEnd;
             }
         }
-        return dateEnd;
+        return null;
     }
 }
