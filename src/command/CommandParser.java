@@ -12,7 +12,8 @@ public class CommandParser {
     private static final String INDIVIDUAL_PARAM_PATTERN = "%1$s|";
     private static final String COMMAND_PATTERN = "(%1$s)(.*?)(?=%2$s$)";
     private static final String COMPLETE_PATTERN = "(%1$s|%2$s)(.*?)(?=%3$s$)";
-
+    private static final String ESCAPE_SEQUENCE = "\\";
+    
     private static final String INVALID_COMMAND_MESSAGE = "%1$s is not a valid command";
 
     private static final Integer ENUM_TYPE = 1;
@@ -70,8 +71,8 @@ public class CommandParser {
         Matcher commandMatcher = commandPattern.matcher(commandString);
 
         if (commandMatcher.find()) {
-            userCommand.addCommandArgument(commandMatcher.group(ENUM_ARGUMENT)
-                    .trim());
+            String argumentEscape = escapeKeyword(commandMatcher.group(ENUM_ARGUMENT).trim());
+            userCommand.addCommandArgument(argumentEscape);
             commandSubString = commandString.substring(commandMatcher.end());
         }
 
@@ -83,9 +84,9 @@ public class CommandParser {
         while (matcher.find()) {
             if (paramEnumTable.containsKey(matcher.group(ENUM_TYPE))) {
                 paramEnum = paramEnumTable.get(matcher.group(ENUM_TYPE));
+                String escaped = escapeKeyword(matcher.group(ENUM_ARGUMENT).trim());
                 ParamEnum groupName = paramEnumTable.get(paramEnum.groupName());
-                userCommand.addParam(groupName, matcher.group(ENUM_ARGUMENT)
-                        .trim());
+                userCommand.addParam(groupName, escaped);
             }
         }
     }
@@ -171,5 +172,16 @@ public class CommandParser {
         for (ParamEnum param : ParamEnum.values()) {
             paramEnumTable.put(param.regex().replace("\\", ""), param);
         }
+    }
+    
+    /**
+     * This operation escape keyword found in the param string
+     * @param paramString
+     * @return
+     */
+    private String escapeKeyword(String paramString) {
+        String resultString = paramString.replace(ESCAPE_SEQUENCE, "");
+        
+        return resultString;
     }
 }

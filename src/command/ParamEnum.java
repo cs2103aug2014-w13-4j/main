@@ -2,22 +2,22 @@ package command;
 
 public enum ParamEnum {
 	KEYWORD ("", ""),
-	DATE ("date", ""),
-	NOTE ("note", ""),
-	LEVEL ("level", ""),
-	TAG ("\\+", "+"),
-	DUE_DATE ("due", ""),
-	START_DATE ("from", ""),
-	END_DATE ("to ", ""),
-	ORDER_BY ("order by", ""),
-	OR_FROM ("or from", "from"),
-	OR_END ("or to ", "to"),
-	NAME ("name", ""),
-	ID ("id", ""),
-	STATUS ("status", ""),
-	BEFORE ("before", ""),
-	AFTER ("after", ""),
-	ON ("on", "");
+	DATE (" date", ""),
+	NOTE (" note", ""),
+	LEVEL (" level", ""),
+	TAG (" \\+", " +"),
+	DUE_DATE (" due", ""),
+	START_DATE (" from", ""),
+	END_DATE (" to ", ""),
+	ORDER_BY (" order by", ""),
+	OR_FROM (" or from", " from"),
+	OR_END (" or to ", " to"),
+	NAME (" name", ""),
+	ID (" id", ""),
+	STATUS (" status", ""),
+	BEFORE (" before", ""),
+	AFTER (" after", ""),
+	ON (" on", "");
 	
 	private final String regex;
 	private final String groupName;
