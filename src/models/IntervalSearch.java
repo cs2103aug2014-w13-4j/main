@@ -145,4 +145,26 @@ public class IntervalSearch {
     public int size() {
         return map.size();
     }
+
+    public Calendar getDateStart(int taskId) {
+        Calendar dateStart = Calendar.getInstance();
+        for (DateRange key : map.keySet()) {
+            if (map.get(key) == taskId) {
+                dateStart.setTimeInMillis(key.getStartDate());
+                break;
+            }
+        }
+        return dateStart;
+    }
+
+    public Calendar getDateEnd(int taskId) {
+        Calendar dateEnd = Calendar.getInstance();
+        for (DateRange key : map.keySet()) {
+            if (map.get(key) == taskId) {
+                dateEnd.setTimeInMillis(key.getEndDate());
+                break;
+            }
+        }
+        return dateEnd;
+    }
 }

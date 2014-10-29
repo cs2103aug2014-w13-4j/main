@@ -12,6 +12,7 @@ import exceptions.InvalidDateFormatException;
 import exceptions.InvalidInputException;
 import exceptions.TaskNotFoundException;
 import models.ApplicationLogger;
+import models.IntervalSearch;
 import storage.tagStorage.TagStorage;
 import storage.taskStorage.TaskStorage;
 import models.Task;
@@ -70,5 +71,9 @@ public class Storage {
 	public ArrayList<Task> searchTask(Hashtable<ParamEnum, ArrayList<String>> keyWordTable) 
 			throws InvalidDateFormatException, InvalidInputException {
 		return taskFile.searchTask(keyWordTable, getAllTasks());
+	}
+
+	public IntervalSearch getIntervalTree() {
+		return taskFile.getIntervalTree();
 	}
 }
