@@ -88,7 +88,7 @@ public class TaskDisplayViewController {
 		}
 	}
 
-	private void setLabelValueInGui(StringProperty labelValue, String value){
+	private void setLabelValueInGui(StringProperty labelValue, String value) {
 		labelValue.setValue(value != null && !value.isEmpty() ? value : "-");
 	}
 }

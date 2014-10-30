@@ -1,12 +1,12 @@
 <?import javafx.scene.control.TextField?>
 
 <?import javafx.scene.layout.AnchorPane?>
-<AnchorPane minHeight="40.0" maxHeight="40.0" minWidth="0.0" prefHeight="40.0" prefWidth="160.0"
-            xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" minHeight="40.0" maxHeight="40.0" minWidth="0.0" prefHeight="40.0"
+            prefWidth="160.0" xmlns="http://javafx.com/javafx/8"
             fx:controller="main.controllers.UserInputViewController">
     <children>
         <TextField fx:id="userInputField" onKeyReleased="#handleUserIncrementalInput" onAction="#handleUserInput"
                    promptText="enter command here..." layoutX="21.0" layoutY="6.0" AnchorPane.bottomAnchor="0.0"
-                   AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                   AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
     </children>
 </AnchorPane>
