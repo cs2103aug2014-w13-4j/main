@@ -25,10 +25,10 @@ import exceptions.InvalidInputException;
 import exceptions.TaskNotFoundException;
 
 public class IntegrationTest {
-    
+
     CommandParser parser;
     LogicApi logicApiObject;
-    
+
     @Before
     public void clearData() throws IOException, FileFormatNotSupportedException {
         PrintWriter writer = new PrintWriter("taskStorage.data");
@@ -38,7 +38,6 @@ public class IntegrationTest {
         logicApiObject = new LogicApi();
         logicApiObject.initialize();
     }
-
 
     @Test
     /**
@@ -73,6 +72,64 @@ public class IntegrationTest {
         Task secondTask = feedback.getTaskList().get(0);
         assertEquals("eat my pet dog", firstTask.getName());
         assertEquals("second", secondTask.getName());
+    }
+
+    /**
+     * Tests that start date must be before end date when adding a task
+     *
+     * @throws Exception
+     */
+    @Test(expected = InvalidInputException.class)
+    public final void testStartDateCannotBeAfterEndDateForAdd()
+            throws Exception {
+        Command addCommand = parser
+                .parseCommand("add from 20 Feb 1999 to 19 Feb 1999");
+        logicApiObject.executeCommand(addCommand);
+    }
+
+    /**
+     * Tests that start date before end date when updating a task
+     *
+     * @throws Exception
+     */
+    @Test(expected = InvalidInputException.class)
+    public final void testStartDateCannotBeAfterEndDateForUpdate()
+            throws Exception {
+        Command addCommand = parser
+                .parseCommand("add from 21 Feb 1999 to 20 Feb 1999 or from 20 Feb 1999 to 21 Feb 1999");
+        logicApiObject.executeCommand(addCommand);
+        Command updateCommand = parser
+                .parseCommand("update 0 from 21 Feb 1999");
+        logicApiObject.executeCommand(updateCommand);
+    }
+    
+    /**
+     * Tests that start date must be before end date when adding a conditional task
+     *
+     * @throws Exception
+     */
+    @Test(expected = InvalidInputException.class)
+    public final void testStartDateCannotBeAfterEndDateForConditional()
+            throws Exception {
+        Command addCommand = parser
+                .parseCommand("add from 20 Jan 1999 to 20 Feb 1999 note I don't know why I want that? level 2");
+        logicApiObject.executeCommand(addCommand);
+        Command updateCommand = parser
+                .parseCommand("update 0 from 21 Feb 1999");
+        logicApiObject.executeCommand(updateCommand);
+    }
+
+    /**
+     * Tests that a task must have a name before it is added
+     *
+     * @throws Exception
+     */
+    @Test(expected = InvalidInputException.class)
+    public final void testConditionalStartDateCannotBeAfterEndDate()
+            throws Exception {
+        Command addCommand = parser
+                .parseCommand("add from 20 Feb 1999 to 20 Jan 1999 note I don't know why I want that? level 2");
+        logicApiObject.executeCommand(addCommand);
     }
 
     /**
@@ -436,7 +493,8 @@ public class IntegrationTest {
     @Test
     public final void testUndoUpdateTask() throws Exception {
         CommandParser parser = new CommandParser();
-        Command addCommand = parser.parseCommand("Add blah due 23 December 1992");
+        Command addCommand = parser
+                .parseCommand("Add blah due 23 December 1992");
         Feedback feedback = logicApiObject.executeCommand(addCommand);
         Command updateCommand = parser.parseCommand("Update 0 name changed");
         logicApiObject.executeCommand(updateCommand);
@@ -477,7 +535,8 @@ public class IntegrationTest {
         Command addCommand = parser
                 .parseCommand("add eat my pet dog from 20 Feb 1999 to 21 Feb 1999 note I don't know why I want that? level 2");
         logicApiObject.executeCommand(addCommand);
-        Command updateCommand = parser.parseCommand("update 0 due 10 October 2013");
+        Command updateCommand = parser
+                .parseCommand("update 0 due 10 October 2013");
         logicApiObject.executeCommand(updateCommand);
     }
 
