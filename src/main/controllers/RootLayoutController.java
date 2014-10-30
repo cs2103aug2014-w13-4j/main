@@ -129,7 +129,7 @@ public class RootLayoutController {
 		notificationPane.show();
 	}
 
-	private boolean validateUserInput(String userInput){
+	private boolean validateUserInput(String userInput) {
 		return (userInput != null && !userInput.isEmpty());
 	}
 }

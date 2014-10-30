@@ -12,10 +12,11 @@ import java.util.Calendar;
 /**
  * This class formats the dateEnd in the GUI TableView to a checkmark, depending on
  * whether the task was completed. If the task was completed, dateEnd would not be null.
+ *
  * @author szhlibrary
  */
-public class TaskDoneFactory<T,C>
-		implements Callback<TableColumn<Task, Calendar>, TableCell<Task,java.util.Calendar>> {
+public class TaskDoneFactory<T, C>
+		implements Callback<TableColumn<Task, Calendar>, TableCell<Task, java.util.Calendar>> {
 
 	@Override
 	public TableCell<Task, java.util.Calendar> call(TableColumn<Task, Calendar> param) {
@@ -29,7 +30,7 @@ public class TaskDoneFactory<T,C>
 					task = (Task) getTableRow().getItem();
 				}
 
-				if (task != null){
+				if (task != null) {
 					if (!task.isCompleted() || item == null || empty) {
 						setText(null);
 						setStyle("");

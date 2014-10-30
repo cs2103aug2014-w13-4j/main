@@ -18,7 +18,7 @@ public class TaskListViewController {
 	public TableView<Task> taskTableView;
 	public TableColumn dueDateTableColumn;
 
-	public void initialize(Feedback initialTasks){
+	public void initialize(Feedback initialTasks) {
 		initializeGuiTaskList(initialTasks);
 	}
 
@@ -35,7 +35,7 @@ public class TaskListViewController {
 	}
 
 	protected void updateTaskList(ArrayList<Task> taskList) {
-		assert(taskList != null && taskList.size() >= 0);
+		assert (taskList != null && taskList.size() >= 0);
 
 		taskTableView.getItems().clear();
 		ObservableList<Task> observableList = FXCollections.observableArrayList(taskList);

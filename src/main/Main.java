@@ -12,14 +12,19 @@ import java.util.logging.Level;
 
 /**
  * The main method of the program; program execution starts here.
+ *
  * @author szhlibrary
  */
-public class Main extends Application{
+public class Main extends Application {
 	private LogicApi logicApi;
 
 	private Stage primaryStage;
 
 	private RootLayoutController rootLayoutController;
+
+	public static void main(String[] args) {
+		launch(args);
+	}
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -34,8 +39,8 @@ public class Main extends Application{
 		this.primaryStage.setTitle("Awesome Task Manager");
 	}
 
-	private void initLayouts(){
-		assert(primaryStage != null);
+	private void initLayouts() {
+		assert (primaryStage != null);
 		try {
 			Feedback allActiveTasks = initLogicAndGetAllActiveTasks();
 			rootLayoutController = new RootLayoutController();
@@ -49,9 +54,5 @@ public class Main extends Application{
 		ApplicationLogger.getApplicationLogger().log(Level.INFO, "Initializing Logic.");
 		logicApi = new LogicApi();
 		return logicApi.initialize();
-	}
-
-	public static void main(String[] args) {
-		launch(args);
 	}
 }

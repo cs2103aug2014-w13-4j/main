@@ -12,10 +12,11 @@ import java.util.Calendar;
 /**
  * This class formats the date in the GUI TableView to a human-readable format using
  * the methods provided by the models.DateParser class.
+ *
  * @author szhlibrary
  */
-public class TaskDateFactory<T,C>
-		implements Callback<TableColumn<Task, Calendar>, TableCell<Task,java.util.Calendar>> {
+public class TaskDateFactory<T, C>
+		implements Callback<TableColumn<Task, Calendar>, TableCell<Task, java.util.Calendar>> {
 
 	@Override
 	public TableCell<Task, java.util.Calendar> call(TableColumn<Task, Calendar> param) {
@@ -29,11 +30,11 @@ public class TaskDateFactory<T,C>
 					task = (Task) getTableRow().getItem();
 				}
 
-				if (task != null){
-					if (task.isConfirmed() && item == null || empty){
+				if (task != null) {
+					if (task.isConfirmed() && item == null || empty) {
 						setText("-");
 						setStyle("");
-					} else if (task.isConfirmed()){
+					} else if (task.isConfirmed()) {
 						setText(DateParser.parseCalendar(item));
 					} else {
 						setText("Unconfirmed");

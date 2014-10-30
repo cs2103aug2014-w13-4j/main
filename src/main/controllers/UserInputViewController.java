@@ -31,17 +31,17 @@ public class UserInputViewController {
 		setFocusToUserInputField();
 	}
 
-	private void initializeAutoCompleteForSearch(Feedback displayAllActiveTasks){
-		if (!autoCompleteSearchInitialized){
+	private void initializeAutoCompleteForSearch(Feedback displayAllActiveTasks) {
+		if (!autoCompleteSearchInitialized) {
 			ArrayList<String> autoCompleteStringList = new ArrayList<String>();
 			ArrayList<Task> taskList = displayAllActiveTasks.getTaskList();
 
-			for (Task task : taskList){
-				if (!task.isDeleted()){
-					autoCompleteStringList.add("search name "+ task.getName());
+			for (Task task : taskList) {
+				if (!task.isDeleted()) {
+					autoCompleteStringList.add("search name " + task.getName());
 				}
 			}
-			if (autoCompletionBinding != null){
+			if (autoCompletionBinding != null) {
 				autoCompletionBinding.dispose();
 			}
 			autoCompletionBinding = TextFields.bindAutoCompletion(userInputField, autoCompleteStringList);
@@ -49,11 +49,11 @@ public class UserInputViewController {
 		}
 	}
 
-	private void initializeAutoComplete(Feedback displayAllActiveTasks){
+	private void initializeAutoComplete(Feedback displayAllActiveTasks) {
 		initializeAutoCompleteForCommands();
 	}
 
-	private void initializeAutoCompleteForCommands(){
+	private void initializeAutoCompleteForCommands() {
 		if (!autoCompleteCommandInitialized) {
 			ArrayList<String> autoCompleteStringList = new ArrayList<String>();
 
@@ -68,15 +68,15 @@ public class UserInputViewController {
 		}
 	}
 
-	public void handleUserIncrementalInput(){
+	public void handleUserIncrementalInput() {
 		String userInput = userInputField.getText();
-		if (userInput.split(" ")[0].equalsIgnoreCase(String.valueOf(CommandEnum.SEARCH))){
-			try{
-				ApplicationLogger.getApplicationLogger().log(Level.INFO, "Sent to Command Parser: "+ userInput);
+		if (userInput.split(" ")[0].equalsIgnoreCase(String.valueOf(CommandEnum.SEARCH))) {
+			try {
+				ApplicationLogger.getApplicationLogger().log(Level.INFO, "Sent to Command Parser: " + userInput);
 				CommandParser commandParser = new CommandParser();
 				Command displayCommand = commandParser.parseCommand(String.valueOf(CommandEnum.DISPLAY));
 
-				ApplicationLogger.getApplicationLogger().log(Level.INFO, "Sent to Logic: "+ userInput);
+				ApplicationLogger.getApplicationLogger().log(Level.INFO, "Sent to Logic: " + userInput);
 				Feedback displayCommandFeedback = rootLayoutController.logicApi.executeCommand(displayCommand);
 				initializeAutoCompleteForSearch(displayCommandFeedback);
 				autoCompleteCommandInitialized = false;
@@ -91,7 +91,7 @@ public class UserInputViewController {
 		System.out.println(userInput);
 	}
 
-	private void setFocusToUserInputField(){
+	private void setFocusToUserInputField() {
 		userInputField.requestFocus();
 	}
 
