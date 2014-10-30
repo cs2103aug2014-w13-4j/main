@@ -168,7 +168,7 @@ public class IntegrationTest {
         Command addCommand = parser.parseCommand("add test");
         logicApiObject.executeCommand(addCommand);
         Command updateCommand = parser
-                .parseCommand("update from 20-02-1999 due 21-02-1999 note I don't know why I want that? level 2");
+                .parseCommand("update from 20 Feb 1999 due 21 Feb 1999 note I don't know why I want that? level 2");
         logicApiObject.executeCommand(updateCommand);
     }
 
@@ -179,7 +179,7 @@ public class IntegrationTest {
      */
     public final void testCompleteTask() throws Exception {
         Command addCommand = parser
-                .parseCommand("add eat my pet dog due 20-02-1999 note I don't know why I want that? level 2");
+                .parseCommand("add eat my pet dog due 20 Feb 1999 note I don't know why I want that? level 2");
         Feedback feedback = logicApiObject.executeCommand(addCommand);
         Task uncompletedTask = feedback.getTaskList().get(0);
         assertTrue(uncompletedTask.getDateEnd() == null);
@@ -256,7 +256,7 @@ public class IntegrationTest {
     public final void testConfirmConditionalTasks() throws Exception {
         CommandParser parser = new CommandParser();
         Command addCommand = parser
-                .parseCommand("Add CS2103T from 23.12.1992 to 23.12.2002 or from 7.10.2014 to 8.10.2014");
+                .parseCommand("Add CS2103T from 23 Dec 1992 to 23 Dec 2002 or from 7 Oct 2014 to 8 Oct 2014");
         logicApiObject.executeCommand(addCommand);
         Command confirmCommand = parser.parseCommand("confirm 0 id 1");
         Feedback feedback = logicApiObject.executeCommand(confirmCommand);
@@ -281,7 +281,7 @@ public class IntegrationTest {
             throws Exception {
         CommandParser parser = new CommandParser();
         Command addCommand = parser
-                .parseCommand("Add CS2103T from 23.12.1992 due 23.12.2002 or due 8.10.2014");
+                .parseCommand("Add CS2103T from 23 Dec 1992 to 23 Dec 2002 or from 7 Oct 2014 to 8 Oct 2014");
         logicApiObject.executeCommand(addCommand);
         Command confirmCommand = parser.parseCommand("confirm 0 id 2");
         logicApiObject.executeCommand(confirmCommand);
@@ -298,7 +298,7 @@ public class IntegrationTest {
             throws Exception {
         CommandParser parser = new CommandParser();
         Command addCommand = parser
-                .parseCommand("Add CS2103T from 23.12.1992 due 23.12.2002 or due 8.10.2014");
+                .parseCommand("Add CS2103T from 23 Dec 1992 to 23 Dec 2002 or from 7 Oct 2014 to 8 Oct 2014");
         logicApiObject.executeCommand(addCommand);
         Command confirmCommand = parser.parseCommand("confirm 0 id -1");
         logicApiObject.executeCommand(confirmCommand);
@@ -311,7 +311,7 @@ public class IntegrationTest {
      */
     public final void testDeleteTask() throws Exception {
         Command addCommand = parser
-                .parseCommand("add eat my pet dog due 20-02-1999 note I don't know why I want that? level 2");
+                .parseCommand("add eat my pet dog due 20 Feb 1999 note I don't know why I want that? level 2");
         Feedback feedback = logicApiObject.executeCommand(addCommand);
         Task task = feedback.getTaskList().get(0);
         assertTrue(task.isDeleted() == false);
@@ -362,7 +362,7 @@ public class IntegrationTest {
     public final void testFilterActiveTask() throws Exception {
         CommandParser parser = new CommandParser();
         Command addCommand = parser
-                .parseCommand("Add completed task due 10/10/2013");
+                .parseCommand("Add completed task due 10 Oct 2013");
         logicApiObject.executeCommand(addCommand);
         Command completeCommand = parser.parseCommand("done 0");
         logicApiObject.executeCommand(completeCommand);
@@ -383,7 +383,7 @@ public class IntegrationTest {
     public final void testFilterCompletedTask() throws Exception {
         CommandParser parser = new CommandParser();
         Command addCommand = parser
-                .parseCommand("Add completed task due 23.12.2002");
+                .parseCommand("Add completed task due 23 December 2002");
         logicApiObject.executeCommand(addCommand);
         Command completeCommand = parser.parseCommand("done 0");
         logicApiObject.executeCommand(completeCommand);
@@ -404,7 +404,7 @@ public class IntegrationTest {
     public final void testUndoAddTask() throws Exception {
         CommandParser parser = new CommandParser();
         Command addCommand = parser
-                .parseCommand("Add blah from 23.12.1992 to 23.12.2002");
+                .parseCommand("Add blah from 23 December 1992 to 23 December 2002");
         logicApiObject.executeCommand(addCommand);
         Command undoCommand = parser.parseCommand("undo");
         Feedback feedback = logicApiObject.executeCommand(undoCommand);
@@ -420,7 +420,7 @@ public class IntegrationTest {
     public final void testUndoDeleteTask() throws Exception {
         CommandParser parser = new CommandParser();
         Command addCommand = parser
-                .parseCommand("Add blah from 23.12.1992 to 23.12.2002");
+                .parseCommand("Add blah from 23 December 1992 to 23 December 2002");
         logicApiObject.executeCommand(addCommand);
         Command deleteCommand = parser.parseCommand("Delete 0");
         logicApiObject.executeCommand(deleteCommand);
@@ -436,7 +436,7 @@ public class IntegrationTest {
     @Test
     public final void testUndoUpdateTask() throws Exception {
         CommandParser parser = new CommandParser();
-        Command addCommand = parser.parseCommand("Add blah due 23.12.2002");
+        Command addCommand = parser.parseCommand("Add blah due 23 December 1992");
         Feedback feedback = logicApiObject.executeCommand(addCommand);
         Command updateCommand = parser.parseCommand("Update 0 name changed");
         logicApiObject.executeCommand(updateCommand);
@@ -471,14 +471,13 @@ public class IntegrationTest {
     @Test(expected = InvalidInputException.class)
     /**
      * Tests that task cannot be changed from a timed task to a deadline task
-     * Some code is commented out due to bug in command parser
      * @throws Exception
      */
     public final void testErrorUpdateTask() throws Exception {
         Command addCommand = parser
-                .parseCommand("add eat my pet dog from 20-02-1999 to 21-02-1999 note I don't know why I want that? level 2");
+                .parseCommand("add eat my pet dog from 20 Feb 1999 to 21 Feb 1999 note I don't know why I want that? level 2");
         logicApiObject.executeCommand(addCommand);
-        Command updateCommand = parser.parseCommand("update 0 due 10.10.2013");
+        Command updateCommand = parser.parseCommand("update 0 due 10 October 2013");
         logicApiObject.executeCommand(updateCommand);
     }
 
