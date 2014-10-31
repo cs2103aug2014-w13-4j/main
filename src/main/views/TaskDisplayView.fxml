@@ -46,7 +46,7 @@
                 <Label text="Description:" GridPane.columnIndex="0" GridPane.rowIndex="6" GridPane.valignment="TOP"/>
                 <Label fx:id="noteLabel" text="-" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="6"
                        GridPane.valignment="TOP"/>
-                <Label text="Conditional Dates:" GridPane.columnIndex="0" GridPane.rowIndex="7"
+                <Label text="Conditional Dates:" wrapText="true" GridPane.columnIndex="0" GridPane.rowIndex="7"
                        GridPane.valignment="TOP"/>
                 <Label fx:id="conditionalDateLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="7"
                        GridPane.valignment="TOP"/>
