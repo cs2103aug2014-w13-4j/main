@@ -6,8 +6,8 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.cell.PropertyValueFactory?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" minHeight="600.0" minWidth="600.0" prefHeight="600.0"
-            prefWidth="600.0" xmlns="http://javafx.com/javafx/8"
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" minHeight="600.0" minWidth="650.0" prefHeight="600.0"
+            prefWidth="650.0" xmlns="http://javafx.com/javafx/8"
             fx:controller="main.controllers.TaskListViewController">
     <children>
         <TableView fx:id="taskTableView" layoutX="122.0" layoutY="62.0" prefHeight="200.0"
@@ -51,7 +51,7 @@
                         <TaskDateFactory/>
                     </cellFactory>
                 </TableColumn>
-                <TableColumn prefWidth="100.0" minWidth="100.0" text="Task Name">
+                <TableColumn prefWidth="225.0" minWidth="225.0" text="Task Name">
                     <cellValueFactory>
                         <PropertyValueFactory property="name"/>
                     </cellValueFactory>
