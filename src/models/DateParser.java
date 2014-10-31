@@ -4,6 +4,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.joestelmach.natty.DateGroup;
 import com.joestelmach.natty.Parser;
@@ -12,6 +14,11 @@ import exceptions.InvalidDateFormatException;
 
 public class DateParser {
     private static final String STORE_DATE_FORMAT = "%d-%d-%d %02d:%02d";
+    private static final String CONVERSION_DATE_FORMAT = "\\d\\d[\\\\\\-\\.]\\d\\d[\\\\\\-\\.]\\d{2}(?:\\d{2})?";
+    private static final String CORRECT_DATE_FORMAT = "%1$s-%2$s-%3$s";
+    private static final int MONTH = 0;
+    private static final int DAY = 1;
+    private static final int YEAR = 2;
 
     /**
      * Reads a date in the string format, and returns its corresponding calendar
@@ -28,7 +35,7 @@ public class DateParser {
         if (dateString.isEmpty()) {
             return null;
         }
-        return nattyDateParser(dateString);
+        return nattyDateParser(formatDate(dateString));
     }
 
     private static Calendar nattyDateParser(String dateString)
@@ -66,5 +73,21 @@ public class DateParser {
     private static String createString(int day, int month, int year, int hour,
             int minute) {
         return String.format(STORE_DATE_FORMAT, day, month, year, hour, minute);
+    }
+
+    private static String formatDate(String date) {
+        String correctedDate = "";
+        Pattern pattern = Pattern.compile(CONVERSION_DATE_FORMAT);
+        Matcher m = pattern.matcher(date);
+        if (m.find()) {
+            String[] dateComponents = date.split("[\\\\\\-\\.]");
+            correctedDate = String.format(CORRECT_DATE_FORMAT,
+                    dateComponents[DAY], dateComponents[MONTH],
+                    dateComponents[YEAR]);
+        } else {
+            correctedDate = date;
+        }
+
+        return correctedDate;
     }
 }
