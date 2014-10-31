@@ -87,6 +87,22 @@ public class LogicTest {
         assertEquals("test test", task.getName());
         assertEquals(PriorityLevelEnum.RED, task.getPriorityLevel());
     }
+    
+    @Test
+    public void testAddWithIntPrioritylevel() throws IllegalAccessException,
+            IllegalArgumentException, InvocationTargetException {
+        Hashtable<ParamEnum, ArrayList<String>> params = new Hashtable<ParamEnum, ArrayList<String>>();
+        ArrayList<String> nameList = new ArrayList<String>();
+        nameList.add("test test");
+        ArrayList<String> priorityList = new ArrayList<String>();
+        priorityList.add("3");
+        params.put(ParamEnum.LEVEL, priorityList);
+
+        Feedback feedback = (Feedback) add.invoke(logicObject, params);
+        assertEquals(1, feedback.getTaskList().size());
+        Task task = feedback.getTaskList().get(0);
+        assertEquals(PriorityLevelEnum.RED, task.getPriorityLevel());
+    }
 
     @Test
     public void testDelete() throws IllegalAccessException,

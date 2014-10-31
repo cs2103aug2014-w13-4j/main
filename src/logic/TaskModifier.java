@@ -193,20 +193,29 @@ public class TaskModifier {
         if (param.containsKey(ParamEnum.LEVEL)) {
             assert param.get(ParamEnum.LEVEL).size() == 1;
             String levelString = param.get(ParamEnum.LEVEL).get(0);
-            PriorityLevelEnum priorityEnum;
-            try {
-                priorityEnum = getPriorityEnumAsString(levelString);
-            } catch (InvalidPriorityLevelException e) {
-                try {
-                    priorityEnum = getPriorityEnumAsInteger(levelString);
-                } catch (InvalidPriorityLevelException | NumberFormatException e1) {
-                    throw new InvalidInputException(
-                            MessageCreator.createMessage(
-                                    INVALID_PRIORITY_LEVEL_MESSAGE,
-                                    levelString, null));
-                }
-            }
+            PriorityLevelEnum priorityEnum = getPriorityLevel(levelString);
             task.setPriorityLevel(priorityEnum);
+        }
+    }
+
+    private static PriorityLevelEnum getPriorityLevel(String levelString)
+            throws InvalidInputException {
+        PriorityLevelEnum priorityEnum;
+        try {
+            priorityEnum = getPriorityEnumAsString(levelString);
+        } catch (InvalidPriorityLevelException e) {
+            priorityEnum = getPriorityEnumAsInteger(levelString);
+        }
+        return priorityEnum;
+    }
+
+    private static PriorityLevelEnum getPriorityEnumAsInteger(String levelString)
+            throws InvalidInputException {
+        try {
+            return parsePriorityAsInteger(levelString);
+        } catch (InvalidPriorityLevelException | NumberFormatException e1) {
+            throw new InvalidInputException(MessageCreator.createMessage(
+                    INVALID_PRIORITY_LEVEL_MESSAGE, levelString, null));
         }
     }
 
@@ -215,8 +224,9 @@ public class TaskModifier {
         return PriorityLevelEnum.fromString(levelString);
     }
 
-    private static PriorityLevelEnum getPriorityEnumAsInteger(String levelString)
-            throws InvalidInputException, InvalidPriorityLevelException {
+    private static PriorityLevelEnum parsePriorityAsInteger(
+            String levelString) throws InvalidInputException,
+            InvalidPriorityLevelException {
         int level = Integer.parseInt(levelString);
         return PriorityLevelEnum.fromInteger(level);
     }
