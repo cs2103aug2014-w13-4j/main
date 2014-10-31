@@ -5,14 +5,17 @@ import java.util.Calendar;
 import java.util.Hashtable;
 
 import models.DateParser;
+import models.MessageCreator;
 import models.PriorityLevelEnum;
 import models.StartDueDatePair;
 import models.Task;
 import command.ParamEnum;
 import exceptions.InvalidDateFormatException;
 import exceptions.InvalidInputException;
+import exceptions.InvalidPriorityLevelException;
 
 public class TaskModifier {
+    private static final String INVALID_PRIORITY_LEVEL_MESSAGE = "%1$s is not a valid priority level.";
     private static final String INVALID_CONDITIONAL_DATE_ID_MESSAGE = "The conditional date id is invalid.";
     private static final int MIN_ID = 0;
     private static final String INVALID_CONFIRMED_TASK_MESSAGE = "The task is already confirmed.";
@@ -108,8 +111,8 @@ public class TaskModifier {
 
     }
 
-    private static void checkStartDateIsBeforeEndDate(Calendar dateStart, Calendar dateEnd)
-            throws InvalidInputException {
+    private static void checkStartDateIsBeforeEndDate(Calendar dateStart,
+            Calendar dateEnd) throws InvalidInputException {
         if (!isStartDateBeforeEndDate(dateStart, dateEnd)) {
             throw new InvalidInputException(INVALID_START_END_DATE_MESSAGE);
         }
@@ -187,18 +190,35 @@ public class TaskModifier {
     private static void setLevelFromCommand(
             Hashtable<ParamEnum, ArrayList<String>> param, Task task)
             throws InvalidInputException {
-        PriorityLevelEnum priorityEnum = null;
         if (param.containsKey(ParamEnum.LEVEL)) {
+            assert param.get(ParamEnum.LEVEL).size() == 1;
+            String levelString = param.get(ParamEnum.LEVEL).get(0);
+            PriorityLevelEnum priorityEnum;
             try {
-                int level = Integer.parseInt(param.get(ParamEnum.LEVEL).get(0));
-                priorityEnum = PriorityLevelEnum.fromInteger(level);
-            } catch (NumberFormatException | NullPointerException e) {
-                throw new InvalidInputException(
-                        "The priority level should be from 0 to 2");
+                priorityEnum = getPriorityEnumAsString(levelString);
+            } catch (InvalidPriorityLevelException e) {
+                try {
+                    priorityEnum = getPriorityEnumAsInteger(levelString);
+                } catch (InvalidPriorityLevelException | NumberFormatException e1) {
+                    throw new InvalidInputException(
+                            MessageCreator.createMessage(
+                                    INVALID_PRIORITY_LEVEL_MESSAGE,
+                                    levelString, null));
+                }
             }
-            // TODO: Indicate error when invalid priority level is added
             task.setPriorityLevel(priorityEnum);
         }
+    }
+
+    private static PriorityLevelEnum getPriorityEnumAsString(String levelString)
+            throws InvalidPriorityLevelException {
+        return PriorityLevelEnum.fromString(levelString);
+    }
+
+    private static PriorityLevelEnum getPriorityEnumAsInteger(String levelString)
+            throws InvalidInputException, InvalidPriorityLevelException {
+        int level = Integer.parseInt(levelString);
+        return PriorityLevelEnum.fromInteger(level);
     }
 
     private static void setNoteFromCommand(
