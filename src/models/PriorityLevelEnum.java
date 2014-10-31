@@ -2,13 +2,11 @@ package models;
 
 //TODO: Implement taking in input of colours
 public enum PriorityLevelEnum {
-    DEFAULT(-1, "default"), GREEN(1, "green"), ORANGE(2, "orange"), RED(3, "red");
+    DEFAULT(-1, "default"), GREEN(1, "green"), ORANGE(2, "orange"), RED(3,
+            "red");
 
     private final int level;
     private final String name;
-
-    // private static final HashMap<Integer, PriorityLevelEnum> lookup = new
-    // HashMap<Integer, PriorityLevelEnum>();
 
     PriorityLevelEnum(int level, String name) {
         this.level = level;
@@ -18,11 +16,16 @@ public enum PriorityLevelEnum {
     public int getLevel() {
         return level;
     }
-    
+
     public String getName() {
         return name;
     }
 
+    /**
+     * Returns the corresponding priority level enum given the integer level. 
+     * @param level: the priority level
+     * @return: priority level snum
+     */
     public static PriorityLevelEnum fromInteger(int level) {
         if (level != PriorityLevelEnum.DEFAULT.getLevel()) {
             for (PriorityLevelEnum e : PriorityLevelEnum.values()) {
@@ -31,9 +34,14 @@ public enum PriorityLevelEnum {
                 }
             }
         }
-        throw new InvalidPriorityLevelException();
+        return null;
     }
 
+    /**
+     * Returns the corresponding priority level enum given the string name. 
+     * @param level: the name of the priority level
+     * @return: priority level snum
+     */
     public static PriorityLevelEnum fromString(String name) {
         name.toLowerCase().trim();
         if (name != PriorityLevelEnum.DEFAULT.getName()) {
@@ -43,7 +51,7 @@ public enum PriorityLevelEnum {
                 }
             }
         }
-        throw new InvalidPriorityLevelException();
+        return null;
     }
 
 }
