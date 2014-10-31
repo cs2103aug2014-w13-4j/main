@@ -46,7 +46,7 @@ public class IntegrationTest {
      */
     public final void testAddTask() throws Exception {
         Command addCommand = parser
-                .parseCommand("add eat my pet dog from 20 February 1999 to 21 February 1999 note I don't know why I want that? level 2");
+                .parseCommand("add eat my pet dog from 20 February 1999 to 21 February 1999 note I don't know why I want that? level red");
         Feedback feedback = logicApiObject.executeCommand(addCommand);
         Task newTask = feedback.getTaskList().get(0);
         assertEquals("eat my pet dog", newTask.getName());
@@ -115,6 +115,43 @@ public class IntegrationTest {
                 .parseCommand("update 0 from 21 Feb 1999");
         logicApiObject.executeCommand(updateCommand);
     }
+    
+    /**
+     * Tests that an invalid priority level cannot be added
+     *
+     * @throws Exception
+     */
+    @Test(expected = InvalidInputException.class)
+    public final void testCannotAddTaskWithInvalidPrioriyInt() throws Exception {
+        Command addCommand = parser
+                .parseCommand("add test level 0");
+        logicApiObject.executeCommand(addCommand);
+    }
+    
+    /**
+     * Tests that an invalid priority level cannot be added
+     *
+     * @throws Exception
+     */
+    @Test(expected = InvalidInputException.class)
+    public final void testCannotAddTaskWithInvalidPrioriyInt2() throws Exception {
+        Command addCommand = parser
+                .parseCommand("add test level 4");
+        logicApiObject.executeCommand(addCommand);
+    }
+    
+    /**
+     * Tests that an invalid priority level cannot be added
+     *
+     * @throws Exception
+     */
+    @Test(expected = InvalidInputException.class)
+    public final void testCannotAddTaskWithInvalidPrioriyString() throws Exception {
+        Command addCommand = parser
+                .parseCommand("add test level gren");
+        logicApiObject.executeCommand(addCommand);
+    }
+
 
     /**
      * Tests that a task must have a name before it is added
@@ -493,10 +530,10 @@ public class IntegrationTest {
      */
     public final void testUpdateTask() throws Exception {
         Command addCommand = parser
-                .parseCommand("add eat my pet dog from 20 Feb 1999 to 21 Feb 1999 note I don't know why I want that? level 2");
+                .parseCommand("add eat my pet dog from 20 Feb 1999 to 21 Feb 1999 note I don't know why I want that? level 3");
         logicApiObject.executeCommand(addCommand);
         Command updateCommand = parser
-                .parseCommand("update 0 name changed from 01 Jan 1999 note changed description level 1");
+                .parseCommand("update 0 name changed from 01 Jan 1999 note changed description level 2");
         Feedback feedback = logicApiObject.executeCommand(updateCommand);
         Task newTask = feedback.getTaskList().get(0);
         assertEquals("changed", newTask.getName());

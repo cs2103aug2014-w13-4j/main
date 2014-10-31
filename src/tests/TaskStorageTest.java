@@ -13,12 +13,13 @@ import command.ParamEnum;
 
 import org.junit.Test;
 
+import exceptions.InvalidPriorityLevelException;
 import storage.taskStorage.TaskStorage;
 
 public class TaskStorageTest {
 	private static final int ID_FOR_NEW_TASK = -1;
 	
-    private Task createTaskForTest(int id, String name, int priorityLevel, String note, boolean isDeleted, ArrayList<StartDueDatePair> datePair) {
+    private Task createTaskForTest(int id, String name, int priorityLevel, String note, boolean isDeleted, ArrayList<StartDueDatePair> datePair) throws InvalidPriorityLevelException {
         Task task = new Task();
         task.setId(id);
         task.setName(name);
