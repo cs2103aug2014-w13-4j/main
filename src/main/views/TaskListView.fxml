@@ -6,15 +6,15 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.cell.PropertyValueFactory?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" minHeight="0.0" minWidth="300.0" prefHeight="160.0"
-            prefWidth="300.0" xmlns="http://javafx.com/javafx/8"
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" minHeight="600.0" minWidth="600.0" prefHeight="600.0"
+            prefWidth="600.0" xmlns="http://javafx.com/javafx/8"
             fx:controller="main.controllers.TaskListViewController">
     <children>
         <TableView fx:id="taskTableView" layoutX="122.0" layoutY="62.0" prefHeight="200.0"
                    prefWidth="400.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
                    AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <columns>
-                <TableColumn prefWidth="20.0" minWidth="20.0" maxWidth="20.0" text="ID">
+                <TableColumn prefWidth="25.0" minWidth="25.0" maxWidth="25.0" text="ID">
                     <cellValueFactory>
                         <PropertyValueFactory property="id"/>
                     </cellValueFactory>
@@ -56,7 +56,7 @@
                         <PropertyValueFactory property="name"/>
                     </cellValueFactory>
                 </TableColumn>
-                <TableColumn prefWidth="60.0" minWidth="60.0" maxWidth="60.0" text="Priority">
+                <TableColumn prefWidth="70.0" minWidth="70.0" maxWidth="70.0" text="Priority">
                     <cellValueFactory>
                         <PropertyValueFactory property="priorityLevel"/>
                     </cellValueFactory>
