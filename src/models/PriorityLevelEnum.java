@@ -2,30 +2,34 @@ package models;
 
 //TODO: Implement taking in input of colours
 public enum PriorityLevelEnum {
-	DEFAULT (-1), 
-	GREEN (0),
-	ORANGE (1),
-	RED (2);
-	
-	private final int level;
-	//private static final HashMap<Integer, PriorityLevelEnum> lookup = new HashMap<Integer, PriorityLevelEnum>();
-	
-	PriorityLevelEnum(int level) {
-		this.level = level;
-	}
-	
-	public int getLevel() {
-		return level;
-	}
+    DEFAULT(-1), GREEN(0), ORANGE(1), RED(2);
 
-	public static PriorityLevelEnum fromInteger(int level) {
-		for (PriorityLevelEnum e : PriorityLevelEnum.values()) {
-			if(level == e.getLevel()) {
-				return e;
-			}
-			
-		}
-		return null;
-	}
+    private final int level;
+
+    // private static final HashMap<Integer, PriorityLevelEnum> lookup = new
+    // HashMap<Integer, PriorityLevelEnum>();
+
+    PriorityLevelEnum(int level) {
+        this.level = level;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public static PriorityLevelEnum fromInteger(int level) {
+        if (level != PriorityLevelEnum.DEFAULT.getLevel()) {
+            for (PriorityLevelEnum e : PriorityLevelEnum.values()) {
+                if (level == e.getLevel()) {
+                    return e;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static PriorityLevelEnum fromString(String level) {
+
+    }
 
 }
