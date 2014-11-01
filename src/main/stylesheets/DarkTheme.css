@@ -60,6 +60,17 @@
     -fx-background-color: -fx-focus-color;
 }
 
+.priority-green {
+    -fx-background-color: green;
+}
+
+.priority-orange {
+    -fx-background-color: orange;
+}
+
+.priority-red {
+    -fx-background-color: red;
+}
 
 /*
  * Metro style
