@@ -2,6 +2,7 @@
 
 <?import main.factories.TaskDoneFactory?>
 <?import main.factories.TaskDateFactory?>
+<?import main.factories.TaskPriorityFactory?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.cell.PropertyValueFactory?>
@@ -56,10 +57,13 @@
                         <PropertyValueFactory property="name"/>
                     </cellValueFactory>
                 </TableColumn>
-                <TableColumn prefWidth="60.0" minWidth="60.0" maxWidth="60.0" text="Priority">
+                <TableColumn prefWidth="5.0" minWidth="5.0" maxWidth="5.0" text="">
                     <cellValueFactory>
                         <PropertyValueFactory property="priorityLevel"/>
                     </cellValueFactory>
+                    <cellFactory>
+                        <TaskPriorityFactory/>
+                    </cellFactory>
                 </TableColumn>
             </columns>
             <columnResizePolicy>
