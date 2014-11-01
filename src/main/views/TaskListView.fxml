@@ -8,7 +8,7 @@
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" minHeight="0.0" minWidth="300.0" prefHeight="160.0"
             prefWidth="300.0" xmlns="http://javafx.com/javafx/8"
-            fx:controller="main.controllers.TaskListViewController">
+            fx:controller="main.controllers.TaskListViewController" stylesheets="main/stylesheets/DarkTheme.css">
     <children>
         <TableView fx:id="taskTableView" layoutX="122.0" layoutY="62.0" prefHeight="200.0"
                    prefWidth="400.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
@@ -19,7 +19,7 @@
                         <PropertyValueFactory property="id"/>
                     </cellValueFactory>
                 </TableColumn>
-                <TableColumn prefWidth="20.0" minWidth="20.0" maxWidth="20.0" text="✓">
+                <TableColumn fx:id="doneTableColumn" prefWidth="20.0" minWidth="20.0" maxWidth="20.0" text="✓">
                     <cellValueFactory>
                         <PropertyValueFactory property="dateEnd"/>
                     </cellValueFactory>
