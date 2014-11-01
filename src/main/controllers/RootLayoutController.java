@@ -60,6 +60,7 @@ public class RootLayoutController {
 		loader.setLocation(Main.class.getResource("views/NotificationPaneWrapper.fxml"));
 		notificationPane = loader.load();
 		notificationPane.setShowFromTop(false);
+		notificationPane.getStyleClass().add(NotificationPane.STYLE_CLASS_DARK);
 	}
 
 	private void initTaskListView(Feedback allActiveTasks) throws IOException {
