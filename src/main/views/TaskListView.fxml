@@ -14,12 +14,12 @@
                    prefWidth="400.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
                    AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <columns>
-                <TableColumn prefWidth="20.0" minWidth="20.0" maxWidth="20.0" text="ID">
+                <TableColumn prefWidth="30.0" minWidth="30.0" maxWidth="20.0" text="ID">
                     <cellValueFactory>
                         <PropertyValueFactory property="id"/>
                     </cellValueFactory>
                 </TableColumn>
-                <TableColumn fx:id="doneTableColumn" prefWidth="20.0" minWidth="20.0" maxWidth="20.0" text="✓">
+                <TableColumn fx:id="doneTableColumn" prefWidth="30.0" minWidth="30.0" maxWidth="20.0" text="✓">
                     <cellValueFactory>
                         <PropertyValueFactory property="dateEnd"/>
                     </cellValueFactory>
