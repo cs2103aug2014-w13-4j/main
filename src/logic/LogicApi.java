@@ -162,10 +162,8 @@ public class LogicApi {
 
     private boolean hasOnlyFromOrToParams(
             Hashtable<ParamEnum, ArrayList<String>> params) {
-        return (params.containsKey(ParamEnum.START_DATE) && !params
-                .containsKey(ParamEnum.END_DATE))
-                || (!params.containsKey(ParamEnum.START_DATE) && params
-                        .containsKey(ParamEnum.END_DATE));
+        return (params.containsKey(ParamEnum.START_DATE) ^ params
+                .containsKey(ParamEnum.END_DATE));
     }
 
     private boolean hasBothBeforeAndAfterParams(
