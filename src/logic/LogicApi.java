@@ -110,7 +110,9 @@ public class LogicApi {
                 // fields is supported in storage
                 if (hasNameParam(param) || hasNoteParam(param)
                         || hasTagParam(param) || hasStatusParam(param)
-                        || hasBeforeParam(param) || hasAfterParam(param) || hasOnParam(param)) {
+                        || hasBeforeParam(param) || hasAfterParam(param)
+                        || hasOnParam(param) || hasFromParam(param)
+                        || hasToParam(param)) {
                     return logic.search(param);
                 }
                 break;
@@ -126,6 +128,14 @@ public class LogicApi {
             }
             throw new InvalidInputException(INVALID_COMMAND_MESSAGE);
         }
+    }
+
+    private boolean hasFromParam(Hashtable<ParamEnum, ArrayList<String>> param) {
+        return param.containsKey(ParamEnum.START_DATE);
+    }
+    
+    private boolean hasToParam(Hashtable<ParamEnum, ArrayList<String>> param) {
+        return param.containsKey(ParamEnum.END_DATE);
     }
 
     private boolean hasOnParam(Hashtable<ParamEnum, ArrayList<String>> param) {

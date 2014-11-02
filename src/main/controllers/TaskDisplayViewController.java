@@ -66,7 +66,7 @@ public class TaskDisplayViewController {
 		ArrayList<StartDueDatePair> conditionalDateList = taskToDisplay.getConditionalDates();
 		String conditionalDates = "";
 		if (conditionalDateList != null) {
-			int dateId = 0;
+			int dateId = 1;
 			for (StartDueDatePair conditionalDatePair : conditionalDateList) {
 				conditionalDates += dateId + ": " + DateParser.parseCalendar(conditionalDatePair.getStartDate())
 						+ " - " + DateParser.parseCalendar(conditionalDatePair.getDueDate())

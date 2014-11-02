@@ -14,6 +14,7 @@ import logic.Logic;
 import logic.LogicApi;
 import logic.TaskModifier;
 import models.Feedback;
+import models.PriorityLevelEnum;
 import models.Task;
 
 import org.junit.Before;
@@ -75,12 +76,32 @@ public class LogicTest {
         ArrayList<String> noteList = new ArrayList<String>();
         noteList.add("Test is good");
         params.put(ParamEnum.NOTE, noteList);
+        ArrayList<String> priorityList = new ArrayList<String>();
+        priorityList.add("RED");
+        params.put(ParamEnum.LEVEL, priorityList);
 
         Feedback feedback = (Feedback) add.invoke(logicObject, params);
         assertEquals(1, feedback.getTaskList().size());
         Task task = feedback.getTaskList().get(0);
         assertEquals("Test is good", task.getNote());
         assertEquals("test test", task.getName());
+        assertEquals(PriorityLevelEnum.RED, task.getPriorityLevel());
+    }
+    
+    @Test
+    public void testAddWithIntPrioritylevel() throws IllegalAccessException,
+            IllegalArgumentException, InvocationTargetException {
+        Hashtable<ParamEnum, ArrayList<String>> params = new Hashtable<ParamEnum, ArrayList<String>>();
+        ArrayList<String> nameList = new ArrayList<String>();
+        nameList.add("test test");
+        ArrayList<String> priorityList = new ArrayList<String>();
+        priorityList.add("3");
+        params.put(ParamEnum.LEVEL, priorityList);
+
+        Feedback feedback = (Feedback) add.invoke(logicObject, params);
+        assertEquals(1, feedback.getTaskList().size());
+        Task task = feedback.getTaskList().get(0);
+        assertEquals(PriorityLevelEnum.RED, task.getPriorityLevel());
     }
 
     @Test

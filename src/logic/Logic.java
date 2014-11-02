@@ -12,6 +12,7 @@ import storage.Storage;
 import command.ParamEnum;
 import models.Feedback;
 import models.History;
+import models.MessageCreator;
 import models.Task;
 import exceptions.FileFormatNotSupportedException;
 import exceptions.HistoryNotFoundException;
@@ -88,7 +89,7 @@ public class Logic {
         Task clonedTask = cloner.deepClone(task);
         logicUndo.pushAddCommandToHistory(clonedTask);
         ArrayList<Task> taskList = storage.getAllTasks();
-        return createTaskListFeedback(createMessage(ADD_MESSAGE, name, null),
+        return createTaskListFeedback(MessageCreator.createMessage(ADD_MESSAGE, name, null),
                 taskList);
     }
 
@@ -119,7 +120,7 @@ public class Logic {
             logicUndo.pushCompleteCommandToHistory(clonedTask);
             ArrayList<Task> taskList = storage.getAllTasks();
             return createTaskListFeedback(
-                    createMessage(COMPLETE_MESSAGE, name, null), taskList);
+                    MessageCreator.createMessage(COMPLETE_MESSAGE, name, null), taskList);
         } else {
             throw new InvalidCommandUseException(ERROR_COMPLETE_MESSAGE);
         }
@@ -146,7 +147,7 @@ public class Logic {
         try {
             dateId = Integer.parseInt(dateIdString);
         } catch (NumberFormatException e) {
-            throw new InvalidInputException(createMessage(
+            throw new InvalidInputException(MessageCreator.createMessage(
                     INVALID_DATE_ID_MESSAGE, dateIdString, null));
         }
         Task task = getTaskFromStorage(taskId);
@@ -156,7 +157,7 @@ public class Logic {
         logicUndo.pushConfirmCommandToHistory(clonedTask);
         String taskName = task.getName();
         return createTaskAndTaskListFeedback(
-                createMessage(CONFIRM_MESSAGE, taskName, null),
+                MessageCreator.createMessage(CONFIRM_MESSAGE, taskName, null),
                 storage.getAllTasks(), task);
     }
 
@@ -182,7 +183,7 @@ public class Logic {
         logicUndo.pushDeleteCommandToHistory(clonedTask);
         ArrayList<Task> taskList = storage.getAllTasks();
         return createTaskListFeedback(
-                createMessage(DELETE_MESSAGE, name, null), taskList);
+                MessageCreator.createMessage(DELETE_MESSAGE, name, null), taskList);
     }
 
     /**
@@ -238,7 +239,7 @@ public class Logic {
         ArrayList<Task> taskList = storage.searchTask(param);
         logicUndo.pushNullCommandToHistory();
         return createTaskListFeedback(
-                createMessage(SEARCH_MESSAGE, String.valueOf(taskList.size()),
+                MessageCreator.createMessage(SEARCH_MESSAGE, String.valueOf(taskList.size()),
                         null), taskList);
     }
 
@@ -263,12 +264,12 @@ public class Logic {
             // task detail is not shown if it is deleted?
             if (task.isDeleted()) {
                 return createTaskAndTaskListFeedback(
-                        createMessage(UNDO_MESSAGE, lastAction.getCommand()
+                        MessageCreator.createMessage(UNDO_MESSAGE, lastAction.getCommand()
                                 .regex(), task.getName()),
                         storage.getAllTasks(), null);
             } else {
                 return createTaskAndTaskListFeedback(
-                        createMessage(UNDO_MESSAGE, lastAction.getCommand()
+                        MessageCreator.createMessage(UNDO_MESSAGE, lastAction.getCommand()
                                 .regex(), task.getName()),
                         storage.getAllTasks(), lastAction.getTask());
             }
@@ -295,7 +296,7 @@ public class Logic {
         Task clonedTask = cloner.deepClone(task);
         if (task.isConditionalTask()) {
             if (hasInvalidConditionalTaskParams(param)) {
-                throw new InvalidInputException(createMessage(
+                throw new InvalidInputException(MessageCreator.createMessage(
                         ERROR_UPDATE_CONDITIONAL_TASK_MESSAGE,
                         Integer.toString(taskId), null));
             } else {
@@ -303,7 +304,7 @@ public class Logic {
             }
         } else if (task.isTimedTask()) {
             if (hasInvalidTimedTaskParams(param)) {
-                throw new InvalidInputException(createMessage(
+                throw new InvalidInputException(MessageCreator.createMessage(
                         ERROR_UPDATE_TIMED_TASK_MESSAGE,
                         Integer.toString(taskId), null));
             } else {
@@ -311,7 +312,7 @@ public class Logic {
             }
         } else if (task.isDeadlineTask()) {
             if (hasInvalidDeadlineTaskParams(param)) {
-                throw new InvalidInputException(createMessage(
+                throw new InvalidInputException(MessageCreator.createMessage(
                         ERROR_UPDATE_DEADLINE_TASK_MESSAGE,
                         Integer.toString(taskId), null));
             } else {
@@ -336,12 +337,7 @@ public class Logic {
         ArrayList<Task> taskList = storage.getAllTasks();
         logicUndo.pushUpdateCommandToHistory(clonedTask);
         return createTaskAndTaskListFeedback(
-                createMessage(EDIT_MESSAGE, name, null), taskList, task);
-    }
-
-    private String createMessage(String message, String variableText1,
-            String variableText2) {
-        return String.format(message, variableText1, variableText2);
+                MessageCreator.createMessage(EDIT_MESSAGE, name, null), taskList, task);
     }
 
     private Feedback createTaskAndTaskListFeedback(String message,
@@ -366,7 +362,7 @@ public class Logic {
     private Feedback displayAll() {
         ArrayList<Task> taskList = storage.getAllTasks();
         return createTaskListFeedback(
-                createMessage(DISPLAY_MESSAGE, null, null), taskList);
+                MessageCreator.createMessage(DISPLAY_MESSAGE, null, null), taskList);
     }
 
     /**
@@ -382,7 +378,7 @@ public class Logic {
     private Feedback displayTask(int id) throws TaskNotFoundException {
         Task task = getTaskFromStorage(id);
         return createTaskFeedback(
-                createMessage(DISPLAY_TASK_MESSAGE, String.valueOf(id), task.getName()),
+                MessageCreator.createMessage(DISPLAY_TASK_MESSAGE, String.valueOf(id), task.getName()),
                 task);
     }
 
@@ -398,7 +394,7 @@ public class Logic {
     private Task getTaskFromStorage(int id) throws TaskNotFoundException {
         Task task = storage.getTask(id);
         if (task.isDeleted()) {
-            throw new TaskNotFoundException(createMessage(
+            throw new TaskNotFoundException(MessageCreator.createMessage(
                     ERROR_ALREADY_DELETED_MESSAGE, Integer.toString(id), null));
         }
         return task;
@@ -410,7 +406,7 @@ public class Logic {
         try {
             return Integer.parseInt(taskIdString);
         } catch (NumberFormatException e) {
-            throw new InvalidInputException(createMessage(
+            throw new InvalidInputException(MessageCreator.createMessage(
                     INVALID_TASK_ID_MESSAGE, taskIdString, null));
         }
     }
