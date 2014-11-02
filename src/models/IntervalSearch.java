@@ -10,6 +10,8 @@ public class IntervalSearch {
     private static long END_OF_DATE = Long.MAX_VALUE;
     private static long START_OF_DATE = Long.MIN_VALUE;
 
+    private static int HASH_VALUE = 3;
+    private static int HASH_CONSTANT = 7;
     public static class DateRange {
         public long startDate;
         public long endDate;
@@ -33,9 +35,9 @@ public class IntervalSearch {
         }
 
         public int hashCode() {
-            int hash = 3;
-            hash = (int) (7 * hash + endDate);
-            hash = (int) (7 * hash + startDate);
+            int hash = HASH_VALUE;
+            hash = (int) (HASH_CONSTANT * hash + endDate);
+            hash = (int) (HASH_CONSTANT * hash + startDate);
             return hash;
         }
 
