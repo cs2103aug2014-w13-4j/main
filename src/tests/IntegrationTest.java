@@ -69,7 +69,7 @@ public class IntegrationTest {
         Feedback feedback = logicApiObject.executeCommand(addCommand);
         assertEquals(2, feedback.getTaskList().size());
         Task firstTask = feedback.getTaskList().get(0);
-        Task secondTask = feedback.getTaskList().get(0);
+        Task secondTask = feedback.getTaskList().get(1);
         assertEquals("eat my pet dog", firstTask.getName());
         assertEquals("second", secondTask.getName());
     }
@@ -112,7 +112,7 @@ public class IntegrationTest {
                 .parseCommand("add test from 20 Jan 1999 to 20 Feb 1999");
         logicApiObject.executeCommand(addCommand);
         Command updateCommand = parser
-                .parseCommand("update 0 from 21 Feb 1999");
+                .parseCommand("update 1 from 21 Feb 1999");
         logicApiObject.executeCommand(updateCommand);
     }
     
@@ -261,7 +261,7 @@ public class IntegrationTest {
         Feedback feedback = logicApiObject.executeCommand(addCommand);
         Task uncompletedTask = feedback.getTaskList().get(0);
         assertTrue(uncompletedTask.getDateEnd() == null);
-        Command completeCommand = parser.parseCommand("done 0");
+        Command completeCommand = parser.parseCommand("done 1");
         Feedback completedFeedback = logicApiObject
                 .executeCommand(completeCommand);
         assertEquals(1, completedFeedback.getTaskList().size());
@@ -279,7 +279,7 @@ public class IntegrationTest {
         Task uncompletedTask = feedback.getTaskList().get(0);
         assertNull(uncompletedTask.getDateEnd());
         Command completeCommand = parser
-                .parseCommand("done 0 date 30 January 1992");
+                .parseCommand("done 1 date 30 January 1992");
         Feedback completedFeedback = logicApiObject
                 .executeCommand(completeCommand);
         Task completedTask = completedFeedback.getTaskList().get(0);
@@ -336,7 +336,7 @@ public class IntegrationTest {
         Command addCommand = parser
                 .parseCommand("Add CS2103T from 23 Dec 1992 to 23 Dec 2002 or from 7 Oct 2014 to 8 Oct 2014");
         logicApiObject.executeCommand(addCommand);
-        Command confirmCommand = parser.parseCommand("confirm 0 id 1");
+        Command confirmCommand = parser.parseCommand("confirm 1 id 1");
         Feedback feedback = logicApiObject.executeCommand(confirmCommand);
         Task task = feedback.getTaskList().get(0);
         assertEquals("Task name is correct", "CS2103T", task.getName());
@@ -361,7 +361,7 @@ public class IntegrationTest {
         Command addCommand = parser
                 .parseCommand("Add CS2103T from 23 Dec 1992 to 23 Dec 2002 or from 7 Oct 2014 to 8 Oct 2014");
         logicApiObject.executeCommand(addCommand);
-        Command confirmCommand = parser.parseCommand("confirm 0 id 2");
+        Command confirmCommand = parser.parseCommand("confirm 1 id 2");
         logicApiObject.executeCommand(confirmCommand);
     }
 
@@ -378,7 +378,7 @@ public class IntegrationTest {
         Command addCommand = parser
                 .parseCommand("Add CS2103T from 23 Dec 1992 to 23 Dec 2002 or from 7 Oct 2014 to 8 Oct 2014");
         logicApiObject.executeCommand(addCommand);
-        Command confirmCommand = parser.parseCommand("confirm 0 id -1");
+        Command confirmCommand = parser.parseCommand("confirm 1 id -1");
         logicApiObject.executeCommand(confirmCommand);
     }
 
@@ -393,7 +393,7 @@ public class IntegrationTest {
         Feedback feedback = logicApiObject.executeCommand(addCommand);
         Task task = feedback.getTaskList().get(0);
         assertTrue(task.isDeleted() == false);
-        Command deleteCommand = parser.parseCommand("delete 0");
+        Command deleteCommand = parser.parseCommand("delete 1");
         Feedback completedFeedback = logicApiObject
                 .executeCommand(deleteCommand);
         assertEquals(0, completedFeedback.getTaskList().size());
@@ -423,9 +423,9 @@ public class IntegrationTest {
     public final void testDisplayIndividualTask() throws Exception {
         Command addCommand = parser.parseCommand("add eat my pet dog");
         logicApiObject.executeCommand(addCommand);
-        Command displayCommand = parser.parseCommand("display 0");
+        Command displayCommand = parser.parseCommand("display 1");
         Feedback feedback = logicApiObject.executeCommand(displayCommand);
-        assertEquals("ID is the same", 0, feedback.getTaskDisplay().getId());
+        assertEquals("ID is the same", 1, feedback.getTaskDisplay().getId());
         assertEquals("Name is correct", "eat my pet dog", feedback
                 .getTaskDisplay().getName());
         assertNull("Task list is empty", feedback.getTaskList());
@@ -442,7 +442,7 @@ public class IntegrationTest {
         Command addCommand = parser
                 .parseCommand("Add completed task due 10 Oct 2013");
         logicApiObject.executeCommand(addCommand);
-        Command completeCommand = parser.parseCommand("done 0");
+        Command completeCommand = parser.parseCommand("done 1");
         logicApiObject.executeCommand(completeCommand);
         addCommand = parser.parseCommand("Add nocompleted task");
         logicApiObject.executeCommand(addCommand);
@@ -463,7 +463,7 @@ public class IntegrationTest {
         Command addCommand = parser
                 .parseCommand("Add completed task due 23 December 2002");
         logicApiObject.executeCommand(addCommand);
-        Command completeCommand = parser.parseCommand("done 0");
+        Command completeCommand = parser.parseCommand("done 1");
         logicApiObject.executeCommand(completeCommand);
         addCommand = parser.parseCommand("Add nocompleted task");
         logicApiObject.executeCommand(addCommand);
@@ -500,7 +500,7 @@ public class IntegrationTest {
         Command addCommand = parser
                 .parseCommand("Add blah from 23 December 1992 to 23 December 2002");
         logicApiObject.executeCommand(addCommand);
-        Command deleteCommand = parser.parseCommand("Delete 0");
+        Command deleteCommand = parser.parseCommand("Delete 1");
         logicApiObject.executeCommand(deleteCommand);
         Command undoCommand = parser.parseCommand("undo");
         Feedback feedback = logicApiObject.executeCommand(undoCommand);
@@ -517,7 +517,7 @@ public class IntegrationTest {
         Command addCommand = parser
                 .parseCommand("Add blah due 23 December 1992");
         Feedback feedback = logicApiObject.executeCommand(addCommand);
-        Command updateCommand = parser.parseCommand("Update 0 name changed");
+        Command updateCommand = parser.parseCommand("Update 1 name changed");
         logicApiObject.executeCommand(updateCommand);
         Command undoCommand = parser.parseCommand("undo");
         logicApiObject.executeCommand(undoCommand);
@@ -533,7 +533,7 @@ public class IntegrationTest {
                 .parseCommand("add eat my pet dog from 20 Feb 1999 to 21 Feb 1999 note I don't know why I want that? level 3");
         logicApiObject.executeCommand(addCommand);
         Command updateCommand = parser
-                .parseCommand("update 0 name changed from 01 Jan 1999 note changed description level 2");
+                .parseCommand("update 1 name changed from 01 Jan 1999 note changed description level 2");
         Feedback feedback = logicApiObject.executeCommand(updateCommand);
         Task newTask = feedback.getTaskList().get(0);
         assertEquals("changed", newTask.getName());
@@ -557,7 +557,7 @@ public class IntegrationTest {
                 .parseCommand("add eat my pet dog from 20 Feb 1999 to 21 Feb 1999 note I don't know why I want that? level 2");
         logicApiObject.executeCommand(addCommand);
         Command updateCommand = parser
-                .parseCommand("update 0 due 10 October 2013");
+                .parseCommand("update 1 due 10 October 2013");
         logicApiObject.executeCommand(updateCommand);
     }
 
