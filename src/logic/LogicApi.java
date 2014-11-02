@@ -21,7 +21,7 @@ import exceptions.TaskNotFoundException;
 public class LogicApi {
     private Logic logic;
     private static final String INVALID_COMMAND_MESSAGE = "The command is invalid.";
-    private static final String INVALID_BEFORE_AFTER_SEARCH_MESSAGE = "Before and After cannot be searched together. Use from to instead.";
+    private static final String INVALID_BEFORE_AFTER_SEARCH_MESSAGE = "Before and After cannot be searched together.";
     private static final String INVALID_FROM_TO_SEARCH_MESSAGE = "Both start and end date are required.";
 
     public LogicApi() {
