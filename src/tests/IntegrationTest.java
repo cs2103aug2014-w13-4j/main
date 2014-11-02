@@ -124,7 +124,7 @@ public class IntegrationTest {
     @Test(expected = InvalidInputException.class)
     public final void testCannotAddTaskWithInvalidPrioriyInt() throws Exception {
         Command addCommand = parser
-                .parseCommand("add test level 0");
+                .parseCommand("add test level -1");
         logicApiObject.executeCommand(addCommand);
     }
     

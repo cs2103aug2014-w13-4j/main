@@ -264,7 +264,7 @@ public class TaskStorage {
 			return task.isCompleted() && !task.isDeleted();
 		} else if (status.equals(ACTIVE)) {
 			// need double check
-			return !task.isDeleted();
+			return !task.isCompleted() && !task.isDeleted();
 		} else {
 			throw new InvalidInputException("Filter keyword is wrong.");
 		}
