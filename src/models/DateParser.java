@@ -40,6 +40,15 @@ public class DateParser {
         return nattyDateParser(formatDate(dateString));
     }
 
+    /**
+     * Parse a given date given in given natural language into its corresponding
+     * calendar representation
+     * 
+     * @param dateString
+     *            : A string in any natural format representing a correct date
+     * @return the calendar object representing the date
+     * @throws InvalidDateFormatException
+     */
     private static Calendar nattyDateParser(String dateString)
             throws InvalidDateFormatException {
         Parser parser = new Parser();
@@ -59,6 +68,13 @@ public class DateParser {
         return inputDate;
     }
 
+    /**
+     * A function to parse a given calendar object into its date string format
+     * 
+     * @param date
+     *            : calendar object representing the intended date to parse
+     * @return Date in its string format
+     */
     public static String parseCalendar(Calendar date) {
         if (date != null) {
             int day = date.get(Calendar.DAY_OF_MONTH);
@@ -77,6 +93,13 @@ public class DateParser {
         return String.format(STORE_DATE_FORMAT, day, month, year, hour, minute);
     }
 
+    /**
+     * Format a date from dd-mm-yyyy format into natty acceptable date format
+     * 
+     * @param date
+     *            : string representation of a date
+     * @return corrected date format
+     */
     private static String formatDate(String date) {
         String correctedDate = "";
         Pattern pattern = Pattern.compile(CONVERSION_DATE_FORMAT);
