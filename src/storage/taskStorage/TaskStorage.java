@@ -27,14 +27,14 @@ import models.Task;
  */
 public class TaskStorage {
 	private static final int MAX_DIFF_BETWEEN_WORDS = 3;
-	private static final int MIN_INDEX = 0;
+	private static final int MIN_INDEX = 1;
 	private ArrayList<Task> taskBuffer;
 	private int nextTaskIndex;
 	private File dataFile;
 	private IntervalSearch intervalTree;
 
-	private static final int ID_FOR_NEW_TASK = -1;
-	private static final int ID_FOR_FIRST_TASK = 0;
+	private static final int ID_FOR_NEW_TASK = 0;
+	private static final int ID_FOR_FIRST_TASK = 1;
 
 	private static final String COMPLETED = "completed";
 	private static final String ACTIVE = "active";
@@ -153,7 +153,7 @@ public class TaskStorage {
 		int taskID = task.getId();	
 		Calendar dateStart, dateEnd, oldStart, oldEnd;
 		// Update task to task buffer
-		taskBuffer.set(taskID, task);
+		taskBuffer.set(taskID - 1, task);
 		// Update task to task file
 		updateTaskToStorage();
 		// Update task to Interval Tree
@@ -264,7 +264,7 @@ public class TaskStorage {
 			return task.isCompleted() && !task.isDeleted();
 		} else if (status.equals(ACTIVE)) {
 			// need double check
-			return !task.isCompleted();
+			return !task.isCompleted() && !task.isDeleted();
 		} else {
 			throw new InvalidInputException("Filter keyword is wrong.");
 		}

@@ -5,7 +5,7 @@ import java.util.Calendar;
 import models.PriorityLevelEnum;
 
 public class Task {
-	private int id = -1;
+	private int id = 0;
 	private String name = "";
 	private Calendar dateDue = null;
 	private Calendar dateStart = null;
