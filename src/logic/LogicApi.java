@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.logging.Level;
 
 import models.ApplicationLogger;
@@ -20,6 +21,8 @@ import exceptions.TaskNotFoundException;
 public class LogicApi {
     private Logic logic;
     private static final String INVALID_COMMAND_MESSAGE = "The command is invalid.";
+    private static final String INVALID_BEFORE_AFTER_SEARCH_MESSAGE = "Before and After cannot be searched together. Use from to instead.";
+    private static final String INVALID_FROM_TO_SEARCH_MESSAGE = "Both start and end date are required.";
 
     public LogicApi() {
 
@@ -139,13 +142,36 @@ public class LogicApi {
     }
 
     private boolean hasSearchParams(
-            Hashtable<ParamEnum, ArrayList<String>> params) {
-        for (ParamEnum param : params.keySet()) {
-           if (Arrays.asList(CommandEnum.SEARCH.params()).contains(param)) {
-               return true;
-           }
+            Hashtable<ParamEnum, ArrayList<String>> params)
+            throws InvalidInputException {
+        List<ParamEnum> searchParams = Arrays.asList(CommandEnum.SEARCH
+                .params());
+        if (hasBothBeforeAndAfterParams(params)) {
+            throw new InvalidInputException(INVALID_BEFORE_AFTER_SEARCH_MESSAGE);
+        } else if (hasOnlyFromOrToParams(params)) {
+            throw new InvalidInputException(INVALID_FROM_TO_SEARCH_MESSAGE);
+        } else {
+            for (ParamEnum param : params.keySet()) {
+                if (searchParams.contains(param)) {
+                    return true;
+                }
+            }
+            return false;
         }
-        return false;
+    }
+
+    private boolean hasOnlyFromOrToParams(
+            Hashtable<ParamEnum, ArrayList<String>> params) {
+        return (params.containsKey(ParamEnum.START_DATE) && !params
+                .containsKey(ParamEnum.END_DATE))
+                || (!params.containsKey(ParamEnum.START_DATE) && params
+                        .containsKey(ParamEnum.END_DATE));
+    }
+
+    private boolean hasBothBeforeAndAfterParams(
+            Hashtable<ParamEnum, ArrayList<String>> params) {
+        return params.containsKey(ParamEnum.BEFORE)
+                && params.containsKey(ParamEnum.AFTER);
     }
 
     private boolean hasIdParam(Hashtable<ParamEnum, ArrayList<String>> param) {
