@@ -160,6 +160,30 @@ public class Logic {
                 MessageCreator.createMessage(CONFIRM_MESSAGE, taskName, null),
                 storage.getAllTasks(), task);
     }
+    
+    Feedback clear(Hashtable<ParamEnum, ArrayList<String>> param) {
+        String keyword = param.get(ParamEnum.KEYWORD).get(0).toLowerCase();
+        switch (keyword) {
+        case "completed": 
+            //get all completed task from storage
+            //ArrayList<Task> completedTasks = storage.getAllCompleted();
+            ArrayList<Task> completedTasks = null;
+            ArrayList<Task> cloneCompletedTasks = cloner.deepClone(completedTasks);
+            for (int i = 0; i < completedTasks.size(); i++) {
+                Task task = completedTasks.get(i);
+                TaskModifier.deleteTask(task);
+                try {
+                    storage.writeTaskToFile(task);
+                } catch (TaskNotFoundException e) {
+                    assert false;
+                } catch (IOException e) {
+                    
+                }
+            }
+            
+        } 
+        
+    }
 
     /**
      * Deletes a task from the file
