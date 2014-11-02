@@ -2,7 +2,9 @@ package logic;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.logging.Level;
 
 import models.ApplicationLogger;
@@ -19,6 +21,8 @@ import exceptions.TaskNotFoundException;
 public class LogicApi {
     private Logic logic;
     private static final String INVALID_COMMAND_MESSAGE = "The command is invalid.";
+    private static final String INVALID_BEFORE_AFTER_SEARCH_MESSAGE = "Before and After cannot be searched together.";
+    private static final String INVALID_FROM_TO_SEARCH_MESSAGE = "Both start and end date are required.";
 
     public LogicApi() {
 
@@ -105,12 +109,7 @@ public class LogicApi {
             case LEVEL:
                 return null;
             case SEARCH:
-                // to add: !isKeywordParamEmpty(param) after search in multiple
-                // To add: Date param
-                // fields is supported in storage
-                if (hasNameParam(param) || hasNoteParam(param)
-                        || hasTagParam(param) || hasStatusParam(param)
-                        || hasBeforeParam(param) || hasAfterParam(param) || hasOnParam(param)) {
+                if (hasSearchParams(param)) {
                     return logic.search(param);
                 }
                 break;
@@ -128,10 +127,6 @@ public class LogicApi {
         }
     }
 
-    private boolean hasOnParam(Hashtable<ParamEnum, ArrayList<String>> param) {
-        return param.containsKey(ParamEnum.ON);
-    }
-
     /**
      * Initialises the logic object by creating its corresponding storage object
      * It also catches the exceptions that can be thrown
@@ -146,12 +141,35 @@ public class LogicApi {
         return logic.initialize();
     }
 
-    private boolean hasAfterParam(Hashtable<ParamEnum, ArrayList<String>> param) {
-        return param.containsKey(ParamEnum.AFTER);
+    private boolean hasSearchParams(
+            Hashtable<ParamEnum, ArrayList<String>> params)
+            throws InvalidInputException {
+        List<ParamEnum> searchParams = Arrays.asList(CommandEnum.SEARCH
+                .params());
+        if (hasBothBeforeAndAfterParams(params)) {
+            throw new InvalidInputException(INVALID_BEFORE_AFTER_SEARCH_MESSAGE);
+        } else if (hasOnlyFromOrToParams(params)) {
+            throw new InvalidInputException(INVALID_FROM_TO_SEARCH_MESSAGE);
+        } else {
+            for (ParamEnum param : params.keySet()) {
+                if (searchParams.contains(param)) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
-    private boolean hasBeforeParam(Hashtable<ParamEnum, ArrayList<String>> param) {
-        return param.containsKey(ParamEnum.BEFORE);
+    private boolean hasOnlyFromOrToParams(
+            Hashtable<ParamEnum, ArrayList<String>> params) {
+        return (params.containsKey(ParamEnum.START_DATE) ^ params
+                .containsKey(ParamEnum.END_DATE));
+    }
+
+    private boolean hasBothBeforeAndAfterParams(
+            Hashtable<ParamEnum, ArrayList<String>> params) {
+        return params.containsKey(ParamEnum.BEFORE)
+                && params.containsKey(ParamEnum.AFTER);
     }
 
     private boolean hasIdParam(Hashtable<ParamEnum, ArrayList<String>> param) {
@@ -165,18 +183,6 @@ public class LogicApi {
 
     private boolean hasNameParam(Hashtable<ParamEnum, ArrayList<String>> param) {
         return param.containsKey(ParamEnum.NAME);
-    }
-
-    private boolean hasNoteParam(Hashtable<ParamEnum, ArrayList<String>> param) {
-        return param.containsKey(ParamEnum.NOTE);
-    }
-
-    private boolean hasStatusParam(Hashtable<ParamEnum, ArrayList<String>> param) {
-        return param.containsKey(ParamEnum.STATUS);
-    }
-
-    private boolean hasTagParam(Hashtable<ParamEnum, ArrayList<String>> param) {
-        return param.containsKey(ParamEnum.TAG);
     }
 
     private boolean isKeywordParamEmpty(

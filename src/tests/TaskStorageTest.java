@@ -17,7 +17,7 @@ import exceptions.InvalidPriorityLevelException;
 import storage.taskStorage.TaskStorage;
 
 public class TaskStorageTest {
-	private static final int ID_FOR_NEW_TASK = -1;
+	private static final int ID_FOR_NEW_TASK = 0;
 	
     private Task createTaskForTest(int id, String name, int priorityLevel, String note, boolean isDeleted, ArrayList<StartDueDatePair> datePair) throws InvalidPriorityLevelException {
         Task task = new Task();
@@ -42,10 +42,10 @@ public class TaskStorageTest {
 
             Task task = createTaskForTest(ID_FOR_NEW_TASK, "Write Report", 1, "Do eat apple when you are writing report.", false, datePairArrayList);
             taskStorage.writeTaskToFile(task);
-            assertEquals(task, taskStorage.getTask(taskStorage.getAllTasks().size()-1));
-            task = createTaskForTest(0, "Read Report", 1, "Do eat apple when you are writing report.", false, null);
+            assertEquals(task, taskStorage.getTask(taskStorage.getAllTasks().size()));
+            task = createTaskForTest(1, "Read Report", 1, "Do eat apple when you are writing report.", false, null);
             taskStorage.writeTaskToFile(task);
-            assertEquals(task, taskStorage.getTask(0));
+            assertEquals(task, taskStorage.getTask(1));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

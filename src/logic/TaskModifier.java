@@ -16,6 +16,8 @@ import exceptions.InvalidPriorityLevelException;
 
 public class TaskModifier {
 
+    private static final int OFFSET_FOR_ARRAY = 1;
+
     private static final String INVALID_PRIORITY_LEVEL_MESSAGE = "%1$s is not a valid priority level.";
 
     private static final String INVALID_CONDITIONAL_DATE_ID_MESSAGE = "The conditional date id is invalid.";
@@ -47,7 +49,7 @@ public class TaskModifier {
             throw new InvalidInputException(INVALID_CONFIRMED_TASK_MESSAGE);
         } else {
             StartDueDatePair conditionalDatesToConfirm = event
-                    .getConditionalDates().get(dateId);
+                    .getConditionalDates().get(dateId - OFFSET_FOR_ARRAY);
             Calendar startDate = conditionalDatesToConfirm.getStartDate();
             event.setDateStart(startDate);
             Calendar endDate = conditionalDatesToConfirm.getDueDate();
