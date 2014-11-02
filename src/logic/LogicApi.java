@@ -2,6 +2,7 @@ package logic;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.logging.Level;
 
@@ -105,14 +106,7 @@ public class LogicApi {
             case LEVEL:
                 return null;
             case SEARCH:
-                // to add: !isKeywordParamEmpty(param) after search in multiple
-                // To add: Date param
-                // fields is supported in storage
-                if (hasNameParam(param) || hasNoteParam(param)
-                        || hasTagParam(param) || hasStatusParam(param)
-                        || hasBeforeParam(param) || hasAfterParam(param)
-                        || hasOnParam(param) || hasFromParam(param)
-                        || hasToParam(param)) {
+                if (hasSearchParams(param)) {
                     return logic.search(param);
                 }
                 break;
@@ -130,18 +124,6 @@ public class LogicApi {
         }
     }
 
-    private boolean hasFromParam(Hashtable<ParamEnum, ArrayList<String>> param) {
-        return param.containsKey(ParamEnum.START_DATE);
-    }
-    
-    private boolean hasToParam(Hashtable<ParamEnum, ArrayList<String>> param) {
-        return param.containsKey(ParamEnum.END_DATE);
-    }
-
-    private boolean hasOnParam(Hashtable<ParamEnum, ArrayList<String>> param) {
-        return param.containsKey(ParamEnum.ON);
-    }
-
     /**
      * Initialises the logic object by creating its corresponding storage object
      * It also catches the exceptions that can be thrown
@@ -156,12 +138,14 @@ public class LogicApi {
         return logic.initialize();
     }
 
-    private boolean hasAfterParam(Hashtable<ParamEnum, ArrayList<String>> param) {
-        return param.containsKey(ParamEnum.AFTER);
-    }
-
-    private boolean hasBeforeParam(Hashtable<ParamEnum, ArrayList<String>> param) {
-        return param.containsKey(ParamEnum.BEFORE);
+    private boolean hasSearchParams(
+            Hashtable<ParamEnum, ArrayList<String>> params) {
+        for (ParamEnum param : params.keySet()) {
+           if (Arrays.asList(CommandEnum.SEARCH.params()).contains(param)) {
+               return true;
+           }
+        }
+        return false;
     }
 
     private boolean hasIdParam(Hashtable<ParamEnum, ArrayList<String>> param) {
@@ -175,18 +159,6 @@ public class LogicApi {
 
     private boolean hasNameParam(Hashtable<ParamEnum, ArrayList<String>> param) {
         return param.containsKey(ParamEnum.NAME);
-    }
-
-    private boolean hasNoteParam(Hashtable<ParamEnum, ArrayList<String>> param) {
-        return param.containsKey(ParamEnum.NOTE);
-    }
-
-    private boolean hasStatusParam(Hashtable<ParamEnum, ArrayList<String>> param) {
-        return param.containsKey(ParamEnum.STATUS);
-    }
-
-    private boolean hasTagParam(Hashtable<ParamEnum, ArrayList<String>> param) {
-        return param.containsKey(ParamEnum.TAG);
     }
 
     private boolean isKeywordParamEmpty(
