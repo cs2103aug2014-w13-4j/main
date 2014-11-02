@@ -23,6 +23,7 @@ import exceptions.TaskNotFoundException;
 
 //TODO: Throw exceptions when mandatory fields are missing
 public class Logic {
+    private static final String ERROR_UNDO_MESSAGE = "Search and display actions cannot be undone.";
     private static final String INVALID_TASK_ID_MESSAGE = "Task ID: %1$s is invalid!";
     private static final String INVALID_DATE_ID_MESSAGE = "Date ID: %1$s is invalid!";
     private static final String ERROR_UPDATE_DEADLINE_TASK_MESSAGE = "Task %1$s is a deadline task, so it should not contain start or end date";
@@ -256,23 +257,15 @@ public class Logic {
             IOException {
         History lastAction = logicUndo.getLastAction();
         if (lastAction == null) {
-            throw new HistoryNotFoundException("Not supported yet. :( ");
+            throw new HistoryNotFoundException(ERROR_UNDO_MESSAGE);
         } else {
             Task task = lastAction.getTask();
             storage.writeTaskToFile(task);
-            // TODO: Find better way. Is there a way to generalise such that the
-            // task detail is not shown if it is deleted?
-            if (task.isDeleted()) {
-                return createTaskAndTaskListFeedback(
-                        MessageCreator.createMessage(UNDO_MESSAGE, lastAction.getCommand()
-                                .regex(), task.getName()),
-                        storage.getAllTasks(), null);
-            } else {
-                return createTaskAndTaskListFeedback(
-                        MessageCreator.createMessage(UNDO_MESSAGE, lastAction.getCommand()
-                                .regex(), task.getName()),
-                        storage.getAllTasks(), lastAction.getTask());
-            }
+            Task displayTask = getTaskDisplayForUndo(task);
+            return createTaskAndTaskListFeedback(
+                    MessageCreator.createMessage(UNDO_MESSAGE, lastAction.getCommand()
+                            .regex(), task.getName()),
+                    storage.getAllTasks(), displayTask);
         }
     }
 
@@ -380,6 +373,16 @@ public class Logic {
         return createTaskFeedback(
                 MessageCreator.createMessage(DISPLAY_TASK_MESSAGE, String.valueOf(id), task.getName()),
                 task);
+    }
+
+    private Task getTaskDisplayForUndo(Task task) {
+        Task displayTask;
+        if (task.isDeleted()) {
+            displayTask = null;
+        } else {
+            displayTask = task;
+        }
+        return displayTask;
     }
 
     /**
