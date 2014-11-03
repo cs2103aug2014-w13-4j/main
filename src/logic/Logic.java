@@ -349,13 +349,11 @@ public class Logic {
     }
 
     private Task getTaskDisplayForUndo(Task task) {
-        Task displayTask;
         if (task.isDeleted()) {
-            displayTask = null;
+            return null;
         } else {
-            displayTask = task;
+            return task;
         }
-        return displayTask;
     }
 
     /**

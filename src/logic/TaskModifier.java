@@ -16,6 +16,13 @@ import exceptions.InvalidPriorityLevelException;
 
 public class TaskModifier {
 
+    private static final int OFFSET_FOR_ARRAY = 1;
+    private static final String INVALID_PRIORITY_LEVEL_MESSAGE = "%1$s is not a valid priority level.";
+    private static final String INVALID_CONDITIONAL_DATE_ID_MESSAGE = "The conditional date id is invalid.";
+    private static final int MIN_ID = 0;
+    private static final String INVALID_CONFIRMED_TASK_MESSAGE = "The task is already confirmed.";
+    private static final String INVALID_START_END_DATE_MESSAGE = "The start date should occur before the end date";
+
     static void completeTask(Hashtable<ParamEnum, ArrayList<String>> param,
             Task task) throws InvalidDateFormatException, InvalidInputException {
         if (param.containsKey(ParamEnum.DATE)) {
@@ -51,7 +58,7 @@ public class TaskModifier {
 
     static void modifyConditionalTask(
             Hashtable<ParamEnum, ArrayList<String>> param, Task task)
-                    throws InvalidDateFormatException, InvalidInputException {
+            throws InvalidDateFormatException, InvalidInputException {
         setNameFromCommand(param, task);
         setTagsFromCommand(param, task);
         setLevelFromCommand(param, task);
@@ -61,7 +68,7 @@ public class TaskModifier {
 
     static void modifyDeadlineTask(
             Hashtable<ParamEnum, ArrayList<String>> param, Task task)
-                    throws InvalidDateFormatException, InvalidInputException {
+            throws InvalidDateFormatException, InvalidInputException {
         setNameFromCommand(param, task);
         setTagsFromCommand(param, task);
         setLevelFromCommand(param, task);
@@ -72,7 +79,7 @@ public class TaskModifier {
 
     static void modifyFloatingTask(
             Hashtable<ParamEnum, ArrayList<String>> param, Task task)
-                    throws InvalidDateFormatException, InvalidInputException {
+            throws InvalidDateFormatException, InvalidInputException {
         setNameFromCommand(param, task);
         setTagsFromCommand(param, task);
         setLevelFromCommand(param, task);
@@ -166,7 +173,7 @@ public class TaskModifier {
 
     private static void setConditionalDatesFromCommand(
             Hashtable<ParamEnum, ArrayList<String>> param, Task task)
-                    throws InvalidDateFormatException, InvalidInputException {
+            throws InvalidDateFormatException, InvalidInputException {
         if (param.containsKey(ParamEnum.START_DATE)
                 && param.containsKey(ParamEnum.END_DATE)) {
             ArrayList<String> startDates = param.get(ParamEnum.START_DATE);
@@ -188,7 +195,7 @@ public class TaskModifier {
 
     private static void setDueDateFromCommand(
             Hashtable<ParamEnum, ArrayList<String>> param, Task task)
-                    throws InvalidDateFormatException {
+            throws InvalidDateFormatException {
         if (param.containsKey(ParamEnum.DUE_DATE)
                 && !param.get(ParamEnum.DUE_DATE).get(0).isEmpty()) {
             Calendar dueDate = DateParser.parseString(param.get(
@@ -203,7 +210,7 @@ public class TaskModifier {
 
     private static void setEndDateFromCommand(
             Hashtable<ParamEnum, ArrayList<String>> param, Task task)
-                    throws InvalidDateFormatException {
+            throws InvalidDateFormatException {
         if (param.containsKey(ParamEnum.END_DATE)
                 && !param.get(ParamEnum.END_DATE).get(0).isEmpty()) {
             Calendar endDate = DateParser.parseString(param.get(
@@ -214,7 +221,7 @@ public class TaskModifier {
 
     private static void setLevelFromCommand(
             Hashtable<ParamEnum, ArrayList<String>> param, Task task)
-                    throws InvalidInputException {
+            throws InvalidInputException {
         if (param.containsKey(ParamEnum.LEVEL)) {
             assert param.get(ParamEnum.LEVEL).size() == 1;
             String levelString = param.get(ParamEnum.LEVEL).get(0);
@@ -246,7 +253,7 @@ public class TaskModifier {
 
     private static void setStartDateFromCommand(
             Hashtable<ParamEnum, ArrayList<String>> param, Task task)
-                    throws InvalidDateFormatException {
+            throws InvalidDateFormatException {
         if (param.containsKey(ParamEnum.START_DATE)
                 && !param.get(ParamEnum.START_DATE).get(0).isEmpty()) {
             Calendar startDate = DateParser.parseString(param.get(
@@ -262,16 +269,4 @@ public class TaskModifier {
             task.setTags(tags);
         }
     }
-
-    private static final int OFFSET_FOR_ARRAY = 1;
-
-    private static final String INVALID_PRIORITY_LEVEL_MESSAGE = "%1$s is not a valid priority level.";
-
-    private static final String INVALID_CONDITIONAL_DATE_ID_MESSAGE = "The conditional date id is invalid.";
-
-    private static final int MIN_ID = 0;
-
-    private static final String INVALID_CONFIRMED_TASK_MESSAGE = "The task is already confirmed.";
-
-    private static final String INVALID_START_END_DATE_MESSAGE = "The start date should occur before the end date";
 }
