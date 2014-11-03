@@ -89,8 +89,8 @@ public class Logic {
         Task clonedTask = cloner.deepClone(task);
         logicUndo.pushAddCommandToHistory(clonedTask);
         ArrayList<Task> taskList = storage.getAllTasks();
-        return createTaskListFeedback(MessageCreator.createMessage(ADD_MESSAGE, name, null),
-                taskList);
+        return createTaskListFeedback(
+                MessageCreator.createMessage(ADD_MESSAGE, name, null), taskList);
     }
 
     /**
@@ -120,7 +120,8 @@ public class Logic {
             logicUndo.pushCompleteCommandToHistory(clonedTask);
             ArrayList<Task> taskList = storage.getAllTasks();
             return createTaskListFeedback(
-                    MessageCreator.createMessage(COMPLETE_MESSAGE, name, null), taskList);
+                    MessageCreator.createMessage(COMPLETE_MESSAGE, name, null),
+                    taskList);
         } else {
             throw new InvalidCommandUseException(ERROR_COMPLETE_MESSAGE);
         }
@@ -129,7 +130,7 @@ public class Logic {
     /**
      * Confirms a particular conditional date pair in the conditional task to be
      * used as the start and end date
-     * 
+     *
      * @param param
      *            : the command created by commandParser
      * @return feedback containing the updated list of tasks in the file, and
@@ -183,12 +184,13 @@ public class Logic {
         logicUndo.pushDeleteCommandToHistory(clonedTask);
         ArrayList<Task> taskList = storage.getAllTasks();
         return createTaskListFeedback(
-                MessageCreator.createMessage(DELETE_MESSAGE, name, null), taskList);
+                MessageCreator.createMessage(DELETE_MESSAGE, name, null),
+                taskList);
     }
 
     /**
      * Displays the task if the id is provided, or all the tasks otherwise
-     * 
+     *
      * @param param
      *            : the command created by commandParser
      * @return feedback containing the list of all tasks in the file/the task to
@@ -239,13 +241,13 @@ public class Logic {
         ArrayList<Task> taskList = storage.searchTask(param);
         logicUndo.pushNullCommandToHistory();
         return createTaskListFeedback(
-                MessageCreator.createMessage(SEARCH_MESSAGE, String.valueOf(taskList.size()),
-                        null), taskList);
+                MessageCreator.createMessage(SEARCH_MESSAGE,
+                        String.valueOf(taskList.size()), null), taskList);
     }
 
     /**
      * Undo the last action taken
-     * 
+     *
      * @return feedback containing the list of updated tasks in the file, and
      *         the message.
      * @throws HistoryNotFoundException
@@ -253,7 +255,7 @@ public class Logic {
      * @throws IOException
      */
     Feedback undo() throws HistoryNotFoundException, TaskNotFoundException,
-            IOException {
+    IOException {
         History lastAction = logicUndo.getLastAction();
         if (lastAction == null) {
             throw new HistoryNotFoundException("Not supported yet. :( ");
@@ -264,14 +266,14 @@ public class Logic {
             // task detail is not shown if it is deleted?
             if (task.isDeleted()) {
                 return createTaskAndTaskListFeedback(
-                        MessageCreator.createMessage(UNDO_MESSAGE, lastAction.getCommand()
-                                .regex(), task.getName()),
-                        storage.getAllTasks(), null);
+                        MessageCreator.createMessage(UNDO_MESSAGE, lastAction
+                                .getCommand().regex(), task.getName()),
+                                storage.getAllTasks(), null);
             } else {
                 return createTaskAndTaskListFeedback(
-                        MessageCreator.createMessage(UNDO_MESSAGE, lastAction.getCommand()
-                                .regex(), task.getName()),
-                        storage.getAllTasks(), lastAction.getTask());
+                        MessageCreator.createMessage(UNDO_MESSAGE, lastAction
+                                .getCommand().regex(), task.getName()),
+                                storage.getAllTasks(), lastAction.getTask());
             }
         }
     }
@@ -303,7 +305,9 @@ public class Logic {
                 TaskModifier.modifyConditionalTask(param, task);
             }
         } else if (task.isTimedTask()) {
-            if (hasInvalidTimedTaskParams(param)) {
+            if (hasDeadlineTaskParams(param)) {
+                TaskModifier.modifyDeadlineTask(param, task);
+            } else if (hasInvalidTimedTaskParams(param)) {
                 throw new InvalidInputException(MessageCreator.createMessage(
                         ERROR_UPDATE_TIMED_TASK_MESSAGE,
                         Integer.toString(taskId), null));
@@ -311,7 +315,9 @@ public class Logic {
                 TaskModifier.modifyTimedTask(param, task);
             }
         } else if (task.isDeadlineTask()) {
-            if (hasInvalidDeadlineTaskParams(param)) {
+            if (hasTimedTaskParams(param)) {
+                TaskModifier.modifyTimedTask(param, task);
+            } else if (hasInvalidDeadlineTaskParams(param)) {
                 throw new InvalidInputException(MessageCreator.createMessage(
                         ERROR_UPDATE_DEADLINE_TASK_MESSAGE,
                         Integer.toString(taskId), null));
@@ -337,7 +343,8 @@ public class Logic {
         ArrayList<Task> taskList = storage.getAllTasks();
         logicUndo.pushUpdateCommandToHistory(clonedTask);
         return createTaskAndTaskListFeedback(
-                MessageCreator.createMessage(EDIT_MESSAGE, name, null), taskList, task);
+                MessageCreator.createMessage(EDIT_MESSAGE, name, null),
+                taskList, task);
     }
 
     private Feedback createTaskAndTaskListFeedback(String message,
@@ -362,7 +369,8 @@ public class Logic {
     private Feedback displayAll() {
         ArrayList<Task> taskList = storage.getAllTasks();
         return createTaskListFeedback(
-                MessageCreator.createMessage(DISPLAY_MESSAGE, null, null), taskList);
+                MessageCreator.createMessage(DISPLAY_MESSAGE, null, null),
+                taskList);
     }
 
     /**
@@ -378,8 +386,8 @@ public class Logic {
     private Feedback displayTask(int id) throws TaskNotFoundException {
         Task task = getTaskFromStorage(id);
         return createTaskFeedback(
-                MessageCreator.createMessage(DISPLAY_TASK_MESSAGE, String.valueOf(id), task.getName()),
-                task);
+                MessageCreator.createMessage(DISPLAY_TASK_MESSAGE,
+                        String.valueOf(id), task.getName()), task);
     }
 
     /**
