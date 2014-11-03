@@ -37,14 +37,15 @@ public class TaskModifier {
 
     static void confirmEvent(int dateId, Task event)
             throws InvalidInputException {
-        if (isLessThanMinId(dateId) || hasNullConditionalDates(event)
-                || isIdOutsideConditionalDatesRange(dateId, event)) {
+        int dateIndex = dateId - OFFSET_FOR_ARRAY;
+        if (isLessThanMinId(dateIndex) || hasNullConditionalDates(event)
+                || isIdOutsideConditionalDatesRange(dateIndex, event)) {
             throw new InvalidInputException(INVALID_CONDITIONAL_DATE_ID_MESSAGE);
         } else if (event.isConfirmed()) {
             throw new InvalidInputException(INVALID_CONFIRMED_TASK_MESSAGE);
         } else {
             StartDueDatePair conditionalDatesToConfirm = event
-                    .getConditionalDates().get(dateId - OFFSET_FOR_ARRAY);
+                    .getConditionalDates().get(dateIndex);
             Calendar startDate = conditionalDatesToConfirm.getStartDate();
             event.setDateStart(startDate);
             Calendar endDate = conditionalDatesToConfirm.getDueDate();

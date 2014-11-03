@@ -261,10 +261,9 @@ public class Logic {
             Task task = lastAction.getTask();
             storage.writeTaskToFile(task);
             Task displayTask = getTaskDisplayForUndo(task);
-            return createTaskAndTaskListFeedback(
-                    MessageCreator.createMessage(UNDO_MESSAGE, lastAction.getCommand()
-                            .regex(), task.getName()),
-                    storage.getAllTasks(), displayTask);
+            return createTaskAndTaskListFeedback(MessageCreator.createMessage(
+                    UNDO_MESSAGE, lastAction.getCommand().regex(),
+                    task.getName()), storage.getAllTasks(), displayTask);
         }
     }
 
@@ -496,13 +495,32 @@ public class Logic {
     private void updateTimedTask(Hashtable<ParamEnum, ArrayList<String>> param,
             int taskId, Task task) throws InvalidDateFormatException,
             InvalidInputException {
-        if (hasTimedTaskParams(param) || !hasDateParam(param)) {
+        if (hasUpdateTimedTaskParams(param) || !hasDateParam(param)) {
             TaskModifier.modifyTimedTask(param, task);
         } else if (hasDeadlineTaskParams(param)) {
             TaskModifier.modifyDeadlineTask(param, task);
         } else {
             throw new InvalidInputException(MessageCreator.createMessage(
                     ERROR_DATE_INPUT_MESSAGE, Integer.toString(taskId), null));
+        }
+    }
+
+    private boolean hasUpdateTimedTaskParams(
+            Hashtable<ParamEnum, ArrayList<String>> param) {
+        if (!param.containsKey(ParamEnum.DUE_DATE)) {
+            if (param.containsKey(ParamEnum.START_DATE)
+                    && (param.get(ParamEnum.START_DATE).size() != 1 || param
+                            .get(ParamEnum.START_DATE).get(0).isEmpty())) {
+                return false;
+            }
+            if (param.containsKey(ParamEnum.END_DATE)
+                    && (param.get(ParamEnum.END_DATE).size() != 1 || param
+                            .get(ParamEnum.END_DATE).get(0).isEmpty())) {
+                return false;
+            }
+            return true;
+        } else {
+            return false;
         }
     }
 }

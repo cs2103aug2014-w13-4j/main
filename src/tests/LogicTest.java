@@ -13,6 +13,7 @@ import java.util.Hashtable;
 import logic.Logic;
 import logic.LogicApi;
 import logic.TaskModifier;
+import models.DateParser;
 import models.Feedback;
 import models.PriorityLevelEnum;
 import models.Task;
@@ -118,7 +119,7 @@ public class LogicTest {
 
         Hashtable<ParamEnum, ArrayList<String>> deleteParams = new Hashtable<ParamEnum, ArrayList<String>>();
         ArrayList<String> numList = new ArrayList<String>();
-        numList.add("0");
+        numList.add("1");
         deleteParams.put(ParamEnum.KEYWORD, numList);
         Feedback deleteFeedback = (Feedback) delete.invoke(logicObject,
                 deleteParams);
@@ -139,7 +140,7 @@ public class LogicTest {
 
         Hashtable<ParamEnum, ArrayList<String>> completeParams = new Hashtable<ParamEnum, ArrayList<String>>();
         ArrayList<String> numList = new ArrayList<String>();
-        numList.add("0");
+        numList.add("1");
         completeParams.put(ParamEnum.KEYWORD, numList);
         Feedback completeFeedback = (Feedback) complete.invoke(logicObject,
                 completeParams);
@@ -165,13 +166,52 @@ public class LogicTest {
         ArrayList<String> noteList = new ArrayList<String>();
         noteList.add("Test is good");
         updateParams.put(ParamEnum.NOTE, noteList);
+        ArrayList<String> dueDateList = new ArrayList<String>();
+        dueDateList.add("20 Oct 2014 9am");
+        updateParams.put(ParamEnum.DUE_DATE, dueDateList);
         ArrayList<String> numList = new ArrayList<String>();
-        numList.add("0");
+        numList.add("1");
         updateParams.put(ParamEnum.KEYWORD, numList);
         Feedback updateFeedback = (Feedback) update.invoke(logicObject,
                 updateParams);
         assertEquals(1, updateFeedback.getTaskList().size());
 
         assertEquals("Test is good", task.getNote());
+        assertTrue(task.isDeadlineTask());
+        assertEquals("20-10-2014 09:00", DateParser.parseCalendar(task.getDateDue()));
+    }
+    
+    @Test
+    public void testUpdateDeadlineToTimed() throws IllegalAccessException,
+            IllegalArgumentException, InvocationTargetException {
+        Hashtable<ParamEnum, ArrayList<String>> params = new Hashtable<ParamEnum, ArrayList<String>>();
+        ArrayList<String> nameList = new ArrayList<String>();
+        nameList.add("test test");
+        params.put(ParamEnum.NAME, nameList);
+        ArrayList<String> dueDateList = new ArrayList<String>();
+        dueDateList.add("20 Oct 2014 9am");
+        params.put(ParamEnum.DUE_DATE, dueDateList);
+        Feedback feedback = (Feedback) add.invoke(logicObject, params);
+
+        Task task = feedback.getTaskList().get(0);
+        assertTrue(task.getNote().isEmpty());
+
+        Hashtable<ParamEnum, ArrayList<String>> updateParams = new Hashtable<ParamEnum, ArrayList<String>>();
+        ArrayList<String> startDateList = new ArrayList<String>();
+        startDateList.add("23 Oct 2014 09:00");
+        updateParams.put(ParamEnum.START_DATE, startDateList);
+        ArrayList<String> endDateList = new ArrayList<String>();
+        endDateList.add("23 Oct 2014 11:00");
+        updateParams.put(ParamEnum.END_DATE, endDateList);
+        ArrayList<String> numList = new ArrayList<String>();
+        numList.add("1");
+        updateParams.put(ParamEnum.KEYWORD, numList);
+        Feedback updateFeedback = (Feedback) update.invoke(logicObject,
+                updateParams);
+        assertEquals(1, updateFeedback.getTaskList().size());
+
+        assertTrue(task.isTimedTask());
+        assertEquals("23-10-2014 09:00", DateParser.parseCalendar(task.getDateStart()));
+        assertEquals("23-10-2014 11:00", DateParser.parseCalendar(task.getDateEnd()));
     }
 }
