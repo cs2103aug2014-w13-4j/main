@@ -507,20 +507,8 @@ public class Logic {
 
     private boolean hasUpdateTimedTaskParams(
             Hashtable<ParamEnum, ArrayList<String>> param) {
-        if (!param.containsKey(ParamEnum.DUE_DATE)) {
-            if (param.containsKey(ParamEnum.START_DATE)
-                    && (param.get(ParamEnum.START_DATE).size() != 1 || param
-                            .get(ParamEnum.START_DATE).get(0).isEmpty())) {
-                return false;
-            }
-            if (param.containsKey(ParamEnum.END_DATE)
-                    && (param.get(ParamEnum.END_DATE).size() != 1 || param
-                            .get(ParamEnum.END_DATE).get(0).isEmpty())) {
-                return false;
-            }
-            return true;
-        } else {
-            return false;
-        }
+            return !param.containsKey(ParamEnum.DUE_DATE)
+                    && !(hasMultipleEntries(param, ParamEnum.START_DATE) || hasMultipleEntries(
+                            param, ParamEnum.END_DATE));
     }
 }
