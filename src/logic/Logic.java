@@ -21,12 +21,9 @@ import exceptions.InvalidDateFormatException;
 import exceptions.InvalidInputException;
 import exceptions.TaskNotFoundException;
 
-//TODO: Throw exceptions when mandatory fields are missing
 public class Logic {
     private static final String INVALID_TASK_ID_MESSAGE = "Task ID: %1$s is invalid!";
     private static final String INVALID_DATE_ID_MESSAGE = "Date ID: %1$s is invalid!";
-    private static final String ERROR_UPDATE_DEADLINE_TASK_MESSAGE = "Task %1$s is a deadline task, so it should not contain start or end date";
-    private static final String ERROR_UPDATE_TIMED_TASK_MESSAGE = "Task %1$s is a timed task, so it should not contain due dates";
     private static final String ERROR_UPDATE_CONDITIONAL_TASK_MESSAGE = "Task %1$s is a conditional task, so it should contain multiple start and end dates";
     private static final String ERROR_COMPLETE_MESSAGE = "Only confirmed and uncompleted tasks without an end date before can be completed";
     private static final String ERROR_DATE_INPUT_MESSAGE = "The date parameters provided are invalid.";
@@ -255,7 +252,7 @@ public class Logic {
      * @throws IOException
      */
     Feedback undo() throws HistoryNotFoundException, TaskNotFoundException,
-    IOException {
+            IOException {
         History lastAction = logicUndo.getLastAction();
         if (lastAction == null) {
             throw new HistoryNotFoundException("Not supported yet. :( ");
@@ -268,12 +265,12 @@ public class Logic {
                 return createTaskAndTaskListFeedback(
                         MessageCreator.createMessage(UNDO_MESSAGE, lastAction
                                 .getCommand().regex(), task.getName()),
-                                storage.getAllTasks(), null);
+                        storage.getAllTasks(), null);
             } else {
                 return createTaskAndTaskListFeedback(
                         MessageCreator.createMessage(UNDO_MESSAGE, lastAction
                                 .getCommand().regex(), task.getName()),
-                                storage.getAllTasks(), lastAction.getTask());
+                        storage.getAllTasks(), lastAction.getTask());
             }
         }
     }
@@ -297,46 +294,14 @@ public class Logic {
         Task task = getTaskFromStorage(taskId);
         Task clonedTask = cloner.deepClone(task);
         if (task.isConditionalTask()) {
-            if (hasInvalidConditionalTaskParams(param)) {
-                throw new InvalidInputException(MessageCreator.createMessage(
-                        ERROR_UPDATE_CONDITIONAL_TASK_MESSAGE,
-                        Integer.toString(taskId), null));
-            } else {
-                TaskModifier.modifyConditionalTask(param, task);
-            }
+            updateConditionalTask(param, taskId, task);
         } else if (task.isTimedTask()) {
-            if (hasDeadlineTaskParams(param)) {
-                TaskModifier.modifyDeadlineTask(param, task);
-            } else if (hasInvalidTimedTaskParams(param)) {
-                throw new InvalidInputException(MessageCreator.createMessage(
-                        ERROR_UPDATE_TIMED_TASK_MESSAGE,
-                        Integer.toString(taskId), null));
-            } else {
-                TaskModifier.modifyTimedTask(param, task);
-            }
+            updateTimedTask(param, taskId, task);
         } else if (task.isDeadlineTask()) {
-            if (hasTimedTaskParams(param)) {
-                TaskModifier.modifyTimedTask(param, task);
-            } else if (hasInvalidDeadlineTaskParams(param)) {
-                throw new InvalidInputException(MessageCreator.createMessage(
-                        ERROR_UPDATE_DEADLINE_TASK_MESSAGE,
-                        Integer.toString(taskId), null));
-            } else {
-                TaskModifier.modifyDeadlineTask(param, task);
-            }
+            updateDeadlineTask(param, taskId, task);
         } else {
             assert task.isFloatingTask();
-            if (hasConditionalTaskParams(param)) {
-                TaskModifier.modifyConditionalTask(param, task);
-            } else if (hasTimedTaskParams(param)) {
-                TaskModifier.modifyTimedTask(param, task);
-            } else if (hasDeadlineTaskParams(param)) {
-                TaskModifier.modifyDeadlineTask(param, task);
-            } else if (hasFloatingTaskParams(param)) {
-                TaskModifier.modifyFloatingTask(param, task);
-            } else {
-                throw new InvalidInputException(ERROR_DATE_INPUT_MESSAGE);
-            }
+            updateFloatingTask(param, task);
         }
         storage.writeTaskToFile(task);
         String name = task.getName();
@@ -457,35 +422,10 @@ public class Logic {
                 && !param.containsKey(ParamEnum.END_DATE);
     }
 
-    private boolean hasInvalidConditionalTaskParams(
-            Hashtable<ParamEnum, ArrayList<String>> param) {
-        return hasSingleEntry(param, ParamEnum.START_DATE)
-                || hasSingleEntry(param, ParamEnum.END_DATE)
-                || param.containsKey(ParamEnum.DUE_DATE);
-    }
-
-    private boolean hasInvalidDeadlineTaskParams(
-            Hashtable<ParamEnum, ArrayList<String>> param) {
-        return param.containsKey(ParamEnum.START_DATE)
-                || param.containsKey(ParamEnum.END_DATE);
-    }
-
-    private boolean hasInvalidTimedTaskParams(
-            Hashtable<ParamEnum, ArrayList<String>> param) {
-        return param.containsKey(ParamEnum.DUE_DATE);
-    }
-
     private boolean hasMultipleEntries(
             Hashtable<ParamEnum, ArrayList<String>> param, ParamEnum type) {
         return param.containsKey(type) && param.get(type).size() > 1
                 && !hasEmptyElements(param.get(type));
-    }
-
-    private boolean hasSingleEntry(
-            Hashtable<ParamEnum, ArrayList<String>> param, ParamEnum type) {
-        return param.containsKey(type)
-                && (param.get(type).size() == 1 || hasEmptyElements(param
-                        .get(type)));
     }
 
     private boolean hasTimedTaskParams(
@@ -501,6 +441,67 @@ public class Logic {
                     && !param.get(ParamEnum.END_DATE).get(0).isEmpty();
         } else {
             return false;
+        }
+    }
+
+    private boolean hasDateParam(Hashtable<ParamEnum, ArrayList<String>> param) {
+        return param.containsKey(ParamEnum.START_DATE)
+                || param.containsKey(ParamEnum.DUE_DATE)
+                || param.containsKey(ParamEnum.END_DATE);
+
+    }
+
+    private void updateConditionalTask(
+            Hashtable<ParamEnum, ArrayList<String>> param, int taskId, Task task)
+            throws InvalidInputException, InvalidDateFormatException {
+        if (!hasDateParam(param) || hasConditionalTaskParams(param)) {
+            TaskModifier.modifyConditionalTask(param, task);
+        } else {
+            throw new InvalidInputException(MessageCreator.createMessage(
+                    ERROR_UPDATE_CONDITIONAL_TASK_MESSAGE,
+                    Integer.toString(taskId), null));
+        }
+    }
+
+    private void updateDeadlineTask(
+            Hashtable<ParamEnum, ArrayList<String>> param, int taskId, Task task)
+            throws InvalidDateFormatException, InvalidInputException {
+        if (hasDeadlineTaskParams(param) || !hasDateParam(param)) {
+            TaskModifier.modifyDeadlineTask(param, task);
+        } else if (hasTimedTaskParams(param)) {
+            TaskModifier.modifyTimedTask(param, task);
+        } else {
+            throw new InvalidInputException(MessageCreator.createMessage(
+                    ERROR_DATE_INPUT_MESSAGE, Integer.toString(taskId), null));
+        }
+    }
+
+    private void updateFloatingTask(
+            Hashtable<ParamEnum, ArrayList<String>> param, Task task)
+            throws InvalidDateFormatException, InvalidInputException {
+        if (hasConditionalTaskParams(param)) {
+            TaskModifier.modifyConditionalTask(param, task);
+        } else if (hasTimedTaskParams(param)) {
+            TaskModifier.modifyTimedTask(param, task);
+        } else if (hasDeadlineTaskParams(param)) {
+            TaskModifier.modifyDeadlineTask(param, task);
+        } else if (hasFloatingTaskParams(param)) {
+            TaskModifier.modifyFloatingTask(param, task);
+        } else {
+            throw new InvalidInputException(ERROR_DATE_INPUT_MESSAGE);
+        }
+    }
+
+    private void updateTimedTask(Hashtable<ParamEnum, ArrayList<String>> param,
+            int taskId, Task task) throws InvalidDateFormatException,
+            InvalidInputException {
+        if (hasTimedTaskParams(param) || !hasDateParam(param)) {
+            TaskModifier.modifyTimedTask(param, task);
+        } else if (hasDeadlineTaskParams(param)) {
+            TaskModifier.modifyDeadlineTask(param, task);
+        } else {
+            throw new InvalidInputException(MessageCreator.createMessage(
+                    ERROR_DATE_INPUT_MESSAGE, Integer.toString(taskId), null));
         }
     }
 }

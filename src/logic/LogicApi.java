@@ -105,9 +105,6 @@ public class LogicApi {
             case LEVEL:
                 return null;
             case SEARCH:
-                // to add: !isKeywordParamEmpty(param) after search in multiple
-                // To add: Date param
-                // fields is supported in storage
                 if (hasNameParam(param) || hasNoteParam(param)
                         || hasTagParam(param) || hasStatusParam(param)
                         || hasBeforeParam(param) || hasAfterParam(param)
