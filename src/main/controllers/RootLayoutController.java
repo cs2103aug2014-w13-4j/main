@@ -3,7 +3,6 @@ package main.controllers;
 import command.CommandParser;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -31,14 +30,18 @@ public class RootLayoutController {
 	private TaskListViewController taskListViewController;
 	private TaskDisplayViewController taskDisplayViewController;
 	private UserInputViewController userInputViewController;
+	
+	private Scene scene;
 
 	public void initialize(Stage primaryStage, Feedback allActiveTasks, LogicApi logicApi) throws IOException {
 		setLogic(logicApi);
 		initRootLayout(primaryStage);
+		initScene();
 		initNotificationPane();
 		initTaskListView(allActiveTasks);
 		initTaskDisplayView();
 		initUserInputView(allActiveTasks);
+		showStage(primaryStage);
 	}
 
 	private void setLogic(LogicApi logicApi) {
@@ -49,10 +52,6 @@ public class RootLayoutController {
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(Main.class.getResource("views/RootLayout.fxml"));
 		rootLayout = loader.load();
-
-		Scene scene = new Scene(rootLayout);
-		primaryStage.setScene(scene);
-		primaryStage.show();
 	}
 
 	private void initNotificationPane() throws IOException {
@@ -94,9 +93,19 @@ public class RootLayoutController {
 		rootLayout.setBottom(userInput);
 
 		userInputViewController = loader.getController();
-		userInputViewController.initialize(allActiveTasks, this);
+		userInputViewController.initialize(this);
 	}
 
+	private void showStage(Stage primaryStage) {
+		assert (scene != null);
+		primaryStage.setScene(scene);
+		primaryStage.show();
+	}
+
+	private void initScene() {
+		scene = new Scene(rootLayout);
+	}
+	
 	protected void executeCommand(String userInput) {
 		CommandParser commandParser = new CommandParser();
 		if (validateUserInput(userInput)) {
