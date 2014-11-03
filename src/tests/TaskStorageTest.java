@@ -51,6 +51,17 @@ public class TaskStorageTest {
 		}
 	}
 
+	@Test 
+	public void testCanGetCompletedTask() {
+		try {
+			TaskStorage taskStorage = new TaskStorage("taskStorage.data");
+			ArrayList<Task> completedTaskList = taskStorage.getAllCompletedTasks();
+			assertEquals(0, completedTaskList.size());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	@Test
 	public void testCanSearchTask() {
 		try {

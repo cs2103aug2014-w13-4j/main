@@ -230,6 +230,27 @@ public class TaskStorage {
 		return allTaskList;
 	}
 
+	/**
+	 * Get all tasks that are completed but not deleted
+	 *
+	 * @return all tasks that are not deleted
+	 */
+	public ArrayList<Task> getAllCompletedTasks() {
+		ArrayList<Task> allCompletedTaskList = new ArrayList<Task>();
+		if (taskBuffer == null) {
+			return null;
+		}
+		for (Task task : taskBuffer) {
+			if (task.isDeleted() || !task.isCompleted()) {
+				continue;
+			} else {
+				allCompletedTaskList.add(task);
+			}
+		}
+		return allCompletedTaskList;
+	}
+
+
 	private boolean isSearchTargetByName(Task task, String name) {
 		return task.getName().contains(name);
 	}
