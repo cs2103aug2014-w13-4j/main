@@ -366,13 +366,14 @@ public class TaskStorage {
 		for (ParamEnum key : keyWordTable.keySet()) {
 			params = keyWordTable.get(key);
 			firstParamElement = params.get(0);
-			for (Task task : parallelTaskList) {
+			for (Task task : searchRange) {
 				switch (key) {
 					case NAME:
 	                    if (!isNearMatchSearchTargetByName(task, firstParamElement)) {
 	                        parallelTaskList.remove(task);
 	                        taskList.remove(task);
-	                    } else if (!isSearchTargetByName(task, firstParamElement)) {
+	                        break;
+	                    } if (!isSearchTargetByName(task, firstParamElement)) {
 							taskList.remove(task);
 						}
 
@@ -381,7 +382,8 @@ public class TaskStorage {
 					    if (!isNearMatchSearchTargetByNote(task, firstParamElement)) {
                             parallelTaskList.remove(task);
                             taskList.remove(task);
-                        } else if (!isSearchTargetByNote(task, firstParamElement)) {
+                            break;
+                        } if (!isSearchTargetByNote(task, firstParamElement)) {
 							taskList.remove(task);
 						}
 						
@@ -390,7 +392,8 @@ public class TaskStorage {
 						if (!isNearMatchSearchTargetByTag(task, params)) {
 							parallelTaskList.remove(task);
 							taskList.remove(task);
-						} else if (!isSearchTargetByTag(task, params)) {
+							break;
+						} if (!isSearchTargetByTag(task, params)) {
                             taskList.remove(task);
                         } 
 						break;
@@ -430,6 +433,7 @@ public class TaskStorage {
 						break;
 				}
 			}
+			searchRange = (ArrayList<Task>) parallelTaskList.clone();
 		}
 		if (taskList.isEmpty()) {
 			return parallelTaskList;
