@@ -3,8 +3,11 @@ package main.controllers;
 import command.CommandParser;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import logic.LogicApi;
 import main.Main;
@@ -25,20 +28,23 @@ public class RootLayoutController {
 	protected LogicApi logicApi;
 
 	private BorderPane rootLayout;
+    private TabPane tabLayout;
 	private NotificationPane notificationPane;
 
 	private TaskListViewController taskListViewController;
 	private TaskDisplayViewController taskDisplayViewController;
 	private UserInputViewController userInputViewController;
-	
+
 	private Scene scene;
 
 	public void initialize(Stage primaryStage, Feedback allActiveTasks, LogicApi logicApi) throws IOException {
 		setLogic(logicApi);
 		initRootLayout(primaryStage);
+        initTabLayout();
 		initScene();
 		initNotificationPane();
 		initTaskListView(allActiveTasks);
+        initCalendarView();
 		initTaskDisplayView();
 		initUserInputView(allActiveTasks);
 		showStage(primaryStage);
@@ -54,16 +60,42 @@ public class RootLayoutController {
 		rootLayout = loader.load();
 	}
 
-	private void initTaskListView(Feedback allActiveTasks) throws IOException {
+    private void initTabLayout() throws IOException {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(Main.class.getResource("views/TabLayout.fxml"));
+        tabLayout = loader.load();
+
+        rootLayout.setCenter(tabLayout);
+    }
+
+    private void initTaskListView(Feedback allActiveTasks) throws IOException {
+        assert (tabLayout != null) : "tabLayout was not initialized!";
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(Main.class.getResource("views/TaskListView.fxml"));
 		AnchorPane taskList = loader.load();
 
-		rootLayout.setCenter(taskList);
+        Tab taskListTab = new Tab();
+        taskListTab.setText("Tasks");
+        taskListTab.setContent(taskList);
+        taskListTab.setClosable(false);
+        tabLayout.getTabs().add(taskListTab);
 
 		taskListViewController = loader.getController();
 		taskListViewController.initialize(allActiveTasks);
 	}
+
+    private void initCalendarView() throws IOException {
+        assert (tabLayout != null) : "tabLayout was not initialized!";
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(Main.class.getResource("views/CalendarView.fxml"));
+        GridPane calendarView = loader.load();
+
+        Tab taskListTab = new Tab();
+        taskListTab.setText("Calendar");
+        taskListTab.setContent(calendarView);
+        taskListTab.setClosable(false);
+        tabLayout.getTabs().add(taskListTab);
+    }
 
 	private void initNotificationPane() throws IOException {
 		FXMLLoader loader = new FXMLLoader();
@@ -106,7 +138,7 @@ public class RootLayoutController {
 	private void initScene() {
 		scene = new Scene(rootLayout);
 	}
-	
+
 	protected void executeCommand(String userInput) {
 		CommandParser commandParser = new CommandParser();
 		if (validateUserInput(userInput)) {
