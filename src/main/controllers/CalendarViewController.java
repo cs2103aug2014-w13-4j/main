@@ -26,7 +26,7 @@ public class CalendarViewController {
                         new Agenda.AppointmentImpl()
                             .withStartTime(task.getDateDue())
                             .withSummary("ID: " + task.getId())
-                            .withDescription("asd")
+                            .withDescription(task.getName())
                             .withAppointmentGroup(lAppointmentGroupMap.get("group0"))
                             .withWholeDay(true)
                     );
@@ -36,7 +36,7 @@ public class CalendarViewController {
                             .withStartTime(task.getDateStart())
                             .withEndTime(task.getDateEnd())
                             .withSummary("ID: " + task.getId())
-                            .withDescription("asd")
+                            .withDescription(task.getName())
                             .withAppointmentGroup(lAppointmentGroupMap.get("group0"))
                     );
                 }
