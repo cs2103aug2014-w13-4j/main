@@ -10,6 +10,8 @@ import models.Feedback;
 import java.io.IOException;
 import java.util.logging.Level;
 
+import exceptions.FileFormatNotSupportedException;
+
 /**
  * The main method of the program; program execution starts here.
  *
@@ -39,7 +41,7 @@ public class Main extends Application {
 		this.primaryStage.setTitle("Awesome Task Manager");
 	}
 
-	private void initLayouts() {
+	private void initLayouts() throws FileFormatNotSupportedException {
 		assert (primaryStage != null);
 		try {
 			Feedback allActiveTasks = initLogicAndGetAllActiveTasks();
@@ -50,9 +52,9 @@ public class Main extends Application {
 		}
 	}
 
-	private Feedback initLogicAndGetAllActiveTasks() {
+	private Feedback initLogicAndGetAllActiveTasks() throws IOException, FileFormatNotSupportedException {
 		ApplicationLogger.getApplicationLogger().log(Level.INFO, "Initializing Logic.");
-		logicApi = new LogicApi();
-		return logicApi.initialize();
+		logicApi = LogicApi.getInstance();
+		return logicApi.displayAll();
 	}
 }

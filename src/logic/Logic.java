@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.logging.Level;
 
+import com.google.gson.JsonSyntaxException;
 import com.rits.cloning.Cloner;
 
 import models.ApplicationLogger;
@@ -44,7 +45,10 @@ public class Logic {
     // public LogicUndo logicUndo = LogicUndo.getInstance();
     private Cloner cloner = new Cloner();
 
-    Logic() {
+    Logic() throws IOException, FileFormatNotSupportedException {
+        ApplicationLogger.getApplicationLogger().log(Level.INFO,
+                "Initializing Logic Backend.");
+        storage = new Storage();
     }
 
     /**
@@ -209,19 +213,6 @@ public class Logic {
         }
     }
 
-    Feedback initialize() {
-        try {
-            ApplicationLogger.getApplicationLogger().log(Level.INFO,
-                    "Initializing Logic Backend.");
-            storage = new Storage();
-            return displayAll();
-        } catch (IOException | FileFormatNotSupportedException e) {
-            ApplicationLogger.getApplicationLogger().log(Level.SEVERE,
-                    e.getMessage());
-            return createTaskListFeedback(ERROR_STORAGE_MESSAGE, null);
-        }
-    }
-
     /**
      * Search for tasks that contain the keyword in the name, description or
      * tags
@@ -323,7 +314,7 @@ public class Logic {
      *
      * @return feedback containing all the tasks in the file, and the message.
      */
-    private Feedback displayAll() {
+    Feedback displayAll() {
         ArrayList<Task> taskList = storage.getAllTasks();
         return createTaskListFeedback(
                 MessageCreator.createMessage(DISPLAY_MESSAGE, null, null),

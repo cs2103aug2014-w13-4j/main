@@ -11,6 +11,7 @@ import models.ApplicationLogger;
 import models.Command;
 import models.Feedback;
 import command.*;
+import exceptions.FileFormatNotSupportedException;
 import exceptions.HistoryNotFoundException;
 import exceptions.InvalidCommandUseException;
 import exceptions.InvalidDateFormatException;
@@ -24,31 +25,35 @@ public class LogicApi {
     private static final String INVALID_BEFORE_AFTER_SEARCH_MESSAGE = "Before and After cannot be searched together.";
     private static final String INVALID_FROM_TO_SEARCH_MESSAGE = "Both start and end date are required.";
 
-    public LogicApi() {
-
-    }
-
     /**
      * constructor This constructor follows the singleton pattern It can only be
      * called with in the current class (Logic.getInstance()) This is to ensure
      * that only there is exactly one instance of Logic class
-     *
-     * @throws FileFormatNotSupportedException
-     *             , IOException
-     * @return Logic object
-     *
-     *         To be implemented in the future
-     */
-    /**
-     * private static Logic instance = null;
-     *
-     * private Logic() {
-     *
-     * }
-     *
-     * public static Logic getInstance() { if (instance == null) { instance =
-     * new Logic(); } return instance; }
      **/
+
+    private static LogicApi instance = null;
+
+    private LogicApi() {
+    }
+
+    public static LogicApi getInstance() throws IOException, FileFormatNotSupportedException {
+        if (instance == null) {
+            instance = new LogicApi();
+            ApplicationLogger.getApplicationLogger().log(Level.INFO,
+                    "Initializing Logic API.");
+            instance.logic = new Logic();
+        }
+        return instance;
+    }
+    
+    // for debugging purposes. Always create a new instance
+    public static LogicApi getNewInstance() throws IOException, FileFormatNotSupportedException {
+        instance = new LogicApi();
+        ApplicationLogger.getApplicationLogger().log(Level.INFO,
+                "Initializing Logic API.");
+        instance.logic = new Logic();
+        return instance;
+    }
 
     /**
      * Main function to call to execute command
@@ -126,19 +131,9 @@ public class LogicApi {
             throw new InvalidInputException(INVALID_COMMAND_MESSAGE);
         }
     }
-
-    /**
-     * Initialises the logic object by creating its corresponding storage object
-     * It also catches the exceptions that can be thrown
-     *
-     * @return the feedback indicating whether the storage has been successfully
-     *         loaded.
-     */
-    public Feedback initialize() {
-        ApplicationLogger.getApplicationLogger().log(Level.INFO,
-                "Initializing Logic API.");
-        logic = new Logic();
-        return logic.initialize();
+    
+    public Feedback displayAll() {
+        return logic.displayAll();
     }
 
     private boolean hasSearchParams(
@@ -194,5 +189,7 @@ public class LogicApi {
             Hashtable<ParamEnum, ArrayList<String>> param) {
         return param.get(ParamEnum.NAME).get(0).isEmpty();
     }
+
+
 
 }
