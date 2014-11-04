@@ -47,7 +47,7 @@ public class TaskStorage {
 	 * @throws FileFormatNotSupportedException
 	 *             , IOException
 	 */
-	private TaskStorage(String fileName) throws IOException,
+	protected TaskStorage(String fileName) throws IOException,
 			FileFormatNotSupportedException {		
 		Task task;
 		Calendar dateStart;

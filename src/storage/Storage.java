@@ -24,8 +24,12 @@ import models.Task;
  * It also supports power search.
  */
 public class Storage {
+	private static Storage storageInstance;
 	private TaskStorage taskFile;
 	private TagStorage tagFile;
+
+	private static final String FILE_NAME_TASK_STORAGE = "taskStorage.data";
+	private static final String FILE_NAME_TAG_STORAGE = "TagStorage.data";
 
 	/**
 	 * constructor
@@ -34,11 +38,18 @@ public class Storage {
 	 * This is to ensure that only there is exactly one instance of Storage class
 	 * @throws FileFormatNotSupportedException, IOException
 	 */
-	public Storage() throws IOException, FileFormatNotSupportedException{
+	protected Storage() throws IOException, FileFormatNotSupportedException{
 		ApplicationLogger.getApplicationLogger().log(Level.INFO, "Initializing Storage.");
-		taskFile = TaskStorage.getInstance("taskStorage.data");
-		tagFile = new TagStorage("TagStorage.data");
+		taskFile = TaskStorage.getInstance(FILE_NAME_TASK_STORAGE);
+		tagFile = new TagStorage(FILE_NAME_TAG_STORAGE);
 	}
+
+	public static Storage getInstance() throws IOException, FileFormatNotSupportedException {
+      if(storageInstance == null) {
+         storageInstance = new Storage();
+      }
+      return storageInstance;
+    }
 
 	// Add/Update a task to file
 	public void writeTaskToFile(Task task) throws TaskNotFoundException, IOException {
