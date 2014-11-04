@@ -13,7 +13,8 @@ public enum CommandEnum {
 	COMPLETE ("complete", ParamEnum.KEYWORD, ParamEnum.DATE),
 	TAG ("\\+", ParamEnum.KEYWORD),
 	LEVEL ("level", ParamEnum.KEYWORD),
-	CONFIRM ("confirm", ParamEnum.KEYWORD, ParamEnum.ID);
+	CONFIRM ("confirm", ParamEnum.KEYWORD, ParamEnum.ID),
+	CLEAR ("clear", ParamEnum.KEYWORD);
 	
 	private final String regex;
 	private final ParamEnum commandKey;
