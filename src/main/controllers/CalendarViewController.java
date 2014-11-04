@@ -43,23 +43,4 @@ public class CalendarViewController {
             }
         }
     }
-
-    static private Calendar getFirstDayOfWeekCalendar(Locale locale, Calendar c)
-    {
-        // result
-        int lFirstDayOfWeek = Calendar.getInstance(locale).getFirstDayOfWeek();
-        int lCurrentDayOfWeek = c.get(Calendar.DAY_OF_WEEK);
-        int lDelta = 0;
-        if (lFirstDayOfWeek <= lCurrentDayOfWeek)
-        {
-            lDelta = -lCurrentDayOfWeek + lFirstDayOfWeek;
-        }
-        else
-        {
-            lDelta = -lCurrentDayOfWeek - (7-lFirstDayOfWeek);
-        }
-        c = ((Calendar)c.clone());
-        c.add(Calendar.DATE, lDelta);
-        return c;
-    }
 }
