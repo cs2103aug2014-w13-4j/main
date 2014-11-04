@@ -1,5 +1,10 @@
 package command;
 
+/**
+ * This enum describe the different kind of params enum that are allowed for each of the command
+ * @author xuanyi
+ *
+ */
 public enum CommandEnum {
 	ADD ("add", ParamEnum.NAME, ParamEnum.DUE_DATE, ParamEnum.OR_END, ParamEnum.OR_FROM, ParamEnum.DATE, ParamEnum.START_DATE, ParamEnum.END_DATE,
 			ParamEnum.LEVEL, ParamEnum.NOTE, ParamEnum.TAG),
@@ -13,7 +18,8 @@ public enum CommandEnum {
 	COMPLETE ("complete", ParamEnum.KEYWORD, ParamEnum.DATE),
 	TAG ("\\+", ParamEnum.KEYWORD),
 	LEVEL ("level", ParamEnum.KEYWORD),
-	CONFIRM ("confirm", ParamEnum.KEYWORD, ParamEnum.ID);
+	CONFIRM ("confirm", ParamEnum.KEYWORD, ParamEnum.ID),
+	CLEAR ("clear", ParamEnum.KEYWORD);
 	
 	private final String regex;
 	private final ParamEnum commandKey;
