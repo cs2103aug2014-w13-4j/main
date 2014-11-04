@@ -187,7 +187,7 @@ public class IntegrationTest {
     public final void testCannotDisplayTaskWithNegativeId() throws Exception {
         Command addCommand = parser.parseCommand("add eat my pet dog");
         logicApiObject.executeCommand(addCommand);
-        Command displayCommand = parser.parseCommand("display -1");
+        Command displayCommand = parser.parseCommand("display 0");
         logicApiObject.executeCommand(displayCommand);
     }
 
@@ -204,10 +204,10 @@ public class IntegrationTest {
         Feedback feedback = logicApiObject.executeCommand(addCommand);
         Task task = feedback.getTaskList().get(0);
         assertTrue(task.isDeleted() == false);
-        Command deleteCommand = parser.parseCommand("delete 0");
+        Command deleteCommand = parser.parseCommand("delete 1");
         Feedback deletedFeedback = logicApiObject.executeCommand(deleteCommand);
         assertEquals(new ArrayList<Task>(), deletedFeedback.getTaskList());
-        Command updateCommand = parser.parseCommand("update 0 name blah");
+        Command updateCommand = parser.parseCommand("update 1 name blah");
         logicApiObject.executeCommand(updateCommand);
     }
 
@@ -336,7 +336,7 @@ public class IntegrationTest {
         Command addCommand = parser
                 .parseCommand("Add CS2103T from 23 Dec 1992 to 23 Dec 2002 or from 7 Oct 2014 to 8 Oct 2014");
         logicApiObject.executeCommand(addCommand);
-        Command confirmCommand = parser.parseCommand("confirm 1 id 1");
+        Command confirmCommand = parser.parseCommand("confirm 1 id 2");
         Feedback feedback = logicApiObject.executeCommand(confirmCommand);
         Task task = feedback.getTaskList().get(0);
         assertEquals("Task name is correct", "CS2103T", task.getName());
@@ -361,7 +361,7 @@ public class IntegrationTest {
         Command addCommand = parser
                 .parseCommand("Add CS2103T from 23 Dec 1992 to 23 Dec 2002 or from 7 Oct 2014 to 8 Oct 2014");
         logicApiObject.executeCommand(addCommand);
-        Command confirmCommand = parser.parseCommand("confirm 1 id 2");
+        Command confirmCommand = parser.parseCommand("confirm 1 id 3");
         logicApiObject.executeCommand(confirmCommand);
     }
 
@@ -545,20 +545,6 @@ public class IntegrationTest {
         assertEquals(21, newTask.getDateEnd().get(Calendar.DAY_OF_MONTH));
         assertEquals(2, newTask.getDateEnd().get(Calendar.MONTH) + 1);
         assertEquals(1999, newTask.getDateEnd().get(Calendar.YEAR));
-    }
-
-    @Test(expected = InvalidInputException.class)
-    /**
-     * Tests that task cannot be changed from a timed task to a deadline task
-     * @throws Exception
-     */
-    public final void testErrorUpdateTask() throws Exception {
-        Command addCommand = parser
-                .parseCommand("add eat my pet dog from 20 Feb 1999 to 21 Feb 1999 note I don't know why I want that? level 2");
-        logicApiObject.executeCommand(addCommand);
-        Command updateCommand = parser
-                .parseCommand("update 1 due 10 October 2013");
-        logicApiObject.executeCommand(updateCommand);
     }
 
 }

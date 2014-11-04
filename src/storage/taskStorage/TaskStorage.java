@@ -417,11 +417,8 @@ public class TaskStorage {
 						}
 						break;
 					case START_DATE:
-						if (keyWordTable.get(ParamEnum.END_DATE) == null) {
-							throw new InvalidInputException("Search start date without end date");
-						} else {
-							dateEnd = keyWordTable.get(ParamEnum.END_DATE).get(0);
-						}
+					    assert keyWordTable.get(ParamEnum.END_DATE) != null;
+						dateEnd = keyWordTable.get(ParamEnum.END_DATE).get(0);
 						if (!isSearchTargetByInterval(task, firstParamElement, dateEnd)) {
 							taskList.remove(task);
 							parallelTaskList.remove(task);
