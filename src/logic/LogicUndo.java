@@ -1,5 +1,6 @@
 package logic;
 
+import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.Stack;
 
@@ -44,7 +45,9 @@ public class LogicUndo {
 	 */
 	void pushAddCommandToHistory(Task task) {
 		TaskModifier.deleteTask(task);
-		History historyCommand = new History(CommandEnum.ADD, task);
+		ArrayList<Task> tasks = new ArrayList<Task>();
+		tasks.add(task);
+		History historyCommand = new History(CommandEnum.ADD, tasks);
 		undoStack.push(historyCommand);
 	}
 
@@ -56,7 +59,9 @@ public class LogicUndo {
 	 *            : the task before it was edited
 	 */
 	void pushUpdateCommandToHistory(Task task) {
-		History historyCommand = new History(CommandEnum.UPDATE, task);
+        ArrayList<Task> tasks = new ArrayList<Task>();
+        tasks.add(task);
+		History historyCommand = new History(CommandEnum.UPDATE, tasks);
 		undoStack.push(historyCommand);
 	}
 
@@ -69,7 +74,9 @@ public class LogicUndo {
 	 */
 	void pushDeleteCommandToHistory(Task task) {
 		TaskModifier.undeleteTask(task);
-		History historyCommand = new History(CommandEnum.DELETE, task);
+        ArrayList<Task> tasks = new ArrayList<Task>();
+        tasks.add(task);		
+		History historyCommand = new History(CommandEnum.DELETE, tasks);
 		undoStack.push(historyCommand);
 	}
 
@@ -82,7 +89,9 @@ public class LogicUndo {
 	 */
 	void pushCompleteCommandToHistory(Task task) {
 		TaskModifier.uncompleteTask(task);
-		History historyCommand = new History(CommandEnum.DONE, task);
+        ArrayList<Task> tasks = new ArrayList<Task>();
+        tasks.add(task);
+		History historyCommand = new History(CommandEnum.DONE, tasks);
 		undoStack.push(historyCommand);
 	}
 
@@ -97,8 +106,15 @@ public class LogicUndo {
 
 	void pushConfirmCommandToHistory(Task task) {
 		TaskModifier.unconfirmTask(task);
-		History historyCommand = new History(CommandEnum.CONFIRM, task);
+        ArrayList<Task> tasks = new ArrayList<Task>();
+        tasks.add(task);
+		History historyCommand = new History(CommandEnum.CONFIRM, tasks);
 		undoStack.push(historyCommand);
+	}
+	
+	void pushClearCommandToHistory(ArrayList<Task> tasks) {
+	    History historyCommand = new History(CommandEnum.CLEAR, tasks);
+	    undoStack.push(historyCommand);
 	}
 
 	/**
