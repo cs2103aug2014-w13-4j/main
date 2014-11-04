@@ -424,13 +424,25 @@ public class TaskStorage {
 		}
 	}
 
+	private boolean isSearchTargetByOn(Task task, String dateString) throws InvalidDateFormatException {
+		String dateStartString, dateEndString;
+		Calendar date = DateParser.parseString(dateString);
+		date.set(Calendar.HOUR_OF_DAY, 0);
+		date.set(Calendar.MINUTE, 0);
+		dateStartString = DateParser.parseCalendar(date);		
+		date.set(Calendar.HOUR_OF_DAY, 23);
+		date.set(Calendar.MINUTE, 59);
+		dateEndString = DateParser.parseCalendar(date);
+		return isSearchTargetByBefore(task, dateEndString) && isSearchTargetByAfter(task, dateStartString);
+	}
+
 	public ArrayList<Task> searchTask(
 			Hashtable<ParamEnum, ArrayList<String>> keyWordTable, ArrayList<Task> searchRange) 
 			throws InvalidDateFormatException, InvalidInputException {
 		ArrayList<Task> taskList = (ArrayList<Task>) searchRange.clone();
 		ArrayList<Task> parallelTaskList = (ArrayList<Task>) searchRange.clone();
 		ArrayList<String> params;
-		String firstParamElement, dateEnd;
+		String firstParamElement, dateEnd, dateStart;
 
 		// exit if there is no keyword table
 		if (keyWordTable == null) {
@@ -498,6 +510,11 @@ public class TaskStorage {
 							parallelTaskList.remove(task);
 						}
 						break;
+					case ON:
+						if (!isSearchTargetByOn(task, firstParamElement)) {
+							taskList.remove(task);
+							parallelTaskList.remove(task);
+						}
 					default:
 						break;
 				}

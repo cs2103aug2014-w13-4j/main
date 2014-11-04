@@ -16,6 +16,7 @@ import exceptions.InvalidCommandUseException;
 import exceptions.InvalidDateFormatException;
 import exceptions.InvalidInputException;
 import exceptions.TaskNotFoundException;
+import exceptions.TimeIntervalOverlapException;
 
 //TODO: Throw exceptions when mandatory fields are missing
 public class LogicApi {
@@ -63,12 +64,13 @@ public class LogicApi {
      * @throws InvalidInputException
      * @throws HistoryNotFoundException
      * @throws InvalidCommandUseException
+     * @throws TimeIntervalOverlapException 
      * @throws EmptySearchResultException
      */
     public Feedback executeCommand(Command command)
             throws TaskNotFoundException, IOException,
             InvalidDateFormatException, InvalidInputException,
-            HistoryNotFoundException, InvalidCommandUseException {
+            HistoryNotFoundException, InvalidCommandUseException, TimeIntervalOverlapException {
         if (logic.storage == null) {
             throw new IOException();
         } else {

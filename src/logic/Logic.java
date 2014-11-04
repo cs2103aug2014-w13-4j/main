@@ -20,6 +20,7 @@ import exceptions.InvalidCommandUseException;
 import exceptions.InvalidDateFormatException;
 import exceptions.InvalidInputException;
 import exceptions.TaskNotFoundException;
+import exceptions.TimeIntervalOverlapException;
 
 public class Logic {
     private static final String ERROR_UNDO_MESSAGE = "Search and display actions cannot be undone.";
@@ -58,10 +59,11 @@ public class Logic {
      * @throws IOException
      * @throws InvalidDateFormatException
      * @throws InvalidInputException
+     * @throws TimeIntervalOverlapException 
      */
     Feedback add(Hashtable<ParamEnum, ArrayList<String>> param)
             throws TaskNotFoundException, IOException,
-            InvalidDateFormatException, InvalidInputException {
+            InvalidDateFormatException, InvalidInputException, TimeIntervalOverlapException {
         Task task = new Task();
         if (hasFloatingTaskParams(param)) {
             ApplicationLogger.getApplicationLogger().log(Level.INFO,
@@ -103,11 +105,12 @@ public class Logic {
      * @throws InvalidDateFormatException
      * @throws InvalidCommandUseException
      * @throws InvalidInputException
+     * @throws TimeIntervalOverlapException 
      */
     Feedback complete(Hashtable<ParamEnum, ArrayList<String>> param)
             throws TaskNotFoundException, IOException,
             InvalidDateFormatException, InvalidCommandUseException,
-            InvalidInputException {
+            InvalidInputException, TimeIntervalOverlapException {
         int taskId = getTaskId(param);
         Task task = getTaskFromStorage(taskId);
         if (task.isConfirmed() && task.getDateEnd() == null) {
@@ -136,10 +139,11 @@ public class Logic {
      * @throws InvalidInputException
      * @throws TaskNotFoundException
      * @throws IOException
+     * @throws TimeIntervalOverlapException 
      */
 
     Feedback confirm(Hashtable<ParamEnum, ArrayList<String>> param)
-            throws InvalidInputException, TaskNotFoundException, IOException {
+            throws InvalidInputException, TaskNotFoundException, IOException, TimeIntervalOverlapException {
         int taskId = getTaskId(param);
         String dateIdString = param.get(ParamEnum.ID).get(0);
         int dateId;
@@ -170,9 +174,10 @@ public class Logic {
      * @throws TaskNotFoundException
      * @throws IOException
      * @throws InvalidInputException
+     * @throws TimeIntervalOverlapException 
      */
     Feedback delete(Hashtable<ParamEnum, ArrayList<String>> param)
-            throws TaskNotFoundException, IOException, InvalidInputException {
+            throws TaskNotFoundException, IOException, InvalidInputException, TimeIntervalOverlapException {
         int taskId = getTaskId(param);
         Task task = getTaskFromStorage(taskId);
         String name = task.getName();
@@ -251,9 +256,10 @@ public class Logic {
      * @throws HistoryNotFoundException
      * @throws TaskNotFoundException
      * @throws IOException
+     * @throws TimeIntervalOverlapException 
      */
     Feedback undo() throws HistoryNotFoundException, TaskNotFoundException,
-            IOException {
+            IOException, TimeIntervalOverlapException {
         History lastAction = logicUndo.getLastAction();
         if (lastAction == null) {
             throw new HistoryNotFoundException(ERROR_UNDO_MESSAGE);
@@ -278,10 +284,11 @@ public class Logic {
      * @throws IOException
      * @throws InvalidDateFormatException
      * @throws InvalidInputException
+     * @throws TimeIntervalOverlapException 
      */
     Feedback update(Hashtable<ParamEnum, ArrayList<String>> param)
             throws TaskNotFoundException, IOException,
-            InvalidDateFormatException, InvalidInputException {
+            InvalidDateFormatException, InvalidInputException, TimeIntervalOverlapException {
         int taskId = getTaskId(param);
         Task task = getTaskFromStorage(taskId);
         Task clonedTask = cloner.deepClone(task);
