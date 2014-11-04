@@ -36,10 +36,24 @@ public class LogicApi {
     private LogicApi() {
     }
 
-    public static LogicApi getInstance() {
+    public static LogicApi getInstance() throws IOException, FileFormatNotSupportedException {
         if (instance == null) {
             instance = new LogicApi();
+            ApplicationLogger.getApplicationLogger().log(Level.INFO,
+                    "Initializing Logic API.");
+            instance.logic = new Logic();
+            instance.logic.initialize();
         }
+        return instance;
+    }
+    
+    // for debugging purposes. Always create a new instance
+    public static LogicApi getNewInstance() throws IOException, FileFormatNotSupportedException {
+        instance = new LogicApi();
+        ApplicationLogger.getApplicationLogger().log(Level.INFO,
+                "Initializing Logic API.");
+        instance.logic = new Logic();
+        instance.logic.initialize();
         return instance;
     }
 
@@ -127,11 +141,14 @@ public class LogicApi {
      * @return the feedback indicating whether the storage has been successfully
      *         loaded.
      */
-    public Feedback initialize() {
+    public void initialize() {
         ApplicationLogger.getApplicationLogger().log(Level.INFO,
                 "Initializing Logic API.");
         logic = new Logic();
-        return logic.initialize();
+    }
+    
+    public Feedback displayAll() {
+        return logic.displayAll();
     }
 
     private boolean hasSearchParams(
@@ -187,5 +204,7 @@ public class LogicApi {
             Hashtable<ParamEnum, ArrayList<String>> param) {
         return param.get(ParamEnum.NAME).get(0).isEmpty();
     }
+
+
 
 }

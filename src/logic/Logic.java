@@ -210,17 +210,10 @@ public class Logic {
         }
     }
 
-    Feedback initialize() {
-        try {
+    void initialize() throws IOException, FileFormatNotSupportedException {
             ApplicationLogger.getApplicationLogger().log(Level.INFO,
                     "Initializing Logic Backend.");
             storage = new Storage();
-            return displayAll();
-        } catch (IOException | FileFormatNotSupportedException |JsonSyntaxException e) {
-            ApplicationLogger.getApplicationLogger().log(Level.SEVERE,
-                    e.getMessage());
-            return createTaskListFeedback(ERROR_STORAGE_MESSAGE, null);
-        }
     }
 
     /**
@@ -324,7 +317,7 @@ public class Logic {
      *
      * @return feedback containing all the tasks in the file, and the message.
      */
-    private Feedback displayAll() {
+    Feedback displayAll() {
         ArrayList<Task> taskList = storage.getAllTasks();
         return createTaskListFeedback(
                 MessageCreator.createMessage(DISPLAY_MESSAGE, null, null),
