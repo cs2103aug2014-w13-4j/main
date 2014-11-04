@@ -85,6 +85,9 @@ public class TaskStorage {
       }
       return taskStorageInstance;
    }
+    public static TaskStorage getNewInstance(String fileName) throws IOException, FileFormatNotSupportedException {
+        return new TaskStorage(fileName);
+    }
 
 	/**
 	 * Return an interval tree for the whole list of tasks
@@ -446,4 +449,6 @@ public class TaskStorage {
 			String firstParamElement) {
 		return isNearMatch(firstParamElement, task.getName());
 	}
+
+
 }

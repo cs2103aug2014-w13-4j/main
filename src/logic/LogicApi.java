@@ -41,7 +41,7 @@ public class LogicApi {
             instance = new LogicApi();
             ApplicationLogger.getApplicationLogger().log(Level.INFO,
                     "Initializing Logic API.");
-            instance.logic = new Logic();
+            instance.logic = Logic.getInstance();
         }
         return instance;
     }
@@ -51,7 +51,7 @@ public class LogicApi {
         instance = new LogicApi();
         ApplicationLogger.getApplicationLogger().log(Level.INFO,
                 "Initializing Logic API.");
-        instance.logic = new Logic();
+        instance.logic = Logic.getNewInstance();
         return instance;
     }
 

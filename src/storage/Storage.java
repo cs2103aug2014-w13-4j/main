@@ -39,17 +39,24 @@ public class Storage {
 	 * @throws FileFormatNotSupportedException, IOException
 	 */
 	protected Storage() throws IOException, FileFormatNotSupportedException{
-		ApplicationLogger.getApplicationLogger().log(Level.INFO, "Initializing Storage.");
-		taskFile = TaskStorage.getInstance(FILE_NAME_TASK_STORAGE);
-		tagFile = new TagStorage(FILE_NAME_TAG_STORAGE);
+	    ApplicationLogger.getApplicationLogger().log(Level.INFO, "Initializing Storage.");
 	}
 
 	public static Storage getInstance() throws IOException, FileFormatNotSupportedException {
       if(storageInstance == null) {
          storageInstance = new Storage();
+         storageInstance.taskFile = TaskStorage.getInstance(FILE_NAME_TASK_STORAGE);
+         storageInstance.tagFile = new TagStorage(FILE_NAME_TAG_STORAGE);
       }
       return storageInstance;
     }
+	
+   public static Storage getNewInstance() throws IOException, FileFormatNotSupportedException {
+       storageInstance = new Storage();
+       storageInstance.taskFile = TaskStorage.getNewInstance(FILE_NAME_TASK_STORAGE);
+       storageInstance.tagFile = new TagStorage(FILE_NAME_TAG_STORAGE);
+       return storageInstance;
+   }
 
 	// Add/Update a task to file
 	public void writeTaskToFile(Task task) throws TaskNotFoundException, IOException {

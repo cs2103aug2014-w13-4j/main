@@ -45,10 +45,30 @@ public class Logic {
     // public LogicUndo logicUndo = LogicUndo.getInstance();
     private Cloner cloner = new Cloner();
 
-    Logic() throws IOException, FileFormatNotSupportedException {
+    private static Logic instance = null;
+
+    private Logic() {
+    }
+
+    public static Logic getInstance() throws IOException,
+            FileFormatNotSupportedException {
+        if (instance == null) {
+            instance = new Logic();
+            ApplicationLogger.getApplicationLogger().log(Level.INFO,
+                    "Initializing Logic.");
+            instance.storage = Storage.getInstance();
+        }
+        return instance;
+    }
+
+    // for debugging purposes. Always create a new instance
+    public static Logic getNewInstance() throws IOException,
+            FileFormatNotSupportedException {
+        instance = new Logic();
         ApplicationLogger.getApplicationLogger().log(Level.INFO,
-                "Initializing Logic Backend.");
-        storage = new Storage();
+                "Initializing Logic.");
+        instance.storage = Storage.getNewInstance();
+        return instance;
     }
 
     /**
@@ -498,8 +518,8 @@ public class Logic {
 
     private boolean hasUpdateTimedTaskParams(
             Hashtable<ParamEnum, ArrayList<String>> param) {
-            return !param.containsKey(ParamEnum.DUE_DATE)
-                    && !(hasMultipleEntries(param, ParamEnum.START_DATE) || hasMultipleEntries(
-                            param, ParamEnum.END_DATE));
+        return !param.containsKey(ParamEnum.DUE_DATE)
+                && !(hasMultipleEntries(param, ParamEnum.START_DATE) || hasMultipleEntries(
+                        param, ParamEnum.END_DATE));
     }
 }
