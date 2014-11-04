@@ -164,7 +164,7 @@ public class IntervalSearch {
      *            of the task
      */
     public void add(Calendar start, Calendar end, int id) {
-        assert start.getTimeInMillis() >= end.getTimeInMillis();
+        assert start.getTimeInMillis() <= end.getTimeInMillis();
 
         DateRange range = new DateRange(start, end);
         map.put(range, id);
