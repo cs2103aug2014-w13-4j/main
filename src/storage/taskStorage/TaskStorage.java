@@ -291,7 +291,7 @@ public class TaskStorage {
 				stringInTask.substring(
 						0,
 						Integer.min(stringInTask.length(),
-								stringToMatch.length())), stringToMatch) < MAX_DIFF_BETWEEN_WORDS;
+								stringToMatch.length())), stringToMatch) <= MAX_DIFF_BETWEEN_WORDS;
 	}
 
 	private boolean isNearMatchTag(ArrayList<String> tagsInTask,
@@ -353,31 +353,33 @@ public class TaskStorage {
 		for (ParamEnum key : keyWordTable.keySet()) {
 			params = keyWordTable.get(key);
 			firstParamElement = params.get(0);
-			for (Task task : searchRange) {
+			for (Task task : parallelTaskList) {
 				switch (key) {
 					case NAME:
-						if (!isSearchTargetByName(task, firstParamElement)) {
+	                    if (!isNearMatchSearchTargetByName(task, firstParamElement)) {
+	                        parallelTaskList.remove(task);
+	                        taskList.remove(task);
+	                    } else if (!isSearchTargetByName(task, firstParamElement)) {
 							taskList.remove(task);
 						}
-						if (!isNearMatchSearchTargetByName(task, firstParamElement)) {
-							parallelTaskList.remove(task);
-						}
+
 						break;
 					case NOTE:
-						if (!isSearchTargetByNote(task, firstParamElement)) {
+					    if (!isNearMatchSearchTargetByNote(task, firstParamElement)) {
+                            parallelTaskList.remove(task);
+                            taskList.remove(task);
+                        } else if (!isSearchTargetByNote(task, firstParamElement)) {
 							taskList.remove(task);
 						}
-						if (!isNearMatchSearchTargetByNote(task, firstParamElement)) {
-							parallelTaskList.remove(task);
-						}
+						
 						break;
 					case TAG:
-						if (!isSearchTargetByTag(task, params)) {
-							taskList.remove(task);
-						} 
 						if (!isNearMatchSearchTargetByTag(task, params)) {
 							parallelTaskList.remove(task);
-						}
+							taskList.remove(task);
+						} else if (!isSearchTargetByTag(task, params)) {
+                            taskList.remove(task);
+                        } 
 						break;
 					case LEVEL:
 						if (!isSearchTargetByPriorityLevel(task, firstParamElement)) {
