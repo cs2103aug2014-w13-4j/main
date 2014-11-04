@@ -33,7 +33,7 @@ public class TaskStorageTest {
 	@Test
 	public void testCanAddAndUpdateTask() {
 		try {
-			TaskStorage taskStorage = new TaskStorage("taskStorage.data");
+			TaskStorage taskStorage = TaskStorage.getInstance("taskStorage.data");
             ArrayList<StartDueDatePair> datePairArrayList = new ArrayList<StartDueDatePair>();
             StartDueDatePair datePairA = new StartDueDatePair(DateParser.parseString("23.10.2010"), DateParser.parseString("24.10.2010"));
             StartDueDatePair datePairB = new StartDueDatePair(DateParser.parseString("25.10.2010"), DateParser.parseString("27.10.2010"));
@@ -54,7 +54,7 @@ public class TaskStorageTest {
 	@Test
 	public void testCanSearchTask() {
 		try {
-			TaskStorage taskStorage = new TaskStorage("taskStorage.data");
+			TaskStorage taskStorage = TaskStorage.getInstance("taskStorage.data");
 			Hashtable<ParamEnum, ArrayList<String>> keyWordTable = new Hashtable<ParamEnum, ArrayList<String>>();
 			ArrayList<String> taskName = new ArrayList<String>();
 			taskName.add("Report");

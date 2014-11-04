@@ -26,6 +26,8 @@ import models.Task;
  *         search.
  */
 public class TaskStorage {
+	private static TaskStorage taskStorageInstance = null;
+
 	private static final int MAX_DIFF_BETWEEN_WORDS = 3;
 	private static final int MIN_INDEX = 1;
 	private ArrayList<Task> taskBuffer;
@@ -45,8 +47,8 @@ public class TaskStorage {
 	 * @throws FileFormatNotSupportedException
 	 *             , IOException
 	 */
-	public TaskStorage(String fileName) throws IOException,
-			FileFormatNotSupportedException {
+	private TaskStorage(String fileName) throws IOException,
+			FileFormatNotSupportedException {		
 		Task task;
 		Calendar dateStart;
 		Calendar dateEnd;
@@ -76,6 +78,13 @@ public class TaskStorage {
 			nextTaskIndex ++;
 		}
 	}
+
+	public static TaskStorage getInstance(String fileName) throws IOException, FileFormatNotSupportedException {
+      if(taskStorageInstance == null) {
+         taskStorageInstance = new TaskStorage(fileName);
+      }
+      return taskStorageInstance;
+   }
 
 	/**
 	 * Return an interval tree for the whole list of tasks

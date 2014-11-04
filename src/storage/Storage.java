@@ -36,7 +36,7 @@ public class Storage {
 	 */
 	public Storage() throws IOException, FileFormatNotSupportedException{
 		ApplicationLogger.getApplicationLogger().log(Level.INFO, "Initializing Storage.");
-		taskFile = new TaskStorage("taskStorage.data");
+		taskFile = TaskStorage.getInstance("taskStorage.data");
 		tagFile = new TagStorage("TagStorage.data");
 	}
 
