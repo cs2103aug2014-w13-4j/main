@@ -96,6 +96,8 @@ public class LogicApi {
                 return logic.undo();
             case DISPLAY:
                 return logic.display(param);
+            case CLEAR:
+                return logic.clear(param);
             case DONE:
             case COMPLETE:
                 if (!isKeywordParamEmpty(param)) {
