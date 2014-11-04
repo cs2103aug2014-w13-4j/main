@@ -74,6 +74,7 @@ public class RootLayoutController {
 	}
 
 	private void initTaskDisplayView() throws IOException {
+		assert (notificationPane != null) : "notificationPane was not initialized!";
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(Main.class.getResource("views/TaskDisplayView.fxml"));
 		AnchorPane taskDisplay = loader.load();
