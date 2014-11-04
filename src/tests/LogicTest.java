@@ -51,7 +51,6 @@ public class LogicTest {
     public void getLogicAndStorage() throws IllegalArgumentException,
             IllegalAccessException, IOException, FileFormatNotSupportedException {
         logicApiObject = LogicApi.getNewInstance();
-        logicApiObject.initialize();
         logicObject = (Logic) logic.get(logicApiObject);
     }
 
@@ -82,7 +81,6 @@ public class LogicTest {
         ArrayList<String> priorityList = new ArrayList<String>();
         priorityList.add("RED");
         params.put(ParamEnum.LEVEL, priorityList);
-
         Feedback feedback = (Feedback) add.invoke(logicObject, params);
         assertEquals(1, feedback.getTaskList().size());
         Task task = feedback.getTaskList().get(0);

@@ -42,7 +42,6 @@ public class LogicApi {
             ApplicationLogger.getApplicationLogger().log(Level.INFO,
                     "Initializing Logic API.");
             instance.logic = new Logic();
-            instance.logic.initialize();
         }
         return instance;
     }
@@ -53,7 +52,6 @@ public class LogicApi {
         ApplicationLogger.getApplicationLogger().log(Level.INFO,
                 "Initializing Logic API.");
         instance.logic = new Logic();
-        instance.logic.initialize();
         return instance;
     }
 
@@ -132,19 +130,6 @@ public class LogicApi {
             }
             throw new InvalidInputException(INVALID_COMMAND_MESSAGE);
         }
-    }
-
-    /**
-     * Initialises the logic object by creating its corresponding storage object
-     * It also catches the exceptions that can be thrown
-     *
-     * @return the feedback indicating whether the storage has been successfully
-     *         loaded.
-     */
-    public void initialize() {
-        ApplicationLogger.getApplicationLogger().log(Level.INFO,
-                "Initializing Logic API.");
-        logic = new Logic();
     }
     
     public Feedback displayAll() {

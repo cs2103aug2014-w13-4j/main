@@ -45,7 +45,10 @@ public class Logic {
     // public LogicUndo logicUndo = LogicUndo.getInstance();
     private Cloner cloner = new Cloner();
 
-    Logic() {
+    Logic() throws IOException, FileFormatNotSupportedException {
+        ApplicationLogger.getApplicationLogger().log(Level.INFO,
+                "Initializing Logic Backend.");
+        storage = new Storage();
     }
 
     /**
@@ -208,12 +211,6 @@ public class Logic {
             int id = Integer.parseInt(idString);
             return displayTask(id);
         }
-    }
-
-    void initialize() throws IOException, FileFormatNotSupportedException {
-            ApplicationLogger.getApplicationLogger().log(Level.INFO,
-                    "Initializing Logic Backend.");
-            storage = new Storage();
     }
 
     /**
