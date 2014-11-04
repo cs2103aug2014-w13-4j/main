@@ -11,11 +11,14 @@ import java.util.Scanner;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.rits.cloning.Cloner;
+
 import command.ParamEnum;
 import exceptions.FileFormatNotSupportedException;
 import exceptions.InvalidDateFormatException;
 import exceptions.InvalidInputException;
 import exceptions.TaskNotFoundException;
+import exceptions.TimeIntervalOverlapException;
 import models.DateParser;
 import models.IntervalSearch;
 import models.Task;
@@ -95,9 +98,10 @@ public class TaskStorage {
 	 *             : trying to update a not existing task
 	 * @throws IOException
 	 *             : wrong IO operations
+	 * @throws TimeIntervalOverlapException 
 	 */
 	public void writeTaskToFile(Task task) throws TaskNotFoundException,
-			IOException {
+			IOException, TimeIntervalOverlapException {
 		int taskID = task.getId();
 		if (taskID == ID_FOR_NEW_TASK) {
 			addTask(task);
@@ -122,24 +126,53 @@ public class TaskStorage {
 	}
 
 	/**
+	 * Check whether a timed task overlaps with the exising time interval
+	 *
+	 * @param taskID: the task id to be checked
+	 * @return boolean: whether a task overlaps with the exising time interval
+	 */
+	private boolean isTaskTimeValid(Task task) {
+		int taskId = task.getId();		
+		Calendar dateStart, dateEnd;
+		ArrayList<Integer> overlapTask;
+		if (task.isTimedTask()) {
+			dateStart = task.getDateStart();
+			dateEnd = task.getDateEnd();
+			overlapTask = intervalTree.getTasksWithinInterval(dateStart, dateEnd);
+			if (overlapTask.isEmpty()) {
+				return true;
+			}
+			if (overlapTask.size() == 1 && overlapTask.get(0) == taskId) {
+				return true;
+			}
+			return false;
+		}
+		return true;
+	}
+
+	/**
 	 * Add a task
 	 *
 	 * @param task: task to be added
 	 * @throws IOException: wrong IO operations
 	 */
-	private void addTask(Task task) throws IOException {
+	private void addTask(Task task) throws IOException, TimeIntervalOverlapException {
 		Calendar dateStart, dateEnd;
-		// Add new task to task file
-		task.setId(nextTaskIndex);
-		nextTaskIndex ++;
-		addTaskToStorage(task);
-		// Add new task to task buffer
-		taskBuffer.add(task);
-		// Add new task to Interval Tree
-		if (task.isTimedTask()) {
-			dateStart = task.getDateStart();
-			dateEnd = task.getDateEnd();
-			intervalTree.add(dateStart, dateEnd, task.getId());
+		if (isTaskTimeValid(task)) {			
+			// Add new task to task file
+			task.setId(nextTaskIndex);
+			nextTaskIndex ++;
+			addTaskToStorage(task);
+			// Add new task to task buffer
+			taskBuffer.add(task);
+			// Add new task to Interval Tree
+			if (task.isTimedTask()) {
+				dateStart = task.getDateStart();
+				dateEnd = task.getDateEnd();
+				intervalTree.add(dateStart, dateEnd, task.getId());
+			}
+		} else {
+			throw new TimeIntervalOverlapException("New timed task overlaps with exisitng time interval.");
 		}
 	}
 
@@ -149,21 +182,27 @@ public class TaskStorage {
 	 * @param task: task to be updated
 	 * @throws IOException: wrong IO operations
 	 */
-	private void updateTask(Task task) throws IOException {	
+	private void updateTask(Task task) throws IOException, TimeIntervalOverlapException {	
 		int taskID = task.getId();	
 		Calendar dateStart, dateEnd, oldStart, oldEnd;
-		// Update task to task buffer
-		taskBuffer.set(taskID - 1, task);
-		// Update task to task file
-		updateTaskToStorage();
-		// Update task to Interval Tree
-		if (task.isTimedTask()) {
-			dateStart = task.getDateStart();
-			dateEnd = task.getDateEnd();
+		if (isTaskTimeValid(task)) {
+			// Update task to task buffer
+			taskBuffer.set(taskID - 1, task);
+			// Update task to task file
+			updateTaskToStorage();
+			// Delete the existing time interval	
 			oldStart = intervalTree.getDateStart(task.getId());
 			oldEnd = intervalTree.getDateEnd(task.getId());
-			intervalTree.update(oldStart, oldEnd, dateStart, dateEnd, taskID);
-		}
+    		intervalTree.remove(oldStart, oldEnd);
+			// Update task to Interval Tree
+			if (task.isTimedTask()) {		
+				dateStart = task.getDateStart();
+				dateEnd = task.getDateEnd();
+				intervalTree.add(dateStart, dateEnd, taskID);
+			}
+		} else {
+			throw new TimeIntervalOverlapException("Updated task overlaps with exisitng time interval.");
+		}		
 	}
 
 	// append task string to the end of the file
@@ -201,6 +240,33 @@ public class TaskStorage {
 			for (Task task : taskBuffer) {
 				if (task.getId() == taskID) {
 					requiredTask = task;
+					break;
+				}
+			}
+		} else {
+			throw new TaskNotFoundException(
+					"Cannot return  task since the current task doesn't exist");
+		}
+		return requiredTask;
+	}
+
+	/**
+	 * Get a copy of an exiting task by its id
+	 *
+	 * @param taskID
+	 *            : the id of a task
+	 * @return a copy of an exiting task
+	 * @throws TaskNotFoundException
+	 *             : trying to get a not existing task
+	 */
+	public Task getTaskCopy(int taskID) throws TaskNotFoundException {
+		Task requiredTask = null;
+		if (isTaskExist(taskID)) {
+			for (Task task : taskBuffer) {
+				if (task.getId() == taskID) {
+					Cloner cloner = new Cloner();
+					requiredTask = cloner.deepClone(task);
+					break;
 				}
 			}
 		} else {
