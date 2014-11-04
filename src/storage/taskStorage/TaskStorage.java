@@ -21,6 +21,7 @@ import exceptions.TaskNotFoundException;
 import exceptions.TimeIntervalOverlapException;
 import models.DateParser;
 import models.IntervalSearch;
+import models.StartDueDatePair;
 import models.Task;
 
 /**
@@ -67,14 +68,10 @@ public class TaskStorage {
 			task = TaskConverter.stringToTask(fileScanner.nextLine());
 			taskBuffer.add(task);
 			// add in interval tree
-			if (task.isTimedTask()) {
-				dateStart = task.getDateStart();
-				dateEnd = task.getDateEnd();
-				if (intervalTree.isValid(dateStart, dateEnd)) {
-					intervalTree.add(dateStart, dateEnd, task.getId());
-				} else {
-					throw new FileFormatNotSupportedException("Events are overlapping");
-				}
+			if (isTaskTimeValid(task)) {
+				addTimeIntervalToIntervalTree(task);
+			} else {
+				throw new FileFormatNotSupportedException("Events are overlapping");
 			}
 			nextTaskIndex ++;
 		}
@@ -126,7 +123,27 @@ public class TaskStorage {
 	}
 
 	/**
-	 * Check whether a timed task overlaps with the exising time interval
+	 * Check whether a time interval overlaps with the exising time interval
+	 *
+	 * @param dateStart: start time
+	 * @param dateEnd: end date
+	 * @return boolean: whether a task overlaps with the exising time interval
+	 */
+	private boolean isTimeIntervalValid(int taskId, Calendar dateStart, Calendar dateEnd) {
+		ArrayList<Integer> overlapTask = intervalTree.getTasksWithinInterval(dateStart, dateEnd);
+		boolean isValid = true;
+		if (!overlapTask.isEmpty()) {
+			for (Integer overlapTaskId : overlapTask) {
+				if (overlapTaskId != taskId) {
+					isValid = false;
+				}
+			}
+		}		
+		return isValid;
+	}
+
+	/**
+	 * Check whether a task overlaps with the exising time interval
 	 *
 	 * @param taskID: the task id to be checked
 	 * @return boolean: whether a task overlaps with the exising time interval
@@ -134,20 +151,57 @@ public class TaskStorage {
 	private boolean isTaskTimeValid(Task task) {
 		int taskId = task.getId();		
 		Calendar dateStart, dateEnd;
-		ArrayList<Integer> overlapTask;
+		boolean isValid = true;
+		ArrayList<StartDueDatePair> conditionalDates;
+		
 		if (task.isTimedTask()) {
 			dateStart = task.getDateStart();
 			dateEnd = task.getDateEnd();
-			overlapTask = intervalTree.getTasksWithinInterval(dateStart, dateEnd);
-			if (overlapTask.isEmpty()) {
-				return true;
+			isValid = isTimeIntervalValid(taskId, dateStart, dateEnd);
+		} else if (task.isConditionalTask()) {
+			conditionalDates = task.getConditionalDates();
+			for (StartDueDatePair datePair : conditionalDates) {
+				dateStart = datePair.getStartDate();
+				dateEnd = datePair.getDueDate();
+				if (!isTimeIntervalValid(taskId, dateStart, dateEnd)) {
+					isValid = false;
+					break;
+				}
 			}
-			if (overlapTask.size() == 1 && overlapTask.get(0) == taskId) {
-				return true;
-			}
-			return false;
 		}
-		return true;
+		return isValid;
+	}
+
+	/**
+	 * Add time intervals to interval tree
+	 *
+	 * @param task: task that contains the time interval to be added
+	 */
+	private void addTimeIntervalToIntervalTree(Task task) {
+		int taskId = task.getId();
+		Calendar dateStart, dateEnd;
+		ArrayList<StartDueDatePair> conditionalDates;
+		if (task.isTimedTask()) {
+			dateStart = task.getDateStart();
+			dateEnd = task.getDateEnd();
+			intervalTree.add(dateStart, dateEnd, taskId);
+		} else if (task.isConditionalTask()) {
+			conditionalDates = task.getConditionalDates();
+			for (StartDueDatePair datePair : conditionalDates) {
+				dateStart = datePair.getStartDate();
+				dateEnd = datePair.getDueDate();
+				intervalTree.add(dateStart, dateEnd, taskId);
+			}
+		}
+	}
+
+	/**
+	 * Remove time intervals to interval tree
+	 *
+	 * @param task: task that contains the time interval to be added
+	 */
+	private void removeTimeIntervalFromIntervalTree(Task task) {
+		intervalTree.remove(task);
 	}
 
 	/**
@@ -166,11 +220,7 @@ public class TaskStorage {
 			// Add new task to task buffer
 			taskBuffer.add(task);
 			// Add new task to Interval Tree
-			if (task.isTimedTask()) {
-				dateStart = task.getDateStart();
-				dateEnd = task.getDateEnd();
-				intervalTree.add(dateStart, dateEnd, task.getId());
-			}
+			addTimeIntervalToIntervalTree(task);
 		} else {
 			throw new TimeIntervalOverlapException("New timed task overlaps with exisitng time interval.");
 		}
@@ -189,17 +239,9 @@ public class TaskStorage {
 			// Update task to task buffer
 			taskBuffer.set(taskID - 1, task);
 			// Update task to task file
-			updateTaskToStorage();
-			// Delete the existing time interval	
-			oldStart = intervalTree.getDateStart(task.getId());
-			oldEnd = intervalTree.getDateEnd(task.getId());
-    		intervalTree.remove(oldStart, oldEnd);
-			// Update task to Interval Tree
-			if (task.isTimedTask()) {		
-				dateStart = task.getDateStart();
-				dateEnd = task.getDateEnd();
-				intervalTree.add(dateStart, dateEnd, taskID);
-			}
+			updateTaskToStorage();	
+			removeTimeIntervalFromIntervalTree(task);
+    		addTimeIntervalToIntervalTree(task);
 		} else {
 			throw new TimeIntervalOverlapException("Updated task overlaps with exisitng time interval.");
 		}		
