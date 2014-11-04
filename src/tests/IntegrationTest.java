@@ -35,8 +35,7 @@ public class IntegrationTest {
         writer.print("");
         writer.close();
         parser = new CommandParser();
-        logicApiObject = new LogicApi();
-        logicApiObject.initialize();
+        logicApiObject = LogicApi.getNewInstance();
     }
 
     @Test

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.logging.Level;
 
+import com.google.gson.JsonSyntaxException;
 import com.rits.cloning.Cloner;
 
 import models.ApplicationLogger;
@@ -48,7 +49,30 @@ public class Logic {
     // public LogicUndo logicUndo = LogicUndo.getInstance();
     private Cloner cloner = new Cloner();
 
-    Logic() {
+    private static Logic instance = null;
+
+    private Logic() {
+    }
+
+    public static Logic getInstance() throws IOException,
+            FileFormatNotSupportedException {
+        if (instance == null) {
+            instance = new Logic();
+            ApplicationLogger.getApplicationLogger().log(Level.INFO,
+                    "Initializing Logic.");
+            instance.storage = Storage.getInstance();
+        }
+        return instance;
+    }
+
+    // for debugging purposes. Always create a new instance
+    public static Logic getNewInstance() throws IOException,
+            FileFormatNotSupportedException {
+        instance = new Logic();
+        ApplicationLogger.getApplicationLogger().log(Level.INFO,
+                "Initializing Logic.");
+        instance.storage = Storage.getNewInstance();
+        return instance;
     }
 
     /**
@@ -244,19 +268,6 @@ public class Logic {
         }
     }
 
-    Feedback initialize() {
-        try {
-            ApplicationLogger.getApplicationLogger().log(Level.INFO,
-                    "Initializing Logic Backend.");
-            storage = new Storage();
-            return displayAll();
-        } catch (IOException | FileFormatNotSupportedException e) {
-            ApplicationLogger.getApplicationLogger().log(Level.SEVERE,
-                    e.getMessage());
-            return createTaskListFeedback(ERROR_STORAGE_MESSAGE, null);
-        }
-    }
-
     /**
      * Search for tasks that contain the keyword in the name, description or
      * tags
@@ -369,7 +380,7 @@ public class Logic {
      *
      * @return feedback containing all the tasks in the file, and the message.
      */
-    private Feedback displayAll() {
+    Feedback displayAll() {
         ArrayList<Task> taskList = storage.getAllTasks();
         return createTaskListFeedback(
                 MessageCreator.createMessage(DISPLAY_MESSAGE, null, null),
@@ -553,8 +564,8 @@ public class Logic {
 
     private boolean hasUpdateTimedTaskParams(
             Hashtable<ParamEnum, ArrayList<String>> param) {
-            return !param.containsKey(ParamEnum.DUE_DATE)
-                    && !(hasMultipleEntries(param, ParamEnum.START_DATE) || hasMultipleEntries(
-                            param, ParamEnum.END_DATE));
+        return !param.containsKey(ParamEnum.DUE_DATE)
+                && !(hasMultipleEntries(param, ParamEnum.START_DATE) || hasMultipleEntries(
+                        param, ParamEnum.END_DATE));
     }
 }
