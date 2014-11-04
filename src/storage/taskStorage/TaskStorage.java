@@ -373,7 +373,7 @@ public class TaskStorage {
 	                        parallelTaskList.remove(task);
 	                        taskList.remove(task);
 	                        break;
-	                    } if (!isSearchTargetByName(task, firstParamElement)) {
+	                    } else if (!isSearchTargetByName(task, firstParamElement)) {
 							taskList.remove(task);
 						}
 
@@ -383,7 +383,7 @@ public class TaskStorage {
                             parallelTaskList.remove(task);
                             taskList.remove(task);
                             break;
-                        } if (!isSearchTargetByNote(task, firstParamElement)) {
+                        } else if (!isSearchTargetByNote(task, firstParamElement)) {
 							taskList.remove(task);
 						}
 						
@@ -393,7 +393,7 @@ public class TaskStorage {
 							parallelTaskList.remove(task);
 							taskList.remove(task);
 							break;
-						} if (!isSearchTargetByTag(task, params)) {
+						} else if (!isSearchTargetByTag(task, params)) {
                             taskList.remove(task);
                         } 
 						break;
