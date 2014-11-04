@@ -60,6 +60,11 @@ public class Storage {
 	public ArrayList<Task> getAllTasks() {
 		return taskFile.getAllTasks();
 	}
+	
+	// Get a list of all the completed Tasks
+    public ArrayList<Task> getAllCompletedTasks() {
+        return taskFile.getAllCompletedTasks();
+    }
 
 	// Get a list of tags
 	public ArrayList<String> getAllTags() {
