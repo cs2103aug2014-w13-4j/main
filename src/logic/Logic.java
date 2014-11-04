@@ -9,6 +9,7 @@ import com.rits.cloning.Cloner;
 
 import models.ApplicationLogger;
 import storage.Storage;
+import command.CommandEnum;
 import command.ParamEnum;
 import models.Feedback;
 import models.History;
@@ -291,20 +292,34 @@ public class Logic {
         if (lastAction == null) {
             throw new HistoryNotFoundException("Not supported yet. :( ");
         } else {
-            Task task = lastAction.getTask();
-            storage.writeTaskToFile(task);
-            // TODO: Find better way. Is there a way to generalise such that the
-            // task detail is not shown if it is deleted?
-            if (task.isDeleted()) {
+            int count;
+            ArrayList<Task> tasks = lastAction.getTask();
+            
+            // Add all history task back to current task
+            for (Task task: tasks) {
+                storage.writeTaskToFile(task);
+            }
+            
+            if (lastAction.getCommand() == CommandEnum.CLEAR) {
                 return createTaskAndTaskListFeedback(
-                        MessageCreator.createMessage(UNDO_MESSAGE, lastAction.getCommand()
-                                .regex(), task.getName()),
+                        MessageCreator.createMessage(UNDO_CLEAR_MESSAGE, lastAction.getCommand()
+                                .regex(), null),
                         storage.getAllTasks(), null);
             } else {
-                return createTaskAndTaskListFeedback(
-                        MessageCreator.createMessage(UNDO_MESSAGE, lastAction.getCommand()
-                                .regex(), task.getName()),
-                        storage.getAllTasks(), lastAction.getTask());
+                Task task = tasks.get(0);
+                // TODO: Find better way. Is there a way to generalise such that the
+                // task detail is not shown if it is deleted?
+                if (task.isDeleted()) {
+                    return createTaskAndTaskListFeedback(
+                            MessageCreator.createMessage(UNDO_MESSAGE, lastAction.getCommand()
+                                    .regex(), task.getName()),
+                            storage.getAllTasks(), null);
+                } else {
+                    return createTaskAndTaskListFeedback(
+                            MessageCreator.createMessage(UNDO_MESSAGE, lastAction.getCommand()
+                                    .regex(), task.getName()),
+                            storage.getAllTasks(), task);
+                }
             }
         }
     }
