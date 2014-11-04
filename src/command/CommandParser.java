@@ -6,6 +6,13 @@ import java.util.regex.Pattern;
 
 import models.Command;
 
+/**
+ * This class helps to recognize the command given by the user from its string format, and format it into
+ * the common Command object that could then be process easily by the other components of the project.
+ * 
+ * @author xuanyi
+ *
+ */
 public class CommandParser {
 
     private static final String FIRST_WORD_PATTERN = "^([\\w]+)";
@@ -13,7 +20,7 @@ public class CommandParser {
     private static final String COMMAND_PATTERN = "(%1$s)(.*?)(?=%2$s$)";
     private static final String COMPLETE_PATTERN = "(%1$s|%2$s)(.*?)(?=%3$s$)";
     private static final String ESCAPE_SEQUENCE = "\\";
-    
+
     private static final String INVALID_COMMAND_MESSAGE = "%1$s is not a valid command";
 
     private static final Integer ENUM_TYPE = 1;
@@ -27,6 +34,13 @@ public class CommandParser {
         initializeParamTable();
     }
 
+    /**
+     * THe operation parse a given command string into a command object
+     * 
+     * @param commandString
+     * @return command object representing the given command string
+     * @throws Exception
+     */
     public Command parseCommand(String commandString) throws Exception {
         CommandEnum commandType = getCommandType(commandString);
 
@@ -71,7 +85,8 @@ public class CommandParser {
         Matcher commandMatcher = commandPattern.matcher(commandString);
 
         if (commandMatcher.find()) {
-            String argumentEscape = escapeKeyword(commandMatcher.group(ENUM_ARGUMENT).trim());
+            String argumentEscape = escapeKeyword(commandMatcher.group(
+                    ENUM_ARGUMENT).trim());
             userCommand.addCommandArgument(argumentEscape);
             commandSubString = commandString.substring(commandMatcher.end());
         }
@@ -84,7 +99,8 @@ public class CommandParser {
         while (matcher.find()) {
             if (paramEnumTable.containsKey(matcher.group(ENUM_TYPE))) {
                 paramEnum = paramEnumTable.get(matcher.group(ENUM_TYPE));
-                String escaped = escapeKeyword(matcher.group(ENUM_ARGUMENT).trim());
+                String escaped = escapeKeyword(matcher.group(ENUM_ARGUMENT)
+                        .trim());
                 ParamEnum groupName = paramEnumTable.get(paramEnum.groupName());
                 userCommand.addParam(groupName, escaped);
             }
@@ -173,15 +189,16 @@ public class CommandParser {
             paramEnumTable.put(param.regex().replace("\\", ""), param);
         }
     }
-    
+
     /**
      * This operation escape keyword found in the param string
+     * 
      * @param paramString
      * @return
      */
     private String escapeKeyword(String paramString) {
         String resultString = paramString.replace(ESCAPE_SEQUENCE, "");
-        
+
         return resultString;
     }
 }

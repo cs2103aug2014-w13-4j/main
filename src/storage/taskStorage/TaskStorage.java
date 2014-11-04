@@ -229,6 +229,19 @@ public class TaskStorage {
 		}
 		return allTaskList;
 	}
+	
+	public ArrayList<Task> getAllCompletedTasks() {
+	    ArrayList<Task> completedList = new ArrayList<Task>();
+	    if (taskBuffer == null) {
+	        return null;
+	    }
+	    for (Task task : taskBuffer) {
+	        if (!task.isDeleted() && task.isCompleted()) {
+	            completedList.add(task);
+	        }
+	    }
+	    return completedList;
+	}
 
 	private boolean isSearchTargetByName(Task task, String name) {
 		return task.getName().contains(name);
