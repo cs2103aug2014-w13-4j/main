@@ -54,14 +54,6 @@ public class RootLayoutController {
 		rootLayout = loader.load();
 	}
 
-	private void initNotificationPane() throws IOException {
-		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(Main.class.getResource("views/NotificationPaneWrapper.fxml"));
-		notificationPane = loader.load();
-		notificationPane.setShowFromTop(false);
-		notificationPane.getStyleClass().add(NotificationPane.STYLE_CLASS_DARK);
-	}
-
 	private void initTaskListView(Feedback allActiveTasks) throws IOException {
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(Main.class.getResource("views/TaskListView.fxml"));
@@ -71,6 +63,14 @@ public class RootLayoutController {
 
 		taskListViewController = loader.getController();
 		taskListViewController.initialize(allActiveTasks);
+	}
+
+	private void initNotificationPane() throws IOException {
+		FXMLLoader loader = new FXMLLoader();
+		loader.setLocation(Main.class.getResource("views/NotificationPaneWrapper.fxml"));
+		notificationPane = loader.load();
+		notificationPane.setShowFromTop(false);
+		notificationPane.getStyleClass().add(NotificationPane.STYLE_CLASS_DARK);
 	}
 
 	private void initTaskDisplayView() throws IOException {
