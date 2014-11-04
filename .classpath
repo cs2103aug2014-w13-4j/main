@@ -11,5 +11,8 @@
 	<classpathentry kind="lib" path="lib/antlr-runtime-3.2.jar"/>
 	<classpathentry kind="lib" path="lib/gson-2.3.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang3-3.3.2.jar"/>
+	<classpathentry kind="lib" path="lib/jfxtras-agenda-8.0-r3.jar"/>
+	<classpathentry kind="lib" path="lib/jfxtras-common-8.0-r3.jar"/>
+	<classpathentry kind="lib" path="lib/jfxtras-controls-8.0-r3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
