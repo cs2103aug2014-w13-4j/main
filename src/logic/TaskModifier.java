@@ -17,15 +17,10 @@ import exceptions.InvalidPriorityLevelException;
 public class TaskModifier {
 
     private static final int OFFSET_FOR_ARRAY = 1;
-
     private static final String INVALID_PRIORITY_LEVEL_MESSAGE = "%1$s is not a valid priority level.";
-
     private static final String INVALID_CONDITIONAL_DATE_ID_MESSAGE = "The conditional date id is invalid.";
-
     private static final int MIN_ID = 0;
-
     private static final String INVALID_CONFIRMED_TASK_MESSAGE = "The task is already confirmed.";
-
     private static final String INVALID_START_END_DATE_MESSAGE = "The start date should occur before the end date";
 
     static void completeTask(Hashtable<ParamEnum, ArrayList<String>> param,
@@ -42,14 +37,15 @@ public class TaskModifier {
 
     static void confirmEvent(int dateId, Task event)
             throws InvalidInputException {
-        if (isLessThanMinId(dateId) || hasNullConditionalDates(event)
-                || isIdOutsideConditionalDatesRange(dateId, event)) {
+        int dateIndex = dateId - OFFSET_FOR_ARRAY;
+        if (isLessThanMinId(dateIndex) || hasNullConditionalDates(event)
+                || isIdOutsideConditionalDatesRange(dateIndex, event)) {
             throw new InvalidInputException(INVALID_CONDITIONAL_DATE_ID_MESSAGE);
         } else if (event.isConfirmed()) {
             throw new InvalidInputException(INVALID_CONFIRMED_TASK_MESSAGE);
         } else {
             StartDueDatePair conditionalDatesToConfirm = event
-                    .getConditionalDates().get(dateId - OFFSET_FOR_ARRAY);
+                    .getConditionalDates().get(dateIndex);
             Calendar startDate = conditionalDatesToConfirm.getStartDate();
             event.setDateStart(startDate);
             Calendar endDate = conditionalDatesToConfirm.getDueDate();
@@ -79,6 +75,7 @@ public class TaskModifier {
         setLevelFromCommand(param, task);
         setNoteFromCommand(param, task);
         setDueDateFromCommand(param, task);
+        setStartAndEndDateToNull(task);
     }
 
     static void modifyFloatingTask(
@@ -99,6 +96,7 @@ public class TaskModifier {
         setStartDateFromCommand(param, task);
         setEndDateFromCommand(param, task);
         checkStartDateIsBeforeEndDate(task.getDateStart(), task.getDateEnd());
+        setDueDateToNull(task);
     }
 
     static void uncompleteTask(Task task) {
@@ -207,6 +205,10 @@ public class TaskModifier {
         }
     }
 
+    private static void setDueDateToNull(Task task) {
+        task.setDateDue(null);
+    }
+
     private static void setEndDateFromCommand(
             Hashtable<ParamEnum, ArrayList<String>> param, Task task)
             throws InvalidDateFormatException {
@@ -243,6 +245,11 @@ public class TaskModifier {
             String note = param.get(ParamEnum.NOTE).get(0);
             task.setNote(note);
         }
+    }
+
+    private static void setStartAndEndDateToNull(Task task) {
+        task.setDateStart(null);
+        task.setDateEnd(null);
     }
 
     private static void setStartDateFromCommand(
