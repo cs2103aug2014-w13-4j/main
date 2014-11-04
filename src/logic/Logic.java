@@ -43,6 +43,7 @@ public class Logic {
     private static final String ERROR_ALREADY_DELETED_MESSAGE = "Task %1$s is already deleted.";
     private static final String CONFIRM_MESSAGE = "%1$s is marked as confirmed.";
     private static final String UNDO_MESSAGE = "%1$s %2$s is undone";
+    private static final String UNDO_CLEAR_MESSAGE = "Clear is undone";
     private static final String CLEAR_MESSAGE = "All completed task are cleared from the list";
     Storage storage = null;
     private LogicUndo logicUndo = new LogicUndo();
@@ -187,7 +188,7 @@ public class Logic {
                     TaskModifier.deleteTask(task);
                     storage.writeTaskToFile(task);
                 }
-                
+                logicUndo.pushClearCommandToHistory(cloneCompletedTasks);
                 return createTaskListFeedback(MessageCreator.createMessage(CLEAR_MESSAGE, null, null),
                         storage.getAllTasks());
             }
