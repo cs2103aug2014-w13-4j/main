@@ -11,6 +11,7 @@ import models.ApplicationLogger;
 import models.Command;
 import models.Feedback;
 import command.*;
+import exceptions.FileFormatNotSupportedException;
 import exceptions.HistoryNotFoundException;
 import exceptions.InvalidCommandUseException;
 import exceptions.InvalidDateFormatException;
@@ -24,31 +25,23 @@ public class LogicApi {
     private static final String INVALID_BEFORE_AFTER_SEARCH_MESSAGE = "Before and After cannot be searched together.";
     private static final String INVALID_FROM_TO_SEARCH_MESSAGE = "Both start and end date are required.";
 
-    public LogicApi() {
-
-    }
-
     /**
      * constructor This constructor follows the singleton pattern It can only be
      * called with in the current class (Logic.getInstance()) This is to ensure
      * that only there is exactly one instance of Logic class
-     *
-     * @throws FileFormatNotSupportedException
-     *             , IOException
-     * @return Logic object
-     *
-     *         To be implemented in the future
-     */
-    /**
-     * private static Logic instance = null;
-     *
-     * private Logic() {
-     *
-     * }
-     *
-     * public static Logic getInstance() { if (instance == null) { instance =
-     * new Logic(); } return instance; }
      **/
+
+    private static LogicApi instance = null;
+
+    private LogicApi() {
+    }
+
+    public static LogicApi getInstance() {
+        if (instance == null) {
+            instance = new LogicApi();
+        }
+        return instance;
+    }
 
     /**
      * Main function to call to execute command

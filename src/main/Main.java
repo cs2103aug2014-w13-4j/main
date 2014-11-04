@@ -52,7 +52,7 @@ public class Main extends Application {
 
 	private Feedback initLogicAndGetAllActiveTasks() {
 		ApplicationLogger.getApplicationLogger().log(Level.INFO, "Initializing Logic.");
-		logicApi = new LogicApi();
+		logicApi = LogicApi.getInstance();
 		return logicApi.initialize();
 	}
 }

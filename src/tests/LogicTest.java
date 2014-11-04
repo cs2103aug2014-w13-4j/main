@@ -48,7 +48,7 @@ public class LogicTest {
     @Before
     public void getLogicAndStorage() throws IllegalArgumentException,
             IllegalAccessException {
-        logicApiObject = new LogicApi();
+        logicApiObject = LogicApi.getInstance();
         logicApiObject.initialize();
         logicObject = (Logic) logic.get(logicApiObject);
     }

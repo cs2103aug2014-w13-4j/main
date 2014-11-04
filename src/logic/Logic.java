@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.logging.Level;
 
+import com.google.gson.JsonSyntaxException;
 import com.rits.cloning.Cloner;
 
 import models.ApplicationLogger;
@@ -215,7 +216,7 @@ public class Logic {
                     "Initializing Logic Backend.");
             storage = new Storage();
             return displayAll();
-        } catch (IOException | FileFormatNotSupportedException e) {
+        } catch (IOException | FileFormatNotSupportedException |JsonSyntaxException e) {
             ApplicationLogger.getApplicationLogger().log(Level.SEVERE,
                     e.getMessage());
             return createTaskListFeedback(ERROR_STORAGE_MESSAGE, null);
