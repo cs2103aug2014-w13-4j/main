@@ -9,6 +9,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import jfxtras.scene.control.agenda.Agenda;
 import logic.LogicApi;
 import main.Main;
 import models.ApplicationLogger;
@@ -18,7 +19,7 @@ import models.Task;
 import org.controlsfx.control.NotificationPane;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.logging.Level;
 
 /**
@@ -32,6 +33,7 @@ public class RootLayoutController {
 	private NotificationPane notificationPane;
 
 	private TaskListViewController taskListViewController;
+    private CalendarViewController calendarViewController;
 	private TaskDisplayViewController taskDisplayViewController;
 	private UserInputViewController userInputViewController;
 
@@ -44,10 +46,13 @@ public class RootLayoutController {
 		initScene();
 		initNotificationPane();
 		initTaskListView(allActiveTasks);
-        initCalendarView();
+        //initCalendarView(allActiveTasks);
 		initTaskDisplayView();
 		initUserInputView(allActiveTasks);
 		showStage(primaryStage);
+
+        // Initialised after showStage due to JavaFX known issue with CSS warnings
+        initCalendarView(allActiveTasks);
 	}
 
 	private void setLogic(LogicApi logicApi) {
@@ -84,17 +89,20 @@ public class RootLayoutController {
 		taskListViewController.initialize(allActiveTasks);
 	}
 
-    private void initCalendarView() throws IOException {
+    private void initCalendarView(Feedback allActiveTasks) throws IOException {
         assert (tabLayout != null) : "tabLayout was not initialized!";
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(Main.class.getResource("views/CalendarView.fxml"));
-        GridPane calendarView = loader.load();
+        Agenda calendarView = loader.load();
 
         Tab taskListTab = new Tab();
         taskListTab.setText("Calendar");
         taskListTab.setContent(calendarView);
         taskListTab.setClosable(false);
         tabLayout.getTabs().add(taskListTab);
+
+        calendarViewController = loader.getController();
+        calendarViewController.initialize(allActiveTasks);
     }
 
 	private void initNotificationPane() throws IOException {
