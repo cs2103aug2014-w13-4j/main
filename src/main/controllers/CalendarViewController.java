@@ -3,6 +3,7 @@ package main.controllers;
 import javafx.fxml.FXML;
 import jfxtras.scene.control.agenda.Agenda;
 import models.Feedback;
+import models.PriorityLevelEnum;
 import models.Task;
 
 import java.util.*;
@@ -49,25 +50,39 @@ public class CalendarViewController {
 
     private void addDeadlineTaskToCalendarView(Task task) {
         assert (appointmentGroupMap != null) : "appointmentGroupMap was not initialized!";
+        String appointmentGroup = determineAppointmentGroup(task);
         calendarView.appointments().add(
             new Agenda.AppointmentImpl()
                 .withStartTime(task.getDateDue())
                 .withSummary("ID: " + task.getId())
                 .withDescription(task.getName())
-                .withAppointmentGroup(appointmentGroupMap.get("group0"))
+                .withAppointmentGroup(appointmentGroupMap.get(appointmentGroup))
                 .withWholeDay(true)
         );
     }
 
     private void addEventTaskToCalendarView(Task task) {
         assert (appointmentGroupMap != null) : "appointmentGroupMap was not initialized!";
+        String appointmentGroup = determineAppointmentGroup(task);
         calendarView.appointments().add(
             new Agenda.AppointmentImpl()
                 .withStartTime(task.getDateStart())
                 .withEndTime(task.getDateEnd())
                 .withSummary("ID: " + task.getId())
                 .withDescription(task.getName())
-                .withAppointmentGroup(appointmentGroupMap.get("group0"))
+                .withAppointmentGroup(appointmentGroupMap.get(appointmentGroup))
         );
+    }
+
+    private String determineAppointmentGroup(Task task) {
+        if (task.getPriorityLevel().getName().equals(PriorityLevelEnum.GREEN.getName())){
+            return "group7";
+        } else if(task.getPriorityLevel().getName().equals(PriorityLevelEnum.ORANGE.getName())){
+            return "group5";
+        } else if(task.getPriorityLevel().getName().equals(PriorityLevelEnum.RED.getName())){
+            return "group2";
+        } else {
+            return "group12";
+        }
     }
 }
