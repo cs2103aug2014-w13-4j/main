@@ -16,11 +16,18 @@ public class CalendarViewController {
     private Map<String, Agenda.AppointmentGroup> appointmentGroupMap;
 
     public void initialize(Feedback initialTasks) {
-        appointmentGroupMap = new HashMap<String, Agenda.AppointmentGroup>();
-        appointmentGroupMap.put("group0", new Agenda.AppointmentGroupImpl().withStyleClass("group0"));
+        initAppointmentGroups();
 
         ArrayList<Task> taskList = initialTasks.getTaskList();
         addTasksToCalendarView(taskList);
+    }
+
+    private void initAppointmentGroups() {
+        appointmentGroupMap = new HashMap<String, Agenda.AppointmentGroup>();
+        appointmentGroupMap.put("group2", new Agenda.AppointmentGroupImpl().withStyleClass("group2"));
+        appointmentGroupMap.put("group5", new Agenda.AppointmentGroupImpl().withStyleClass("group5"));
+        appointmentGroupMap.put("group7", new Agenda.AppointmentGroupImpl().withStyleClass("group7"));
+        appointmentGroupMap.put("group12", new Agenda.AppointmentGroupImpl().withStyleClass("group12"));
     }
 
     protected void updateCalendarView(ArrayList<Task> taskList) {
