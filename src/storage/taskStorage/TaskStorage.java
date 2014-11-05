@@ -88,6 +88,7 @@ public class TaskStorage {
 
     public static TaskStorage getNewInstance(String fileName)
             throws IOException, FileFormatNotSupportedException {
+        taskStorageInstance = new TaskStorage(fileName);
         return new TaskStorage(fileName);
     }
 
