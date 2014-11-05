@@ -328,7 +328,7 @@ public class TaskStorage {
                 stringInTask.substring(
                         0,
                         Integer.min(stringInTask.length(),
-                                stringToMatch.length())), stringToMatch) < MAX_DIFF_BETWEEN_WORDS;
+                                stringToMatch.length())), stringToMatch) <= MAX_DIFF_BETWEEN_WORDS;
     }
 
     private boolean isNearMatchTag(ArrayList<String> tagsInTask,
@@ -404,19 +404,19 @@ public class TaskStorage {
                     }
                     break;
                 case NOTE:
-                    if (!isSearchTargetByNote(task, firstParamElement)) {
-                        taskList.remove(task);
-                    }
                     if (!isNearMatchSearchTargetByNote(task, firstParamElement)) {
                         parallelTaskList.remove(task);
+                        taskList.remove(task);
+                    } else if (!isSearchTargetByNote(task, firstParamElement)) {
+                        taskList.remove(task);
                     }
                     break;
                 case TAG:
-                    if (!isSearchTargetByTag(task, params)) {
-                        taskList.remove(task);
-                    }
                     if (!isNearMatchSearchTargetByTag(task, params)) {
                         parallelTaskList.remove(task);
+                        taskList.remove(task);
+                    } else if (!isSearchTargetByTag(task, params)) {
+                        taskList.remove(task);
                     }
                     break;
                 case LEVEL:
@@ -456,6 +456,7 @@ public class TaskStorage {
                     break;
                 }
             }
+            searchRange = (ArrayList<Task>) parallelTaskList.clone();
         }
         if (taskList.isEmpty()) {
             return parallelTaskList;
@@ -478,5 +479,4 @@ public class TaskStorage {
             String firstParamElement) {
         return isNearMatch(firstParamElement, task.getName());
     }
-
 }
