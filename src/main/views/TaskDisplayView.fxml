@@ -11,7 +11,7 @@
 
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" minHeight="160.0" minWidth="300.0" prefHeight="160.0" prefWidth="400.0"
             xmlns="http://javafx.com/javafx/8" fx:controller="main.controllers.TaskDisplayViewController"
-            stylesheets="main/stylesheets/DarkTheme.css" styleClass="background">
+            stylesheets="main/stylesheets/TaskDisplayViewStyleSheet.css" styleClass="background">
     <children>
         <Label layoutX="7.0" layoutY="7.0" text="Task Details" AnchorPane.leftAnchor="5.0"
                AnchorPane.topAnchor="5.0" styleClass="label-header"/>

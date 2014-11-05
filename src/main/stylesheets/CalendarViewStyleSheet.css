@@ -1,0 +1,24 @@
+.background {
+    -fx-background-color: #1d1d1d;
+}
+
+.AgendaWeekSkin .Week {
+    -fx-background-color: black;
+}
+
+.AgendaWeekSkin .HourLabel {
+    -fx-fill: white;
+    -fx-stroke: transparent;
+}
+
+.AgendaWeekSkin .DayHeader {
+    -fx-background-color: black;
+}
+
+.AgendaWeekSkin .DayHeader .weekday {
+    -fx-fill: white;
+}
+
+.AgendaWeekSkin .DayHeader .weekend {
+    -fx-fill: white;
+}
