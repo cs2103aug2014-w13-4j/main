@@ -64,13 +64,24 @@ public class TaskStorageTest {
             assertEquals(task,
                     taskStorage.getTask(taskStorage.getAllTasks().size()));
             task = createTaskForTest(1, "Read Report", 1,
-                    "Do eat apple when you are writing report.", false, null);
+                    "Do eat apple when you are writing report.", false, datePairArrayList);
             taskStorage.writeTaskToFile(task);
             assertEquals(task, taskStorage.getTask(1));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+	@Test 
+	public void testCanGetCompletedTask() {
+		try {
+			TaskStorage taskStorage = TaskStorage.getNewInstance("taskStorage.data");
+			ArrayList<Task> completedTaskList = taskStorage.getAllCompletedTasks();
+			assertEquals(0, completedTaskList.size());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
     @Test
     public void testCanSearchTask() {
