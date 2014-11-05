@@ -39,10 +39,10 @@ public class CalendarViewController {
     private void addTasksToCalendarView(ArrayList<Task> taskList) {
         for (Task task : taskList){
             if (!task.isDeleted()){
-                if (task.getDateStart() == null){
+                if (task.isDeadlineTask()){
                     addDeadlineTaskToCalendarView(task);
-                } else if (task.getDateEnd() != null){
-                    addEventTaskToCalendarView(task);
+                } else if (task.isTimedTask()){
+                    addTimedTaskToCalendarView(task);
                 }
             }
         }
@@ -61,7 +61,7 @@ public class CalendarViewController {
         );
     }
 
-    private void addEventTaskToCalendarView(Task task) {
+    private void addTimedTaskToCalendarView(Task task) {
         assert (appointmentGroupMap != null) : "appointmentGroupMap was not initialized!";
         String appointmentGroup = determineAppointmentGroup(task);
         calendarView.appointments().add(
