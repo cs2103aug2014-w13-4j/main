@@ -34,7 +34,7 @@ public class Storage {
      * constructor This constructor follows the singleton pattern It can only be
      * called with in the current class (Storage.getInstance()) This is to
      * ensure that only there is exactly one instance of Storage class
-     * 
+     *
      * @throws FileFormatNotSupportedException
      *             , IOException
      */
@@ -89,6 +89,12 @@ public class Storage {
     // Get a list of all the Tasks
     public ArrayList<Task> getAllTasks() {
         return taskFile.getAllTasks();
+    }
+
+    // Get a list of all active tasks
+    // To be the default display.
+    public ArrayList<Task> getAllActiveTasks() {
+        return taskFile.getAllActiveTasks();
     }
 
     // Get a list of all the completed task

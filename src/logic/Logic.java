@@ -24,35 +24,6 @@ import common.exceptions.TaskNotFoundException;
 import common.exceptions.TimeIntervalOverlapException;
 
 public class Logic {
-    private static final String ERROR_UNDO_MESSAGE = "Search and display actions cannot be undone.";
-    private static final String INVALID_TASK_ID_MESSAGE = "Task ID: %1$s is invalid!";
-    private static final String INVALID_DATE_ID_MESSAGE = "Date ID: %1$s is invalid!";
-    private static final String ERROR_UPDATE_CONDITIONAL_TASK_MESSAGE = "Task %1$s is a conditional task, so it should contain multiple start and end dates";
-    private static final String ERROR_COMPLETE_MESSAGE = "Only confirmed and uncompleted tasks without an end date before can be completed";
-    private static final String ERROR_DATE_INPUT_MESSAGE = "The date parameters provided are invalid.";
-    private static final String ERROR_CLEAR_MESSAGE = "The given parameters for clear are invalid.";
-    private static final String ADD_MESSAGE = "%1$s is successfully added.";
-    private static final String DELETE_MESSAGE = "%1$s is successfully deleted";
-    private static final String EDIT_MESSAGE = "%1$s is successfully edited.";
-    private static final String COMPLETE_MESSAGE = "%1$s is marked as completed.";
-    private static final String SEARCH_MESSAGE = "%1$s results are found.";
-    private static final String DISPLAY_MESSAGE = "All tasks are displayed.";
-    private static final String DISPLAY_TASK_MESSAGE = "Task %1$s: %2$s is displayed.";
-    private static final String ERROR_ALREADY_DELETED_MESSAGE = "Task %1$s is already deleted.";
-    private static final String CONFIRM_MESSAGE = "%1$s is marked as confirmed.";
-    private static final String UNDO_MESSAGE = "%1$s %2$s is undone";
-    private static final String UNDO_CLEAR_MESSAGE = "Clear is undone";
-    private static final String CLEAR_MESSAGE = "All completed task are cleared from the list";
-    Storage storage = null;
-    private LogicUndo logicUndo = new LogicUndo();
-    // public LogicUndo logicUndo = LogicUndo.getInstance();
-    private Cloner cloner = new Cloner();
-
-    private static Logic instance = null;
-
-    private Logic() {
-    }
-
     public static Logic getInstance() throws IOException,
     FileFormatNotSupportedException {
         if (instance == null) {
@@ -72,6 +43,41 @@ public class Logic {
                 "Initializing Logic.");
         instance.storage = Storage.getNewInstance();
         return instance;
+    }
+
+    private static final String COMPLETED_KEYWORD = "completed";
+    private static final String ALL_KEYWORD = "all";
+    private static final String ACTIVE_KEYWORD = "active";
+    private static final String ERROR_UNDO_MESSAGE = "Search and display actions cannot be undone.";
+    private static final String INVALID_TASK_ID_MESSAGE = "Task ID: %1$s is invalid!";
+    private static final String INVALID_DATE_ID_MESSAGE = "Date ID: %1$s is invalid!";
+    private static final String ERROR_UPDATE_CONDITIONAL_TASK_MESSAGE = "Task %1$s is a conditional task, so it should contain multiple start and end dates";
+    private static final String ERROR_COMPLETE_MESSAGE = "Only confirmed and uncompleted tasks without an end date before can be completed";
+    private static final String ERROR_DATE_INPUT_MESSAGE = "The date parameters provided are invalid.";
+    private static final String ERROR_CLEAR_MESSAGE = "The given parameters for clear are invalid.";
+    private static final String ERROR_DISPLAY_MESSAGE = "The display keword: %1$s is invalid.";
+    private static final String ADD_MESSAGE = "%1$s is successfully added.";
+    private static final String DELETE_MESSAGE = "%1$s is successfully deleted";
+    private static final String EDIT_MESSAGE = "%1$s is successfully edited.";
+    private static final String COMPLETE_MESSAGE = "%1$s is marked as completed.";
+    private static final String SEARCH_MESSAGE = "%1$s results are found.";
+    private static final String DISPLAY_MESSAGE = "All %1$s tasks are displayed.";
+    private static final String DISPLAY_TASK_MESSAGE = "Task %1$s: %2$s is displayed.";
+    private static final String ERROR_ALREADY_DELETED_MESSAGE = "Task %1$s is already deleted.";
+    private static final String CONFIRM_MESSAGE = "%1$s is marked as confirmed.";
+    private static final String UNDO_MESSAGE = "%1$s %2$s is undone";
+    private static final String UNDO_CLEAR_MESSAGE = "Clear is undone";
+    private static final String CLEAR_MESSAGE = "All completed task are cleared from the list";
+    Storage storage = null;
+
+    private LogicUndo logicUndo = new LogicUndo();
+
+    // public LogicUndo logicUndo = LogicUndo.getInstance();
+    private Cloner cloner = new Cloner();
+
+    private static Logic instance = null;
+
+    private Logic() {
     }
 
     /**
@@ -115,9 +121,45 @@ public class Logic {
         String name = task.getName();
         Task clonedTask = cloner.deepClone(task);
         logicUndo.pushAddCommandToHistory(clonedTask);
-        ArrayList<Task> taskList = storage.getAllTasks();
+        ArrayList<Task> taskList = storage.getAllActiveTasks();
         return createTaskListFeedback(
                 MessageCreator.createMessage(ADD_MESSAGE, name, null), taskList);
+    }
+
+    /**
+     * Clear all the completed task in the task list
+     *
+     * @param param
+     *            : the command created by commandParser
+     * @return feedback containing the list of tasks that are not completed in
+     *         the file, and the message.
+     * @throws TaskNotFoundException
+     * @throws IOException
+     * @throws InvalidInputException
+     * @throws TimeIntervalOverlapException
+     */
+    Feedback clear(Hashtable<ParamEnum, ArrayList<String>> param)
+            throws TaskNotFoundException, IOException, InvalidInputException,
+            TimeIntervalOverlapException {
+        String keyword = param.get(ParamEnum.KEYWORD).get(0).toLowerCase();
+        switch (keyword) {
+        case COMPLETED_KEYWORD:
+            // get all completed task from storage
+            ArrayList<Task> completedTasks = storage.getAllCompletedTasks();
+            ArrayList<Task> cloneCompletedTasks = cloner
+                    .deepClone(completedTasks);
+            for (int i = 0; i < completedTasks.size(); i++) {
+                Task task = completedTasks.get(i);
+                TaskModifier.deleteTask(task);
+                storage.writeTaskToFile(task);
+            }
+            logicUndo.pushClearCommandToHistory(cloneCompletedTasks);
+            return createTaskListFeedback(
+                    MessageCreator.createMessage(CLEAR_MESSAGE, null, null),
+                    storage.getAllActiveTasks());
+        }
+        throw new InvalidInputException(MessageCreator.createMessage(
+                ERROR_CLEAR_MESSAGE, null, null));
     }
 
     /**
@@ -146,7 +188,7 @@ public class Logic {
             storage.writeTaskToFile(task);
             Task clonedTask = cloner.deepClone(task);
             logicUndo.pushCompleteCommandToHistory(clonedTask);
-            ArrayList<Task> taskList = storage.getAllTasks();
+            ArrayList<Task> taskList = storage.getAllActiveTasks();
             return createTaskListFeedback(
                     MessageCreator.createMessage(COMPLETE_MESSAGE, name, null),
                     taskList);
@@ -189,43 +231,7 @@ public class Logic {
         String taskName = task.getName();
         return createTaskAndTaskListFeedback(
                 MessageCreator.createMessage(CONFIRM_MESSAGE, taskName, null),
-                storage.getAllTasks(), task);
-    }
-
-    /**
-     * Clear all the completed task in the task list
-     *
-     * @param param
-     *            : the command created by commandParser
-     * @return feedback containing the list of tasks that are not completed in
-     *         the file, and the message.
-     * @throws TaskNotFoundException
-     * @throws IOException
-     * @throws InvalidInputException
-     * @throws TimeIntervalOverlapException
-     */
-    Feedback clear(Hashtable<ParamEnum, ArrayList<String>> param)
-            throws TaskNotFoundException, IOException, InvalidInputException,
-            TimeIntervalOverlapException {
-        String keyword = param.get(ParamEnum.KEYWORD).get(0).toLowerCase();
-        switch (keyword) {
-        case "completed":
-            // get all completed task from storage
-            ArrayList<Task> completedTasks = storage.getAllCompletedTasks();
-            ArrayList<Task> cloneCompletedTasks = cloner
-                    .deepClone(completedTasks);
-            for (int i = 0; i < completedTasks.size(); i++) {
-                Task task = completedTasks.get(i);
-                TaskModifier.deleteTask(task);
-                storage.writeTaskToFile(task);
-            }
-            logicUndo.pushClearCommandToHistory(cloneCompletedTasks);
-            return createTaskListFeedback(
-                    MessageCreator.createMessage(CLEAR_MESSAGE, null, null),
-                    storage.getAllTasks());
-        }
-        throw new InvalidInputException(MessageCreator.createMessage(
-                ERROR_CLEAR_MESSAGE, null, null));
+                storage.getAllActiveTasks(), task);
     }
 
     /**
@@ -250,7 +256,7 @@ public class Logic {
         storage.writeTaskToFile(task);
         Task clonedTask = cloner.deepClone(task);
         logicUndo.pushDeleteCommandToHistory(clonedTask);
-        ArrayList<Task> taskList = storage.getAllTasks();
+        ArrayList<Task> taskList = storage.getAllActiveTasks();
         return createTaskListFeedback(
                 MessageCreator.createMessage(DELETE_MESSAGE, name, null),
                 taskList);
@@ -265,18 +271,35 @@ public class Logic {
      *         be displayed, and the message.
      * @throws NumberFormatException
      * @throws TaskNotFoundException
+     * @throws InvalidInputException
      */
 
     Feedback display(Hashtable<ParamEnum, ArrayList<String>> param)
-            throws NumberFormatException, TaskNotFoundException {
-        String idString = param.get(ParamEnum.KEYWORD).get(0);
+            throws NumberFormatException, TaskNotFoundException,
+            InvalidInputException {
+        String displayString = param.get(ParamEnum.KEYWORD).get(0)
+                .toLowerCase();
         logicUndo.pushNullCommandToHistory();
-        if (idString.isEmpty()) {
+        if (displayString.isEmpty() || displayString.equals(ACTIVE_KEYWORD)) {
+            return displayAllActive();
+        } else if (displayString.equals(ALL_KEYWORD)) {
             return displayAll();
+        } else if (displayString.equals(COMPLETED_KEYWORD)) {
+            return displayAllCompleted();
         } else {
-            int id = Integer.parseInt(idString);
-            return displayTask(id);
+            return displayTaskById(displayString);
         }
+    }
+
+    /**
+     * Display all active tasks in the list
+     *
+     * @return feedback containing all the tasks in the file, and the message.
+     */
+    Feedback displayAllActive() {
+        ArrayList<Task> taskList = storage.getAllActiveTasks();
+        return createTaskListFeedback(MessageCreator.createMessage(
+                DISPLAY_MESSAGE, ACTIVE_KEYWORD, null), taskList);
     }
 
     /**
@@ -325,14 +348,14 @@ public class Logic {
                 return createTaskAndTaskListFeedback(
                         MessageCreator.createMessage(UNDO_CLEAR_MESSAGE,
                                 lastAction.getCommand().regex(), null),
-                                storage.getAllTasks(), null);
+                                storage.getAllActiveTasks(), null);
             } else {
                 Task task = tasks.get(0);
                 Task displayTask = getTaskDisplayForUndo(task);
                 return createTaskAndTaskListFeedback(
                         MessageCreator.createMessage(UNDO_MESSAGE, lastAction
                                 .getCommand().regex(), task.getName()),
-                                storage.getAllTasks(), displayTask);
+                                storage.getAllActiveTasks(), displayTask);
             }
         }
     }
@@ -369,7 +392,7 @@ public class Logic {
         }
         storage.writeTaskToFile(task);
         String name = task.getName();
-        ArrayList<Task> taskList = storage.getAllTasks();
+        ArrayList<Task> taskList = storage.getAllActiveTasks();
         logicUndo.pushUpdateCommandToHistory(clonedTask);
         return createTaskAndTaskListFeedback(
                 MessageCreator.createMessage(EDIT_MESSAGE, name, null),
@@ -395,11 +418,17 @@ public class Logic {
      *
      * @return feedback containing all the tasks in the file, and the message.
      */
-    Feedback displayAll() {
+    private Feedback displayAll() {
         ArrayList<Task> taskList = storage.getAllTasks();
         return createTaskListFeedback(
-                MessageCreator.createMessage(DISPLAY_MESSAGE, null, null),
+                MessageCreator.createMessage(DISPLAY_MESSAGE, "", null),
                 taskList);
+    }
+
+    private Feedback displayAllCompleted() {
+        ArrayList<Task> taskList = storage.getAllCompletedTasks();
+        return createTaskListFeedback(MessageCreator.createMessage(
+                DISPLAY_MESSAGE, COMPLETED_KEYWORD, null), taskList);
     }
 
     /**
@@ -417,6 +446,17 @@ public class Logic {
         return createTaskFeedback(
                 MessageCreator.createMessage(DISPLAY_TASK_MESSAGE,
                         String.valueOf(id), task.getName()), task);
+    }
+
+    private Feedback displayTaskById(String displayString)
+            throws TaskNotFoundException, InvalidInputException {
+        try {
+            int id = Integer.parseInt(displayString);
+            return displayTask(id);
+        } catch (NumberFormatException e) {
+            throw new InvalidInputException(MessageCreator.createMessage(
+                    ERROR_DISPLAY_MESSAGE, displayString, null));
+        }
     }
 
     private Task getTaskDisplayForUndo(Task task) {
@@ -462,6 +502,13 @@ public class Logic {
                 && hasMultipleEntries(param, ParamEnum.END_DATE)
                 && hasEqualStartAndEndDates(param)
                 && !param.containsKey(ParamEnum.DUE_DATE);
+    }
+
+    private boolean hasDateParam(Hashtable<ParamEnum, ArrayList<String>> param) {
+        return param.containsKey(ParamEnum.START_DATE)
+                || param.containsKey(ParamEnum.DUE_DATE)
+                || param.containsKey(ParamEnum.END_DATE);
+
     }
 
     private boolean hasDeadlineTaskParams(
@@ -516,11 +563,11 @@ public class Logic {
         }
     }
 
-    private boolean hasDateParam(Hashtable<ParamEnum, ArrayList<String>> param) {
-        return param.containsKey(ParamEnum.START_DATE)
-                || param.containsKey(ParamEnum.DUE_DATE)
-                || param.containsKey(ParamEnum.END_DATE);
-
+    private boolean hasUpdateTimedTaskParams(
+            Hashtable<ParamEnum, ArrayList<String>> param) {
+        return !param.containsKey(ParamEnum.DUE_DATE)
+                && !(hasMultipleEntries(param, ParamEnum.START_DATE) || hasMultipleEntries(
+                        param, ParamEnum.END_DATE));
     }
 
     private void updateConditionalTask(
@@ -575,12 +622,5 @@ public class Logic {
             throw new InvalidInputException(MessageCreator.createMessage(
                     ERROR_DATE_INPUT_MESSAGE, Integer.toString(taskId), null));
         }
-    }
-
-    private boolean hasUpdateTimedTaskParams(
-            Hashtable<ParamEnum, ArrayList<String>> param) {
-        return !param.containsKey(ParamEnum.DUE_DATE)
-                && !(hasMultipleEntries(param, ParamEnum.START_DATE) || hasMultipleEntries(
-                        param, ParamEnum.END_DATE));
     }
 }

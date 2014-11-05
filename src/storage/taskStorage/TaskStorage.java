@@ -45,6 +45,8 @@ public class TaskStorage {
     private static final String COMPLETED = "completed";
     private static final String ACTIVE = "active";
 
+    private static final String ALL = "all";
+
     private Scanner fileScanner;
 
     /**
@@ -421,6 +423,19 @@ public class TaskStorage {
         return completedList;
     }
 
+    public ArrayList<Task> getAllActiveTasks() {
+        ArrayList<Task> activeList = new ArrayList<Task>();
+        if (taskBuffer == null) {
+            return null;
+        }
+        for (Task task : taskBuffer) {
+            if (!task.isDeleted() && !task.isCompleted()) {
+                activeList.add(task);
+            }
+        }
+        return activeList;
+    }
+
     private boolean isSearchTargetByName(Task task, String name) {
         return task.getName().contains(name);
     }
@@ -456,6 +471,9 @@ public class TaskStorage {
         if (status.equals(COMPLETED)) {
             return task.isCompleted() && !task.isDeleted();
         } else if (status.equals(ACTIVE)) {
+            // need double check
+            return !task.isCompleted() && !task.isDeleted();
+        } else if (status.equals(ALL)) {
             // need double check
             return !task.isCompleted() && !task.isDeleted();
         } else {

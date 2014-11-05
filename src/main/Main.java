@@ -60,6 +60,6 @@ public class Main extends Application {
         ApplicationLogger.getApplicationLogger().log(Level.INFO,
                 "Initializing Logic.");
         logicApi = LogicApi.getInstance();
-        return logicApi.displayAll();
+        return logicApi.displayAllActive();
     }
 }

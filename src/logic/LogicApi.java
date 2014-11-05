@@ -139,8 +139,8 @@ public class LogicApi {
         }
     }
 
-    public Feedback displayAll() {
-        return logic.displayAll();
+    public Feedback displayAllActive() {
+        return logic.displayAllActive();
     }
 
     private boolean hasSearchParams(
