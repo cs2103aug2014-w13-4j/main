@@ -340,7 +340,7 @@ public class Logic {
             throws TaskNotFoundException, IOException,
             InvalidDateFormatException, InvalidInputException {
         int taskId = getTaskId(param);
-        Task task = getTaskFromStorage(taskId);
+        Task task = cloner.deepClone(getTaskFromStorage(taskId));
         Task clonedTask = cloner.deepClone(task);
         if (task.isConditionalTask()) {
             updateConditionalTask(param, taskId, task);
