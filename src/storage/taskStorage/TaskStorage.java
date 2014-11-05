@@ -70,7 +70,7 @@ public class TaskStorage {
             // add in interval tree
             if (isTaskTimeValid(task) && !task.isDeleted()) {
                 addTimeIntervalToIntervalTree(task);
-            } else if (isTaskTimeValid(task) && !task.isDeleted()) {
+            } else if (!isTaskTimeValid(task) && !task.isDeleted()) {
                 throw new FileFormatNotSupportedException(
                         "Events are overlapping");
             }
