@@ -162,6 +162,7 @@ public class RootLayoutController {
 				ArrayList<Task> taskList = userCommandFeedback.getTaskList();
 				if (taskList != null) {
 					taskListViewController.updateTaskList(taskList);
+                    calendarViewController.updateCalendarView(taskList);
 				}
 
 				Task taskToDisplay = userCommandFeedback.getTaskDisplay();

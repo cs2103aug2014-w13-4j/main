@@ -13,12 +13,22 @@ import java.util.*;
 public class CalendarViewController {
     @FXML
     private Agenda calendarView;
+    private Map<String, Agenda.AppointmentGroup> lAppointmentGroupMap;
 
     public void initialize(Feedback initialTasks) {
-        final Map<String, Agenda.AppointmentGroup> lAppointmentGroupMap = new HashMap<String, Agenda.AppointmentGroup>();
+        lAppointmentGroupMap = new HashMap<String, Agenda.AppointmentGroup>();
         lAppointmentGroupMap.put("group0", new Agenda.AppointmentGroupImpl().withStyleClass("group0"));
 
         ArrayList<Task> taskList = initialTasks.getTaskList();
+        addTasksToCalendarView(taskList);
+    }
+
+    protected void updateCalendarView(ArrayList<Task> taskList) {
+        calendarView.appointments().clear();
+        addTasksToCalendarView(taskList);
+    }
+
+    private void addTasksToCalendarView(ArrayList<Task> taskList) {
         for (Task task : taskList){
             if (!task.isDeleted()){
                 if (task.getDateStart() == null){ // deadline task
