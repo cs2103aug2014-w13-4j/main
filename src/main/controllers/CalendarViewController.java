@@ -13,11 +13,11 @@ import java.util.*;
 public class CalendarViewController {
     @FXML
     private Agenda calendarView;
-    private Map<String, Agenda.AppointmentGroup> lAppointmentGroupMap;
+    private Map<String, Agenda.AppointmentGroup> appointmentGroupMap;
 
     public void initialize(Feedback initialTasks) {
-        lAppointmentGroupMap = new HashMap<String, Agenda.AppointmentGroup>();
-        lAppointmentGroupMap.put("group0", new Agenda.AppointmentGroupImpl().withStyleClass("group0"));
+        appointmentGroupMap = new HashMap<String, Agenda.AppointmentGroup>();
+        appointmentGroupMap.put("group0", new Agenda.AppointmentGroupImpl().withStyleClass("group0"));
 
         ArrayList<Task> taskList = initialTasks.getTaskList();
         addTasksToCalendarView(taskList);
@@ -31,26 +31,36 @@ public class CalendarViewController {
     private void addTasksToCalendarView(ArrayList<Task> taskList) {
         for (Task task : taskList){
             if (!task.isDeleted()){
-                if (task.getDateStart() == null){ // deadline task
-                    calendarView.appointments().add(
-                        new Agenda.AppointmentImpl()
-                            .withStartTime(task.getDateDue())
-                            .withSummary("ID: " + task.getId())
-                            .withDescription(task.getName())
-                            .withAppointmentGroup(lAppointmentGroupMap.get("group0"))
-                            .withWholeDay(true)
-                    );
-                } else if (task.getDateEnd() != null){ // event task
-                    calendarView.appointments().add(
-                        new Agenda.AppointmentImpl()
-                            .withStartTime(task.getDateStart())
-                            .withEndTime(task.getDateEnd())
-                            .withSummary("ID: " + task.getId())
-                            .withDescription(task.getName())
-                            .withAppointmentGroup(lAppointmentGroupMap.get("group0"))
-                    );
+                if (task.getDateStart() == null){
+                    addDeadlineTaskToCalendarView(task);
+                } else if (task.getDateEnd() != null){
+                    addEventTaskToCalendarView(task);
                 }
             }
         }
+    }
+
+    private void addDeadlineTaskToCalendarView(Task task) {
+        assert (appointmentGroupMap != null) : "appointmentGroupMap was not initialized!";
+        calendarView.appointments().add(
+            new Agenda.AppointmentImpl()
+                .withStartTime(task.getDateDue())
+                .withSummary("ID: " + task.getId())
+                .withDescription(task.getName())
+                .withAppointmentGroup(appointmentGroupMap.get("group0"))
+                .withWholeDay(true)
+        );
+    }
+
+    private void addEventTaskToCalendarView(Task task) {
+        assert (appointmentGroupMap != null) : "appointmentGroupMap was not initialized!";
+        calendarView.appointments().add(
+            new Agenda.AppointmentImpl()
+                .withStartTime(task.getDateStart())
+                .withEndTime(task.getDateEnd())
+                .withSummary("ID: " + task.getId())
+                .withDescription(task.getName())
+                .withAppointmentGroup(appointmentGroupMap.get("group0"))
+        );
     }
 }
