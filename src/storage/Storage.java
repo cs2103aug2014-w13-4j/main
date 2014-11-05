@@ -97,20 +97,26 @@ public class Storage {
         return taskFile.getAllCompletedTasks();
     }
 
-    // Get a list of tags
-    public ArrayList<String> getAllTags() {
-        return tagFile.getAllTags();
-    }
+	// Get a list of tags
+	public ArrayList<String> getAllTags() {
+		return tagFile.getAllTags();
+	}
 
-    // Search a list of tasks with certain key words
-    // Assume keywords of name and note is only one string
-    public ArrayList<Task> searchTask(
-            Hashtable<ParamEnum, ArrayList<String>> keyWordTable)
-            throws InvalidDateFormatException, InvalidInputException {
-        return taskFile.searchTask(keyWordTable, getAllTasks());
-    }
+	// Search a list of tasks with certain key words
+	// Assume keywords of name and note is only one string
+	public ArrayList<Task> searchTask(Hashtable<ParamEnum, ArrayList<String>> keyWordTable) 
+			throws InvalidDateFormatException, InvalidInputException {
+		return taskFile.searchTask(keyWordTable, getAllTasks());
+	}
+	
+	// Search a list of tasks within certain interval only
+	public ArrayList<Task> suggestedSearchTask(Hashtable<ParamEnum, ArrayList<String>> keyWordTable) throws InvalidDateFormatException, InvalidInputException {
+	    Hashtable<ParamEnum, ArrayList<String>> searchKeyWordTable = (Hashtable<ParamEnum, ArrayList<String>>) keyWordTable.clone();
+	    searchKeyWordTable.remove(ParamEnum.NAME);
+	    return searchTask(searchKeyWordTable);
+	}
 
-    public IntervalSearch getIntervalTree() {
-        return taskFile.getIntervalTree();
-    }
+	public IntervalSearch getIntervalTree() {
+		return taskFile.getIntervalTree();
+	}
 }
