@@ -14,16 +14,16 @@ import java.util.Hashtable;
 import logic.Logic;
 import logic.LogicApi;
 import logic.TaskModifier;
-import models.DateParser;
-import models.Feedback;
-import models.PriorityLevelEnum;
-import models.Task;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import command.ParamEnum;
-import exceptions.FileFormatNotSupportedException;
+import common.DateParser;
+import common.Feedback;
+import common.PriorityLevelEnum;
+import common.Task;
+import common.exceptions.FileFormatNotSupportedException;
 
 public class LogicTest {
     Class<LogicApi> logicApiClass = LogicApi.class;
@@ -49,7 +49,8 @@ public class LogicTest {
 
     @Before
     public void getLogicAndStorage() throws IllegalArgumentException,
-            IllegalAccessException, IOException, FileFormatNotSupportedException {
+    IllegalAccessException, IOException,
+            FileFormatNotSupportedException {
         logicApiObject = LogicApi.getNewInstance();
         logicObject = (Logic) logic.get(logicApiObject);
     }
@@ -70,7 +71,7 @@ public class LogicTest {
 
     @Test
     public void testAdd() throws IllegalAccessException,
-            IllegalArgumentException, InvocationTargetException {
+    IllegalArgumentException, InvocationTargetException {
         Hashtable<ParamEnum, ArrayList<String>> params = new Hashtable<ParamEnum, ArrayList<String>>();
         ArrayList<String> nameList = new ArrayList<String>();
         nameList.add("test test");
@@ -88,10 +89,10 @@ public class LogicTest {
         assertEquals("test test", task.getName());
         assertEquals(PriorityLevelEnum.RED, task.getPriorityLevel());
     }
-    
+
     @Test
     public void testAddWithIntPrioritylevel() throws IllegalAccessException,
-            IllegalArgumentException, InvocationTargetException {
+    IllegalArgumentException, InvocationTargetException {
         Hashtable<ParamEnum, ArrayList<String>> params = new Hashtable<ParamEnum, ArrayList<String>>();
         ArrayList<String> nameList = new ArrayList<String>();
         nameList.add("test test");
@@ -107,7 +108,7 @@ public class LogicTest {
 
     @Test
     public void testDelete() throws IllegalAccessException,
-            IllegalArgumentException, InvocationTargetException {
+    IllegalArgumentException, InvocationTargetException {
         Hashtable<ParamEnum, ArrayList<String>> params = new Hashtable<ParamEnum, ArrayList<String>>();
         ArrayList<String> nameList = new ArrayList<String>();
         nameList.add("test test");
@@ -115,7 +116,7 @@ public class LogicTest {
         ArrayList<String> noteList = new ArrayList<String>();
         noteList.add("Test is good");
         params.put(ParamEnum.NOTE, noteList);
-        Feedback feedback = (Feedback) add.invoke(logicObject, params);
+        add.invoke(logicObject, params);
 
         Hashtable<ParamEnum, ArrayList<String>> deleteParams = new Hashtable<ParamEnum, ArrayList<String>>();
         ArrayList<String> numList = new ArrayList<String>();
@@ -128,7 +129,7 @@ public class LogicTest {
 
     @Test
     public void testConfirm() throws IllegalAccessException,
-            IllegalArgumentException, InvocationTargetException {
+    IllegalArgumentException, InvocationTargetException {
         Hashtable<ParamEnum, ArrayList<String>> params = new Hashtable<ParamEnum, ArrayList<String>>();
         ArrayList<String> nameList = new ArrayList<String>();
         nameList.add("test test");
@@ -136,7 +137,7 @@ public class LogicTest {
         ArrayList<String> noteList = new ArrayList<String>();
         noteList.add("Test is good");
         params.put(ParamEnum.NOTE, noteList);
-        Feedback feedback = (Feedback) add.invoke(logicObject, params);
+        add.invoke(logicObject, params);
 
         Hashtable<ParamEnum, ArrayList<String>> completeParams = new Hashtable<ParamEnum, ArrayList<String>>();
         ArrayList<String> numList = new ArrayList<String>();
@@ -152,7 +153,7 @@ public class LogicTest {
 
     @Test
     public void testUpdate() throws IllegalAccessException,
-            IllegalArgumentException, InvocationTargetException {
+    IllegalArgumentException, InvocationTargetException {
         Hashtable<ParamEnum, ArrayList<String>> params = new Hashtable<ParamEnum, ArrayList<String>>();
         ArrayList<String> nameList = new ArrayList<String>();
         nameList.add("test test");
@@ -178,12 +179,13 @@ public class LogicTest {
 
         assertEquals("Test is good", task.getNote());
         assertTrue(task.isDeadlineTask());
-        assertEquals("20-10-2014 09:00", DateParser.parseCalendar(task.getDateDue()));
+        assertEquals("20-10-2014 09:00",
+                DateParser.parseCalendar(task.getDateDue()));
     }
-    
+
     @Test
     public void testUpdateDeadlineToTimed() throws IllegalAccessException,
-            IllegalArgumentException, InvocationTargetException {
+    IllegalArgumentException, InvocationTargetException {
         Hashtable<ParamEnum, ArrayList<String>> params = new Hashtable<ParamEnum, ArrayList<String>>();
         ArrayList<String> nameList = new ArrayList<String>();
         nameList.add("test test");
@@ -211,7 +213,9 @@ public class LogicTest {
         assertEquals(1, updateFeedback.getTaskList().size());
 
         assertTrue(task.isTimedTask());
-        assertEquals("23-10-2014 09:00", DateParser.parseCalendar(task.getDateStart()));
-        assertEquals("23-10-2014 11:00", DateParser.parseCalendar(task.getDateEnd()));
+        assertEquals("23-10-2014 09:00",
+                DateParser.parseCalendar(task.getDateStart()));
+        assertEquals("23-10-2014 11:00",
+                DateParser.parseCalendar(task.getDateEnd()));
     }
 }

@@ -4,13 +4,13 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import logic.LogicApi;
 import main.controllers.RootLayoutController;
-import models.ApplicationLogger;
-import models.Feedback;
 
 import java.io.IOException;
 import java.util.logging.Level;
 
-import exceptions.FileFormatNotSupportedException;
+import common.ApplicationLogger;
+import common.Feedback;
+import common.exceptions.FileFormatNotSupportedException;
 
 /**
  * The main method of the program; program execution starts here.
@@ -18,43 +18,48 @@ import exceptions.FileFormatNotSupportedException;
  * @author szhlibrary
  */
 public class Main extends Application {
-	private LogicApi logicApi;
+    private LogicApi logicApi;
 
-	private Stage primaryStage;
+    private Stage primaryStage;
 
-	private RootLayoutController rootLayoutController;
+    private RootLayoutController rootLayoutController;
 
-	public static void main(String[] args) {
-		launch(args);
-	}
+    public static void main(String[] args) {
+        launch(args);
+    }
 
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-		ApplicationLogger.getApplicationLogger().log(Level.INFO, "Initializing JavaFX UI.");
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        ApplicationLogger.getApplicationLogger().log(Level.INFO,
+                "Initializing JavaFX UI.");
 
-		initPrimaryStage(primaryStage);
-		initLayouts();
-	}
+        initPrimaryStage(primaryStage);
+        initLayouts();
+    }
 
-	private void initPrimaryStage(Stage primaryStage) {
-		this.primaryStage = primaryStage;
-		this.primaryStage.setTitle("Awesome Task Manager");
-	}
+    private void initPrimaryStage(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+        this.primaryStage.setTitle("Awesome Task Manager");
+    }
 
-	private void initLayouts() throws FileFormatNotSupportedException {
-		assert (primaryStage != null);
-		try {
-			Feedback allActiveTasks = initLogicAndGetAllActiveTasks();
-			rootLayoutController = new RootLayoutController();
-			rootLayoutController.initialize(primaryStage, allActiveTasks, logicApi);
-		} catch (IOException e) {
-			ApplicationLogger.getApplicationLogger().log(Level.SEVERE, e.getMessage());
-		}
-	}
+    private void initLayouts() throws FileFormatNotSupportedException {
+        assert (primaryStage != null);
+        try {
+            Feedback allActiveTasks = initLogicAndGetAllActiveTasks();
+            rootLayoutController = new RootLayoutController();
+            rootLayoutController.initialize(primaryStage, allActiveTasks,
+                    logicApi);
+        } catch (IOException e) {
+            ApplicationLogger.getApplicationLogger().log(Level.SEVERE,
+                    e.getMessage());
+        }
+    }
 
-	private Feedback initLogicAndGetAllActiveTasks() throws IOException, FileFormatNotSupportedException {
-		ApplicationLogger.getApplicationLogger().log(Level.INFO, "Initializing Logic.");
-		logicApi = LogicApi.getInstance();
-		return logicApi.displayAll();
-	}
+    private Feedback initLogicAndGetAllActiveTasks() throws IOException,
+            FileFormatNotSupportedException {
+        ApplicationLogger.getApplicationLogger().log(Level.INFO,
+                "Initializing Logic.");
+        logicApi = LogicApi.getInstance();
+        return logicApi.displayAll();
+    }
 }

@@ -7,16 +7,16 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import models.DateParser;
-import models.PriorityLevelEnum;
-import models.StartDueDatePair;
-import models.Task;
 import command.ParamEnum;
+import common.DateParser;
+import common.PriorityLevelEnum;
+import common.StartDueDatePair;
+import common.Task;
+import common.exceptions.InvalidPriorityLevelException;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import exceptions.InvalidPriorityLevelException;
 import storage.taskStorage.TaskStorage;
 
 public class TaskStorageTest {
@@ -31,7 +31,7 @@ public class TaskStorageTest {
 
     private Task createTaskForTest(int id, String name, int priorityLevel,
             String note, boolean isDeleted, ArrayList<StartDueDatePair> datePair)
-            throws InvalidPriorityLevelException {
+                    throws InvalidPriorityLevelException {
         Task task = new Task();
         task.setId(id);
         task.setName(name);
@@ -64,7 +64,8 @@ public class TaskStorageTest {
             assertEquals(task,
                     taskStorage.getTask(taskStorage.getAllTasks().size()));
             task = createTaskForTest(1, "Read Report", 1,
-                    "Do eat apple when you are writing report.", false, datePairArrayList);
+                    "Do eat apple when you are writing report.", false,
+                    datePairArrayList);
             taskStorage.writeTaskToFile(task);
             assertEquals(task, taskStorage.getTask(1));
         } catch (Exception e) {
@@ -72,16 +73,18 @@ public class TaskStorageTest {
         }
     }
 
-	@Test 
-	public void testCanGetCompletedTask() {
-		try {
-			TaskStorage taskStorage = TaskStorage.getNewInstance("taskStorage.data");
-			ArrayList<Task> completedTaskList = taskStorage.getAllCompletedTasks();
-			assertEquals(0, completedTaskList.size());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    @Test
+    public void testCanGetCompletedTask() {
+        try {
+            TaskStorage taskStorage = TaskStorage
+                    .getNewInstance("taskStorage.data");
+            ArrayList<Task> completedTaskList = taskStorage
+                    .getAllCompletedTasks();
+            assertEquals(0, completedTaskList.size());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     @Test
     public void testCanSearchTask() {

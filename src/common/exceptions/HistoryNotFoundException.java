@@ -1,4 +1,4 @@
-package exceptions;
+package common.exceptions;
 
 public class HistoryNotFoundException extends Exception {
     public HistoryNotFoundException(String message) {

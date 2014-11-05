@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Hashtable;
 
-import models.DateParser;
-import models.MessageCreator;
-import models.PriorityLevelEnum;
-import models.StartDueDatePair;
-import models.Task;
 import command.ParamEnum;
-import exceptions.InvalidDateFormatException;
-import exceptions.InvalidInputException;
-import exceptions.InvalidPriorityLevelException;
+import common.DateParser;
+import common.MessageCreator;
+import common.PriorityLevelEnum;
+import common.StartDueDatePair;
+import common.Task;
+import common.exceptions.InvalidDateFormatException;
+import common.exceptions.InvalidInputException;
+import common.exceptions.InvalidPriorityLevelException;
 
 public class TaskModifier {
 
@@ -59,7 +59,7 @@ public class TaskModifier {
 
     static void modifyConditionalTask(
             Hashtable<ParamEnum, ArrayList<String>> param, Task task)
-            throws InvalidDateFormatException, InvalidInputException {
+                    throws InvalidDateFormatException, InvalidInputException {
         setNameFromCommand(param, task);
         setTagsFromCommand(param, task);
         setLevelFromCommand(param, task);
@@ -69,7 +69,7 @@ public class TaskModifier {
 
     static void modifyDeadlineTask(
             Hashtable<ParamEnum, ArrayList<String>> param, Task task)
-            throws InvalidDateFormatException, InvalidInputException {
+                    throws InvalidDateFormatException, InvalidInputException {
         setNameFromCommand(param, task);
         setTagsFromCommand(param, task);
         setLevelFromCommand(param, task);
@@ -80,7 +80,7 @@ public class TaskModifier {
 
     static void modifyFloatingTask(
             Hashtable<ParamEnum, ArrayList<String>> param, Task task)
-            throws InvalidDateFormatException, InvalidInputException {
+                    throws InvalidDateFormatException, InvalidInputException {
         setNameFromCommand(param, task);
         setTagsFromCommand(param, task);
         setLevelFromCommand(param, task);
@@ -174,7 +174,7 @@ public class TaskModifier {
 
     private static void setConditionalDatesFromCommand(
             Hashtable<ParamEnum, ArrayList<String>> param, Task task)
-            throws InvalidDateFormatException, InvalidInputException {
+                    throws InvalidDateFormatException, InvalidInputException {
         if (param.containsKey(ParamEnum.START_DATE)
                 && param.containsKey(ParamEnum.END_DATE)) {
             ArrayList<String> startDates = param.get(ParamEnum.START_DATE);
@@ -196,7 +196,7 @@ public class TaskModifier {
 
     private static void setDueDateFromCommand(
             Hashtable<ParamEnum, ArrayList<String>> param, Task task)
-            throws InvalidDateFormatException {
+                    throws InvalidDateFormatException {
         if (param.containsKey(ParamEnum.DUE_DATE)
                 && !param.get(ParamEnum.DUE_DATE).get(0).isEmpty()) {
             Calendar dueDate = DateParser.parseString(param.get(
@@ -211,7 +211,7 @@ public class TaskModifier {
 
     private static void setEndDateFromCommand(
             Hashtable<ParamEnum, ArrayList<String>> param, Task task)
-            throws InvalidDateFormatException {
+                    throws InvalidDateFormatException {
         if (param.containsKey(ParamEnum.END_DATE)
                 && !param.get(ParamEnum.END_DATE).get(0).isEmpty()) {
             Calendar endDate = DateParser.parseString(param.get(
@@ -222,7 +222,7 @@ public class TaskModifier {
 
     private static void setLevelFromCommand(
             Hashtable<ParamEnum, ArrayList<String>> param, Task task)
-            throws InvalidInputException {
+                    throws InvalidInputException {
         if (param.containsKey(ParamEnum.LEVEL)) {
             assert param.get(ParamEnum.LEVEL).size() == 1;
             String levelString = param.get(ParamEnum.LEVEL).get(0);
@@ -254,7 +254,7 @@ public class TaskModifier {
 
     private static void setStartDateFromCommand(
             Hashtable<ParamEnum, ArrayList<String>> param, Task task)
-            throws InvalidDateFormatException {
+                    throws InvalidDateFormatException {
         if (param.containsKey(ParamEnum.START_DATE)
                 && !param.get(ParamEnum.START_DATE).get(0).isEmpty()) {
             Calendar startDate = DateParser.parseString(param.get(

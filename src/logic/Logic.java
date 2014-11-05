@@ -5,24 +5,23 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.logging.Level;
 
-import com.google.gson.JsonSyntaxException;
 import com.rits.cloning.Cloner;
 
-import models.ApplicationLogger;
 import storage.Storage;
 import command.CommandEnum;
 import command.ParamEnum;
-import models.Feedback;
-import models.History;
-import models.MessageCreator;
-import models.Task;
-import exceptions.FileFormatNotSupportedException;
-import exceptions.HistoryNotFoundException;
-import exceptions.InvalidCommandUseException;
-import exceptions.InvalidDateFormatException;
-import exceptions.InvalidInputException;
-import exceptions.TaskNotFoundException;
-import exceptions.TimeIntervalOverlapException;
+import common.ApplicationLogger;
+import common.Feedback;
+import common.History;
+import common.MessageCreator;
+import common.Task;
+import common.exceptions.FileFormatNotSupportedException;
+import common.exceptions.HistoryNotFoundException;
+import common.exceptions.InvalidCommandUseException;
+import common.exceptions.InvalidDateFormatException;
+import common.exceptions.InvalidInputException;
+import common.exceptions.TaskNotFoundException;
+import common.exceptions.TimeIntervalOverlapException;
 
 public class Logic {
     private static final String ERROR_UNDO_MESSAGE = "Search and display actions cannot be undone.";
@@ -37,7 +36,6 @@ public class Logic {
     private static final String EDIT_MESSAGE = "%1$s is successfully edited.";
     private static final String COMPLETE_MESSAGE = "%1$s is marked as completed.";
     private static final String SEARCH_MESSAGE = "%1$s results are found.";
-    private static final String ERROR_STORAGE_MESSAGE = "There is an error loading the storage.";
     private static final String DISPLAY_MESSAGE = "All tasks are displayed.";
     private static final String DISPLAY_TASK_MESSAGE = "Task %1$s: %2$s is displayed.";
     private static final String ERROR_ALREADY_DELETED_MESSAGE = "Task %1$s is already deleted.";
@@ -56,7 +54,7 @@ public class Logic {
     }
 
     public static Logic getInstance() throws IOException,
-            FileFormatNotSupportedException {
+    FileFormatNotSupportedException {
         if (instance == null) {
             instance = new Logic();
             ApplicationLogger.getApplicationLogger().log(Level.INFO,
@@ -68,7 +66,7 @@ public class Logic {
 
     // for debugging purposes. Always create a new instance
     public static Logic getNewInstance() throws IOException,
-            FileFormatNotSupportedException {
+    FileFormatNotSupportedException {
         instance = new Logic();
         ApplicationLogger.getApplicationLogger().log(Level.INFO,
                 "Initializing Logic.");
@@ -87,11 +85,12 @@ public class Logic {
      * @throws IOException
      * @throws InvalidDateFormatException
      * @throws InvalidInputException
-     * @throws TimeIntervalOverlapException 
+     * @throws TimeIntervalOverlapException
      */
     Feedback add(Hashtable<ParamEnum, ArrayList<String>> param)
             throws TaskNotFoundException, IOException,
-            InvalidDateFormatException, InvalidInputException, TimeIntervalOverlapException {
+            InvalidDateFormatException, InvalidInputException,
+            TimeIntervalOverlapException {
         Task task = new Task();
         if (hasFloatingTaskParams(param)) {
             ApplicationLogger.getApplicationLogger().log(Level.INFO,
@@ -133,7 +132,7 @@ public class Logic {
      * @throws InvalidDateFormatException
      * @throws InvalidCommandUseException
      * @throws InvalidInputException
-     * @throws TimeIntervalOverlapException 
+     * @throws TimeIntervalOverlapException
      */
     Feedback complete(Hashtable<ParamEnum, ArrayList<String>> param)
             throws TaskNotFoundException, IOException,
@@ -167,11 +166,12 @@ public class Logic {
      * @throws InvalidInputException
      * @throws TaskNotFoundException
      * @throws IOException
-     * @throws TimeIntervalOverlapException 
+     * @throws TimeIntervalOverlapException
      */
 
     Feedback confirm(Hashtable<ParamEnum, ArrayList<String>> param)
-            throws InvalidInputException, TaskNotFoundException, IOException, TimeIntervalOverlapException {
+            throws InvalidInputException, TaskNotFoundException, IOException,
+            TimeIntervalOverlapException {
         int taskId = getTaskId(param);
         String dateIdString = param.get(ParamEnum.ID).get(0);
         int dateId;
@@ -191,37 +191,41 @@ public class Logic {
                 MessageCreator.createMessage(CONFIRM_MESSAGE, taskName, null),
                 storage.getAllTasks(), task);
     }
-    
+
     /**
      * Clear all the completed task in the task list
-     * 
+     *
      * @param param
      *            : the command created by commandParser
-     * @return feedback containing the list of tasks that are not completed in the file, and
-     *         the message.
+     * @return feedback containing the list of tasks that are not completed in
+     *         the file, and the message.
      * @throws TaskNotFoundException
      * @throws IOException
-     * @throws InvalidInputException 
-     * @throws TimeIntervalOverlapException 
+     * @throws InvalidInputException
+     * @throws TimeIntervalOverlapException
      */
-    Feedback clear(Hashtable<ParamEnum, ArrayList<String>> param) throws TaskNotFoundException, IOException, InvalidInputException, TimeIntervalOverlapException {
-            String keyword = param.get(ParamEnum.KEYWORD).get(0).toLowerCase();
-            switch (keyword) {
-            case "completed": 
-            //get all completed task from storage
-                ArrayList<Task> completedTasks = storage.getAllCompletedTasks();
-                ArrayList<Task> cloneCompletedTasks = cloner.deepClone(completedTasks);
-                for (int i = 0; i < completedTasks.size(); i++) {
-                    Task task = completedTasks.get(i);
-                    TaskModifier.deleteTask(task);
-                    storage.writeTaskToFile(task);
-                }
-                logicUndo.pushClearCommandToHistory(cloneCompletedTasks);
-                return createTaskListFeedback(MessageCreator.createMessage(CLEAR_MESSAGE, null, null),
-                        storage.getAllTasks());
+    Feedback clear(Hashtable<ParamEnum, ArrayList<String>> param)
+            throws TaskNotFoundException, IOException, InvalidInputException,
+            TimeIntervalOverlapException {
+        String keyword = param.get(ParamEnum.KEYWORD).get(0).toLowerCase();
+        switch (keyword) {
+        case "completed":
+            // get all completed task from storage
+            ArrayList<Task> completedTasks = storage.getAllCompletedTasks();
+            ArrayList<Task> cloneCompletedTasks = cloner
+                    .deepClone(completedTasks);
+            for (int i = 0; i < completedTasks.size(); i++) {
+                Task task = completedTasks.get(i);
+                TaskModifier.deleteTask(task);
+                storage.writeTaskToFile(task);
             }
-            throw new InvalidInputException(MessageCreator.createMessage(
-                    ERROR_CLEAR_MESSAGE, null, null));
+            logicUndo.pushClearCommandToHistory(cloneCompletedTasks);
+            return createTaskListFeedback(
+                    MessageCreator.createMessage(CLEAR_MESSAGE, null, null),
+                    storage.getAllTasks());
+        }
+        throw new InvalidInputException(MessageCreator.createMessage(
+                ERROR_CLEAR_MESSAGE, null, null));
     }
 
     /**
@@ -234,10 +238,11 @@ public class Logic {
      * @throws TaskNotFoundException
      * @throws IOException
      * @throws InvalidInputException
-     * @throws TimeIntervalOverlapException 
+     * @throws TimeIntervalOverlapException
      */
     Feedback delete(Hashtable<ParamEnum, ArrayList<String>> param)
-            throws TaskNotFoundException, IOException, InvalidInputException, TimeIntervalOverlapException {
+            throws TaskNotFoundException, IOException, InvalidInputException,
+            TimeIntervalOverlapException {
         int taskId = getTaskId(param);
         Task task = getTaskFromStorage(taskId);
         String name = task.getName();
@@ -303,30 +308,31 @@ public class Logic {
      * @throws HistoryNotFoundException
      * @throws TaskNotFoundException
      * @throws IOException
-     * @throws TimeIntervalOverlapException 
+     * @throws TimeIntervalOverlapException
      */
     Feedback undo() throws HistoryNotFoundException, TaskNotFoundException,
-            IOException, TimeIntervalOverlapException {
+    IOException, TimeIntervalOverlapException {
         History lastAction = logicUndo.getLastAction();
         if (lastAction == null) {
             throw new HistoryNotFoundException(ERROR_UNDO_MESSAGE);
         } else {
             ArrayList<Task> tasks = lastAction.getTask();
             // Add all history task back to current task
-            for (Task task: tasks) {
+            for (Task task : tasks) {
                 storage.writeTaskToFile(task);
             }
             if (lastAction.getCommand() == CommandEnum.CLEAR) {
                 return createTaskAndTaskListFeedback(
-                        MessageCreator.createMessage(UNDO_CLEAR_MESSAGE, lastAction.getCommand()
-                                .regex(), null),
-                        storage.getAllTasks(), null);
+                        MessageCreator.createMessage(UNDO_CLEAR_MESSAGE,
+                                lastAction.getCommand().regex(), null),
+                                storage.getAllTasks(), null);
             } else {
                 Task task = tasks.get(0);
                 Task displayTask = getTaskDisplayForUndo(task);
-                return createTaskAndTaskListFeedback(MessageCreator.createMessage(
-                        UNDO_MESSAGE, lastAction.getCommand().regex(),
-                        task.getName()), storage.getAllTasks(), displayTask);
+                return createTaskAndTaskListFeedback(
+                        MessageCreator.createMessage(UNDO_MESSAGE, lastAction
+                                .getCommand().regex(), task.getName()),
+                                storage.getAllTasks(), displayTask);
             }
         }
     }
@@ -342,11 +348,12 @@ public class Logic {
      * @throws IOException
      * @throws InvalidDateFormatException
      * @throws InvalidInputException
-     * @throws TimeIntervalOverlapException 
+     * @throws TimeIntervalOverlapException
      */
     Feedback update(Hashtable<ParamEnum, ArrayList<String>> param)
             throws TaskNotFoundException, IOException,
-            InvalidDateFormatException, InvalidInputException, TimeIntervalOverlapException {
+            InvalidDateFormatException, InvalidInputException,
+            TimeIntervalOverlapException {
         int taskId = getTaskId(param);
         Task task = cloner.deepClone(getTaskFromStorage(taskId));
         Task clonedTask = cloner.deepClone(task);
@@ -518,7 +525,7 @@ public class Logic {
 
     private void updateConditionalTask(
             Hashtable<ParamEnum, ArrayList<String>> param, int taskId, Task task)
-            throws InvalidInputException, InvalidDateFormatException {
+                    throws InvalidInputException, InvalidDateFormatException {
         if (!hasDateParam(param) || hasConditionalTaskParams(param)) {
             TaskModifier.modifyConditionalTask(param, task);
         } else {
@@ -530,7 +537,7 @@ public class Logic {
 
     private void updateDeadlineTask(
             Hashtable<ParamEnum, ArrayList<String>> param, int taskId, Task task)
-            throws InvalidDateFormatException, InvalidInputException {
+                    throws InvalidDateFormatException, InvalidInputException {
         if (hasDeadlineTaskParams(param) || !hasDateParam(param)) {
             TaskModifier.modifyDeadlineTask(param, task);
         } else if (hasTimedTaskParams(param)) {
@@ -543,7 +550,7 @@ public class Logic {
 
     private void updateFloatingTask(
             Hashtable<ParamEnum, ArrayList<String>> param, Task task)
-            throws InvalidDateFormatException, InvalidInputException {
+                    throws InvalidDateFormatException, InvalidInputException {
         if (hasConditionalTaskParams(param)) {
             TaskModifier.modifyConditionalTask(param, task);
         } else if (hasTimedTaskParams(param)) {

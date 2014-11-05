@@ -8,8 +8,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import command.CommandParser;
-import models.Command;
 import command.ParamEnum;
+import common.Command;
 
 public class CommandParserTest {
 

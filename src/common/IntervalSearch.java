@@ -1,4 +1,4 @@
-package models;
+package common;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -8,7 +8,7 @@ import java.util.HashMap;
 /**
  * This class helps to keep track of the dates of all the events from the user.
  * It helps to ensure no crash of event as well as finding empty slots for user.
- * 
+ *
  * @author xuanyi
  *
  */
@@ -22,7 +22,7 @@ public class IntervalSearch {
     /**
      * Helper class to represent an date interval. Supports check for overlap of
      * interval.
-     * 
+     *
      * @author xuanyi
      *
      */
@@ -48,6 +48,7 @@ public class IntervalSearch {
                     && endDate >= range.getStartDate();
         }
 
+        @Override
         public int hashCode() {
             int hash = HASH_VALUE;
             hash = (int) (HASH_CONSTANT * hash + endDate);
@@ -57,10 +58,12 @@ public class IntervalSearch {
 
         @Override
         public boolean equals(Object obj) {
-            if (!(obj instanceof DateRange))
+            if (!(obj instanceof DateRange)) {
                 return false;
-            if (obj == this)
+            }
+            if (obj == this) {
                 return true;
+            }
 
             DateRange range = (DateRange) obj;
             return startDate == range.getStartDate()
@@ -73,7 +76,7 @@ public class IntervalSearch {
     /**
      * This operation search in a given interval for all the DateRange object
      * that overlap with this given dates.
-     * 
+     *
      * @param start
      *            of the date interval
      * @param end
@@ -94,7 +97,7 @@ public class IntervalSearch {
 
     /**
      * This operation check if a given date overlap with any other DateRange
-     * 
+     *
      * @param start
      *            of the new date range to be added
      * @param end
@@ -109,7 +112,7 @@ public class IntervalSearch {
 
     /**
      * This operation returns all the task id found in a given date range
-     * 
+     *
      * @param start
      *            of the given date range
      * @param end
@@ -131,7 +134,7 @@ public class IntervalSearch {
     /**
      * This operation returns all the date range that is blocked within the
      * given date range
-     * 
+     *
      * @param start
      *            of the given date range to be check
      * @param end
@@ -157,7 +160,7 @@ public class IntervalSearch {
     /**
      * This operaton adds a given start and end date to the hashmap to be check
      * against other date
-     * 
+     *
      * @param start
      * @param end
      * @param id
@@ -173,7 +176,7 @@ public class IntervalSearch {
     /**
      * This operation remove the date range from the hashmap so that it will not
      * be check against other date
-     * 
+     *
      * @param start
      * @param end
      */
@@ -187,7 +190,7 @@ public class IntervalSearch {
 
     /**
      * This operation updates a given date range in the hashmap
-     * 
+     *
      * @param oldStart
      * @param oldEnd
      * @param newStart
@@ -213,24 +216,24 @@ public class IntervalSearch {
 
     /**
      * This operation returns all the tasks starting from a given date
-     * 
+     *
      * @param start
      * @return list of task that overlap with the given starting date
      */
     public ArrayList<Integer> getTasksFrom(Calendar start) {
-        Calendar end = GregorianCalendar.getInstance();
+        Calendar end = Calendar.getInstance();
         end.setTimeInMillis(END_OF_DATE);
         return getTasksWithinInterval(start, end);
     }
 
     /**
      * This operation returns all the tasks before a given date
-     * 
+     *
      * @param end
      * @return list of task that overlap with the given ending date
      */
     public ArrayList<Integer> getTasksBefore(Calendar end) {
-        Calendar start = GregorianCalendar.getInstance();
+        Calendar start = Calendar.getInstance();
         start.setTimeInMillis(START_OF_DATE);
         return getTasksWithinInterval(start, end);
     }
@@ -242,8 +245,9 @@ public class IntervalSearch {
     public void remove(Task task) {
         int taskId = task.getId();
         Calendar dateStart, dateEnd;
-        HashMap<DateRange, Integer> clonedMap = (HashMap<DateRange, Integer>) map.clone();
-        
+        HashMap<DateRange, Integer> clonedMap = (HashMap<DateRange, Integer>) map
+                .clone();
+
         for (DateRange key : clonedMap.keySet()) {
             if (map.get(key) == taskId) {
                 dateStart = Calendar.getInstance();

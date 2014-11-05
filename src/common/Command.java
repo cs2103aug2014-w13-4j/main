@@ -1,4 +1,4 @@
-package models;
+package common;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -7,8 +7,9 @@ import command.CommandEnum;
 import command.ParamEnum;
 
 /**
- * This class acts a a common object for different components of the project to interpret
- * the given command of the user
+ * This class acts a a common object for different components of the project to
+ * interpret the given command of the user
+ * 
  * @author xuanyi
  *
  */
@@ -21,7 +22,7 @@ public class Command {
 
     public Command(CommandEnum commandType) {
         this.commandType = commandType;
-        this.params = new Hashtable<ParamEnum, ArrayList<String>>();
+        params = new Hashtable<ParamEnum, ArrayList<String>>();
     }
 
     public void addCommandString(String userCommandString) {

@@ -3,21 +3,26 @@ package main.controllers;
 import command.CommandEnum;
 import command.CommandParser;
 import command.ParamEnum;
-import exceptions.*;
+import common.ApplicationLogger;
+import common.Command;
+import common.Feedback;
+import common.Task;
+import common.exceptions.HistoryNotFoundException;
+import common.exceptions.InvalidCommandUseException;
+import common.exceptions.InvalidDateFormatException;
+import common.exceptions.InvalidInputException;
+import common.exceptions.TaskNotFoundException;
+import common.exceptions.TimeIntervalOverlapException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import jfxtras.scene.control.agenda.Agenda;
 import logic.LogicApi;
 import main.Main;
-import models.ApplicationLogger;
-import models.Command;
-import models.Feedback;
-import models.Task;
+
 import org.controlsfx.control.NotificationPane;
 
 import java.io.IOException;
@@ -45,19 +50,21 @@ public class RootLayoutController {
 
     private Scene scene;
 
-    public void initialize(Stage primaryStage, Feedback allActiveTasks, LogicApi logicApi) throws IOException {
+    public void initialize(Stage primaryStage, Feedback allActiveTasks,
+            LogicApi logicApi) throws IOException {
         setLogic(logicApi);
         initRootLayout(primaryStage);
         initTabLayout();
         initScene();
         initNotificationPane();
         initTaskListView(allActiveTasks);
-        //initCalendarView(allActiveTasks);
+        // initCalendarView(allActiveTasks);
         initTaskDisplayView();
         initUserInputView(allActiveTasks);
         showStage(primaryStage);
 
-        // Initialised after showStage due to JavaFX known issue with CSS warnings
+        // Initialised after showStage due to JavaFX known issue with CSS
+        // warnings
         initCalendarView(allActiveTasks);
     }
 
@@ -115,7 +122,8 @@ public class RootLayoutController {
 
     private void initNotificationPane() throws IOException {
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(Main.class.getResource("views/NotificationPaneWrapper.fxml"));
+        loader.setLocation(Main.class
+                .getResource("views/NotificationPaneWrapper.fxml"));
         notificationPane = loader.load();
         notificationPane.setShowFromTop(false);
         notificationPane.getStyleClass().add(NotificationPane.STYLE_CLASS_DARK);
@@ -162,7 +170,7 @@ public class RootLayoutController {
                 Command userCommand = commandParser.parseCommand(userInput);
 
                 executeGuiCommand(userCommand);
-                //executeLogicCommand(userCommand);
+                // executeLogicCommand(userCommand);
             } catch (Exception e) {
                 showNotification(e.getMessage());
                 e.printStackTrace();
@@ -170,32 +178,38 @@ public class RootLayoutController {
         }
     }
 
-    private void executeGuiCommand(Command userCommand) throws HistoryNotFoundException, InvalidInputException, IOException, InvalidDateFormatException, TaskNotFoundException, InvalidCommandUseException {
+    private void executeGuiCommand(Command userCommand)
+            throws HistoryNotFoundException, InvalidInputException,
+            IOException, InvalidDateFormatException, TaskNotFoundException,
+            InvalidCommandUseException, TimeIntervalOverlapException {
         CommandEnum commandType = userCommand.getCommand();
         Hashtable<ParamEnum, ArrayList<String>> param = userCommand.getParam();
         switch (commandType) {
-            case TAB:
-                if (param.get(ParamEnum.KEYWORD).get(0).toLowerCase().equals("calendar")){
-                    selectionModel.select(calendarTab);
-                } else if (param.get(ParamEnum.KEYWORD).get(0).toLowerCase().equals("tasks")) {
-                    selectionModel.select(taskListTab);
-                }
-                break;
-            default:
-                executeLogicCommand(userCommand);
+        case TAB:
+            if (param.get(ParamEnum.KEYWORD).get(0).toLowerCase()
+                    .equals("calendar")) {
+                selectionModel.select(calendarTab);
+            } else if (param.get(ParamEnum.KEYWORD).get(0).toLowerCase()
+                    .equals("tasks")) {
+                selectionModel.select(taskListTab);
+            }
+            break;
+        default:
+            executeLogicCommand(userCommand);
         }
     }
 
     private void executeLogicCommand(Command userCommand)
             throws HistoryNotFoundException, InvalidInputException,
             IOException, InvalidDateFormatException, TaskNotFoundException,
-            InvalidCommandUseException {
+            InvalidCommandUseException, TimeIntervalOverlapException {
         Feedback userCommandFeedback = logicApi.executeCommand(userCommand);
         String feedbackMessage = userCommandFeedback.getFeedbackMessage();
 
         showNotification(feedbackMessage);
 
-        ApplicationLogger.getApplicationLogger().log(Level.INFO, "Message shown: " + feedbackMessage);
+        ApplicationLogger.getApplicationLogger().log(Level.INFO,
+                "Message shown: " + feedbackMessage);
 
         ArrayList<Task> taskList = userCommandFeedback.getTaskList();
         if (taskList != null) {

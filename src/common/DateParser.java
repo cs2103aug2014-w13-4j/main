@@ -1,4 +1,4 @@
-package models;
+package common;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -9,8 +9,7 @@ import java.util.regex.Pattern;
 
 import com.joestelmach.natty.DateGroup;
 import com.joestelmach.natty.Parser;
-
-import exceptions.InvalidDateFormatException;
+import common.exceptions.InvalidDateFormatException;
 
 public class DateParser {
     private static final String STORE_DATE_FORMAT = "%d-%d-%d %02d:%02d";
@@ -25,7 +24,7 @@ public class DateParser {
     /**
      * Reads a date in the string format, and returns its corresponding calendar
      * representation
-     * 
+     *
      * @param dateString
      *            : date in string format
      * @return the calendar object representing the date
@@ -43,7 +42,7 @@ public class DateParser {
     /**
      * Parse a given date given in given natural language into its corresponding
      * calendar representation
-     * 
+     *
      * @param dateString
      *            : A string in any natural format representing a correct date
      * @return the calendar object representing the date
@@ -70,7 +69,7 @@ public class DateParser {
 
     /**
      * A function to parse a given calendar object into its date string format
-     * 
+     *
      * @param date
      *            : calendar object representing the intended date to parse
      * @return Date in its string format
@@ -95,7 +94,7 @@ public class DateParser {
 
     /**
      * Format a date from dd-mm-yyyy format into natty acceptable date format
-     * 
+     *
      * @param date
      *            : string representation of a date
      * @return corrected date format

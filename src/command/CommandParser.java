@@ -4,12 +4,13 @@ import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import models.Command;
+import common.Command;
 
 /**
- * This class helps to recognize the command given by the user from its string format, and format it into
- * the common Command object that could then be process easily by the other components of the project.
- * 
+ * This class helps to recognize the command given by the user from its string
+ * format, and format it into the common Command object that could then be
+ * process easily by the other components of the project.
+ *
  * @author xuanyi
  *
  */
@@ -36,7 +37,7 @@ public class CommandParser {
 
     /**
      * THe operation parse a given command string into a command object
-     * 
+     *
      * @param commandString
      * @return command object representing the given command string
      * @throws Exception
@@ -51,7 +52,7 @@ public class CommandParser {
 
     /**
      * This operation parse the command string arguments to the command object
-     * 
+     *
      * @param userCommand
      * @param commandString
      */
@@ -69,7 +70,7 @@ public class CommandParser {
 
     /**
      * This operation map all the params of command string to its enum type
-     * 
+     *
      * @param userCommand
      * @param commandString
      * @param patternString
@@ -109,7 +110,7 @@ public class CommandParser {
 
     /**
      * This operation add the user command string to the command object
-     * 
+     *
      * @param userCommand
      * @param commandString
      */
@@ -127,7 +128,7 @@ public class CommandParser {
 
     /**
      * This operation return a pattern string for the given command type
-     * 
+     *
      * @param commandType
      * @return
      */
@@ -141,7 +142,7 @@ public class CommandParser {
     /**
      * This operation returns a pattern string consist of all the params of the
      * command type
-     * 
+     *
      * @param commandType
      * @return
      */
@@ -192,7 +193,7 @@ public class CommandParser {
 
     /**
      * This operation escape keyword found in the param string
-     * 
+     *
      * @param paramString
      * @return
      */

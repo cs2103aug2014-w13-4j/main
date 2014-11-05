@@ -8,21 +8,20 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import logic.LogicApi;
-import models.Command;
-import models.DateParser;
-import models.Feedback;
-import models.PriorityLevelEnum;
-import models.Task;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import storage.Storage;
 import command.CommandParser;
-import exceptions.FileFormatNotSupportedException;
-import exceptions.HistoryNotFoundException;
-import exceptions.InvalidInputException;
-import exceptions.TaskNotFoundException;
+import common.Command;
+import common.DateParser;
+import common.Feedback;
+import common.PriorityLevelEnum;
+import common.Task;
+import common.exceptions.FileFormatNotSupportedException;
+import common.exceptions.HistoryNotFoundException;
+import common.exceptions.InvalidInputException;
+import common.exceptions.TaskNotFoundException;
 
 public class IntegrationTest {
 
@@ -114,7 +113,7 @@ public class IntegrationTest {
                 .parseCommand("update 1 from 21 Feb 1999");
         logicApiObject.executeCommand(updateCommand);
     }
-    
+
     /**
      * Tests that an invalid priority level cannot be added
      *
@@ -122,35 +121,33 @@ public class IntegrationTest {
      */
     @Test(expected = InvalidInputException.class)
     public final void testCannotAddTaskWithInvalidPrioriyInt() throws Exception {
-        Command addCommand = parser
-                .parseCommand("add test level -1");
-        logicApiObject.executeCommand(addCommand);
-    }
-    
-    /**
-     * Tests that an invalid priority level cannot be added
-     *
-     * @throws Exception
-     */
-    @Test(expected = InvalidInputException.class)
-    public final void testCannotAddTaskWithInvalidPrioriyInt2() throws Exception {
-        Command addCommand = parser
-                .parseCommand("add test level 4");
-        logicApiObject.executeCommand(addCommand);
-    }
-    
-    /**
-     * Tests that an invalid priority level cannot be added
-     *
-     * @throws Exception
-     */
-    @Test(expected = InvalidInputException.class)
-    public final void testCannotAddTaskWithInvalidPrioriyString() throws Exception {
-        Command addCommand = parser
-                .parseCommand("add test level gren");
+        Command addCommand = parser.parseCommand("add test level -1");
         logicApiObject.executeCommand(addCommand);
     }
 
+    /**
+     * Tests that an invalid priority level cannot be added
+     *
+     * @throws Exception
+     */
+    @Test(expected = InvalidInputException.class)
+    public final void testCannotAddTaskWithInvalidPrioriyInt2()
+            throws Exception {
+        Command addCommand = parser.parseCommand("add test level 4");
+        logicApiObject.executeCommand(addCommand);
+    }
+
+    /**
+     * Tests that an invalid priority level cannot be added
+     *
+     * @throws Exception
+     */
+    @Test(expected = InvalidInputException.class)
+    public final void testCannotAddTaskWithInvalidPrioriyString()
+            throws Exception {
+        Command addCommand = parser.parseCommand("add test level gren");
+        logicApiObject.executeCommand(addCommand);
+    }
 
     /**
      * Tests that a task must have a name before it is added
@@ -502,7 +499,7 @@ public class IntegrationTest {
         Command deleteCommand = parser.parseCommand("Delete 1");
         logicApiObject.executeCommand(deleteCommand);
         Command undoCommand = parser.parseCommand("undo");
-        Feedback feedback = logicApiObject.executeCommand(undoCommand);
+        logicApiObject.executeCommand(undoCommand);
     }
 
     /**
@@ -515,7 +512,7 @@ public class IntegrationTest {
         CommandParser parser = new CommandParser();
         Command addCommand = parser
                 .parseCommand("Add blah due 23 December 1992");
-        Feedback feedback = logicApiObject.executeCommand(addCommand);
+        logicApiObject.executeCommand(addCommand);
         Command updateCommand = parser.parseCommand("Update 1 name changed");
         logicApiObject.executeCommand(updateCommand);
         Command undoCommand = parser.parseCommand("undo");

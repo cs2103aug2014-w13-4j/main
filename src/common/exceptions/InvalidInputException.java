@@ -1,4 +1,4 @@
-package exceptions;
+package common.exceptions;
 
 public class InvalidInputException extends Exception {
     public InvalidInputException(String message) {

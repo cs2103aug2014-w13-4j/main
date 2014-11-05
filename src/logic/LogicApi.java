@@ -7,17 +7,17 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.logging.Level;
 
-import models.ApplicationLogger;
-import models.Command;
-import models.Feedback;
 import command.*;
-import exceptions.FileFormatNotSupportedException;
-import exceptions.HistoryNotFoundException;
-import exceptions.InvalidCommandUseException;
-import exceptions.InvalidDateFormatException;
-import exceptions.InvalidInputException;
-import exceptions.TaskNotFoundException;
-import exceptions.TimeIntervalOverlapException;
+import common.ApplicationLogger;
+import common.Command;
+import common.Feedback;
+import common.exceptions.FileFormatNotSupportedException;
+import common.exceptions.HistoryNotFoundException;
+import common.exceptions.InvalidCommandUseException;
+import common.exceptions.InvalidDateFormatException;
+import common.exceptions.InvalidInputException;
+import common.exceptions.TaskNotFoundException;
+import common.exceptions.TimeIntervalOverlapException;
 
 //TODO: Throw exceptions when mandatory fields are missing
 public class LogicApi {
@@ -37,7 +37,8 @@ public class LogicApi {
     private LogicApi() {
     }
 
-    public static LogicApi getInstance() throws IOException, FileFormatNotSupportedException {
+    public static LogicApi getInstance() throws IOException,
+            FileFormatNotSupportedException {
         if (instance == null) {
             instance = new LogicApi();
             ApplicationLogger.getApplicationLogger().log(Level.INFO,
@@ -46,9 +47,10 @@ public class LogicApi {
         }
         return instance;
     }
-    
+
     // for debugging purposes. Always create a new instance
-    public static LogicApi getNewInstance() throws IOException, FileFormatNotSupportedException {
+    public static LogicApi getNewInstance() throws IOException,
+            FileFormatNotSupportedException {
         instance = new LogicApi();
         ApplicationLogger.getApplicationLogger().log(Level.INFO,
                 "Initializing Logic API.");
@@ -69,13 +71,14 @@ public class LogicApi {
      * @throws InvalidInputException
      * @throws HistoryNotFoundException
      * @throws InvalidCommandUseException
-     * @throws TimeIntervalOverlapException 
+     * @throws TimeIntervalOverlapException
      * @throws EmptySearchResultException
      */
     public Feedback executeCommand(Command command)
             throws TaskNotFoundException, IOException,
             InvalidDateFormatException, InvalidInputException,
-            HistoryNotFoundException, InvalidCommandUseException, TimeIntervalOverlapException {
+            HistoryNotFoundException, InvalidCommandUseException,
+            TimeIntervalOverlapException {
         if (logic.storage == null) {
             throw new IOException();
         } else {
@@ -135,14 +138,14 @@ public class LogicApi {
             throw new InvalidInputException(INVALID_COMMAND_MESSAGE);
         }
     }
-    
+
     public Feedback displayAll() {
         return logic.displayAll();
     }
 
     private boolean hasSearchParams(
             Hashtable<ParamEnum, ArrayList<String>> params)
-            throws InvalidInputException {
+                    throws InvalidInputException {
         List<ParamEnum> searchParams = Arrays.asList(CommandEnum.SEARCH
                 .params());
         if (hasBothBeforeAndAfterParams(params)) {
@@ -193,7 +196,5 @@ public class LogicApi {
             Hashtable<ParamEnum, ArrayList<String>> param) {
         return param.get(ParamEnum.NAME).get(0).isEmpty();
     }
-
-
 
 }

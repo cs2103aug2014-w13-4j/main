@@ -7,10 +7,10 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 
-import models.IntervalSearch;
-
 import org.junit.Before;
 import org.junit.Test;
+
+import common.IntervalSearch;
 
 public class IntervalSearchTest {
 

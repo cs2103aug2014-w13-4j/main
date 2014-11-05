@@ -2,12 +2,13 @@ package main.controllers;
 
 import javafx.fxml.FXML;
 import jfxtras.scene.control.agenda.Agenda;
-import models.Feedback;
-import models.PriorityLevelEnum;
-import models.StartDueDatePair;
-import models.Task;
 
 import java.util.*;
+
+import common.Feedback;
+import common.PriorityLevelEnum;
+import common.StartDueDatePair;
+import common.Task;
 
 /**
  * @author szhlibrary
@@ -26,10 +27,14 @@ public class CalendarViewController {
 
     private void initAppointmentGroups() {
         appointmentGroupMap = new HashMap<String, Agenda.AppointmentGroup>();
-        appointmentGroupMap.put("group2", new Agenda.AppointmentGroupImpl().withStyleClass("group2"));
-        appointmentGroupMap.put("group5", new Agenda.AppointmentGroupImpl().withStyleClass("group5"));
-        appointmentGroupMap.put("group7", new Agenda.AppointmentGroupImpl().withStyleClass("group7"));
-        appointmentGroupMap.put("group12", new Agenda.AppointmentGroupImpl().withStyleClass("group12"));
+        appointmentGroupMap.put("group2",
+                new Agenda.AppointmentGroupImpl().withStyleClass("group2"));
+        appointmentGroupMap.put("group5",
+                new Agenda.AppointmentGroupImpl().withStyleClass("group5"));
+        appointmentGroupMap.put("group7",
+                new Agenda.AppointmentGroupImpl().withStyleClass("group7"));
+        appointmentGroupMap.put("group12",
+                new Agenda.AppointmentGroupImpl().withStyleClass("group12"));
     }
 
     protected void updateCalendarView(ArrayList<Task> taskList) {
@@ -38,13 +43,13 @@ public class CalendarViewController {
     }
 
     private void addTasksToCalendarView(ArrayList<Task> taskList) {
-        for (Task task : taskList){
-            if (!task.isDeleted()){
-                if (task.isDeadlineTask()){
+        for (Task task : taskList) {
+            if (!task.isDeleted()) {
+                if (task.isDeadlineTask()) {
                     addDeadlineTaskToCalendarView(task);
                 } else if (task.isConditionalTask()) {
                     addConditionalTaskToCalendarView(task);
-                } else if (task.isTimedTask()){
+                } else if (task.isTimedTask()) {
                     addTimedTaskToCalendarView(task);
                 }
             }
@@ -55,26 +60,26 @@ public class CalendarViewController {
         assert (appointmentGroupMap != null) : "appointmentGroupMap was not initialized!";
         String appointmentGroup = determineAppointmentGroup(task);
         calendarView.appointments().add(
-            new Agenda.AppointmentImpl()
+                new Agenda.AppointmentImpl()
                 .withStartTime(task.getDateDue())
                 .withSummary("ID: " + task.getId())
                 .withDescription(task.getName())
-                .withAppointmentGroup(appointmentGroupMap.get(appointmentGroup))
-                .withWholeDay(true)
-        );
+                .withAppointmentGroup(
+                        appointmentGroupMap.get(appointmentGroup))
+                        .withWholeDay(true));
     }
 
     private void addTimedTaskToCalendarView(Task task) {
         assert (appointmentGroupMap != null) : "appointmentGroupMap was not initialized!";
         String appointmentGroup = determineAppointmentGroup(task);
         calendarView.appointments().add(
-            new Agenda.AppointmentImpl()
+                new Agenda.AppointmentImpl()
                 .withStartTime(task.getDateStart())
                 .withEndTime(task.getDateEnd())
                 .withSummary("ID: " + task.getId())
                 .withDescription(task.getName())
-                .withAppointmentGroup(appointmentGroupMap.get(appointmentGroup))
-        );
+                .withAppointmentGroup(
+                        appointmentGroupMap.get(appointmentGroup)));
     }
 
     private void addConditionalTaskToCalendarView(Task task) {
@@ -83,22 +88,25 @@ public class CalendarViewController {
         String appointmentGroup = determineAppointmentGroup(task);
         for (StartDueDatePair datePair : task.getConditionalDates()) {
             calendarView.appointments().add(
-                new Agenda.AppointmentImpl()
+                    new Agenda.AppointmentImpl()
                     .withStartTime(datePair.getStartDate())
                     .withEndTime(datePair.getDueDate())
                     .withSummary("ID: " + task.getId())
                     .withDescription(task.getName())
-                    .withAppointmentGroup(appointmentGroupMap.get(appointmentGroup))
-            );
+                    .withAppointmentGroup(
+                            appointmentGroupMap.get(appointmentGroup)));
         }
     }
 
     private String determineAppointmentGroup(Task task) {
-        if (task.getPriorityLevel().getName().equals(PriorityLevelEnum.GREEN.getName())){
+        if (task.getPriorityLevel().getName()
+                .equals(PriorityLevelEnum.GREEN.getName())) {
             return "group7";
-        } else if(task.getPriorityLevel().getName().equals(PriorityLevelEnum.ORANGE.getName())){
+        } else if (task.getPriorityLevel().getName()
+                .equals(PriorityLevelEnum.ORANGE.getName())) {
             return "group5";
-        } else if(task.getPriorityLevel().getName().equals(PriorityLevelEnum.RED.getName())){
+        } else if (task.getPriorityLevel().getName()
+                .equals(PriorityLevelEnum.RED.getName())) {
             return "group2";
         } else {
             return "group12";

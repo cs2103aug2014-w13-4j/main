@@ -14,15 +14,15 @@ import org.apache.commons.lang3.StringUtils;
 import com.rits.cloning.Cloner;
 
 import command.ParamEnum;
-import exceptions.FileFormatNotSupportedException;
-import exceptions.InvalidDateFormatException;
-import exceptions.InvalidInputException;
-import exceptions.TaskNotFoundException;
-import exceptions.TimeIntervalOverlapException;
-import models.DateParser;
-import models.IntervalSearch;
-import models.StartDueDatePair;
-import models.Task;
+import common.DateParser;
+import common.IntervalSearch;
+import common.StartDueDatePair;
+import common.Task;
+import common.exceptions.FileFormatNotSupportedException;
+import common.exceptions.InvalidDateFormatException;
+import common.exceptions.InvalidInputException;
+import common.exceptions.TaskNotFoundException;
+import common.exceptions.TimeIntervalOverlapException;
 
 /**
  *
@@ -45,14 +45,16 @@ public class TaskStorage {
     private static final String COMPLETED = "completed";
     private static final String ACTIVE = "active";
 
+    private Scanner fileScanner;
+
     /**
      * constructor``
-     * 
+     *
      * @throws FileFormatNotSupportedException
      *             , IOException
      */
     protected TaskStorage(String fileName) throws IOException,
-            FileFormatNotSupportedException {
+    FileFormatNotSupportedException {
         Task task;
         dataFile = new File(fileName);
 
@@ -60,7 +62,7 @@ public class TaskStorage {
             dataFile.createNewFile();
         }
 
-        Scanner fileScanner = new Scanner(dataFile);
+        fileScanner = new Scanner(dataFile);
         taskBuffer = new ArrayList<Task>();
         intervalTree = new IntervalSearch();
         nextTaskIndex = ID_FOR_FIRST_TASK;
@@ -76,10 +78,11 @@ public class TaskStorage {
             }
             nextTaskIndex++;
         }
+        fileScanner.close();
     }
 
     public static TaskStorage getInstance(String fileName) throws IOException,
-            FileFormatNotSupportedException {
+    FileFormatNotSupportedException {
         if (taskStorageInstance == null) {
             taskStorageInstance = new TaskStorage(fileName);
         }
@@ -113,7 +116,7 @@ public class TaskStorage {
      * @throws TimeIntervalOverlapException
      */
     public void writeTaskToFile(Task task) throws TaskNotFoundException,
-            IOException, TimeIntervalOverlapException {
+    IOException, TimeIntervalOverlapException {
         int taskID = task.getId();
         if (taskID == ID_FOR_NEW_TASK) {
             addTask(task);
@@ -244,8 +247,7 @@ public class TaskStorage {
      *             : wrong IO operations
      */
     private void addTask(Task task) throws IOException,
-            TimeIntervalOverlapException {
-        Calendar dateStart, dateEnd;
+    TimeIntervalOverlapException {
         if (isTaskTimeValid(task)) {
             // Add new task to task file
             task.setId(nextTaskIndex);
@@ -270,9 +272,8 @@ public class TaskStorage {
      *             : wrong IO operations
      */
     private void updateTask(Task task) throws IOException,
-            TimeIntervalOverlapException {
+    TimeIntervalOverlapException {
         int taskID = task.getId();
-        Calendar dateStart, dateEnd, oldStart, oldEnd;
         if (isTaskTimeValid(task)) {
             // Update task to task buffer
             taskBuffer.set(taskID - 1, task);
@@ -287,9 +288,8 @@ public class TaskStorage {
     }
 
     private void restoreTask(Task task) throws IOException,
-            TimeIntervalOverlapException {
+    TimeIntervalOverlapException {
         int taskID = task.getId();
-        Calendar dateStart, dateEnd, oldStart, oldEnd;
         if (isTaskTimeValid(task)) {
             // Update task to task buffer
             taskBuffer.set(taskID - 1, task);

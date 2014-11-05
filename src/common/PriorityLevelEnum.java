@@ -1,10 +1,9 @@
-package models;
+package common;
 
-import exceptions.InvalidPriorityLevelException;
+import common.exceptions.InvalidPriorityLevelException;
 
 public enum PriorityLevelEnum {
-    DEFAULT(0, "default"), GREEN(1, "green"), ORANGE(2, "orange"), RED(3,
-            "red");
+    DEFAULT(0, "default"), GREEN(1, "green"), ORANGE(2, "orange"), RED(3, "red");
 
     private static final int FIRST_INDEX = 0;
 

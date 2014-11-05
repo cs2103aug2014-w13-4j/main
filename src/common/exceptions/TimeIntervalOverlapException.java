@@ -1,4 +1,4 @@
-package exceptions;
+package common.exceptions;
 
 public class TimeIntervalOverlapException extends Exception {
     public TimeIntervalOverlapException(String message) {
