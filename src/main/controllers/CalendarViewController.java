@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import jfxtras.scene.control.agenda.Agenda;
 import models.Feedback;
 import models.PriorityLevelEnum;
+import models.StartDueDatePair;
 import models.Task;
 
 import java.util.*;
@@ -41,6 +42,8 @@ public class CalendarViewController {
             if (!task.isDeleted()){
                 if (task.isDeadlineTask()){
                     addDeadlineTaskToCalendarView(task);
+                } else if (task.isConditionalTask()) {
+                    addConditionalTaskToCalendarView(task);
                 } else if (task.isTimedTask()){
                     addTimedTaskToCalendarView(task);
                 }
@@ -72,6 +75,22 @@ public class CalendarViewController {
                 .withDescription(task.getName())
                 .withAppointmentGroup(appointmentGroupMap.get(appointmentGroup))
         );
+    }
+
+    private void addConditionalTaskToCalendarView(Task task) {
+        assert (appointmentGroupMap != null) : "appointmentGroupMap was not initialized!";
+        assert !task.getConditionalDates().isEmpty() : "Conditional task has no conditional dates!";
+        String appointmentGroup = determineAppointmentGroup(task);
+        for (StartDueDatePair datePair : task.getConditionalDates()) {
+            calendarView.appointments().add(
+                new Agenda.AppointmentImpl()
+                    .withStartTime(datePair.getStartDate())
+                    .withEndTime(datePair.getDueDate())
+                    .withSummary("ID: " + task.getId())
+                    .withDescription(task.getName())
+                    .withAppointmentGroup(appointmentGroupMap.get(appointmentGroup))
+            );
+        }
     }
 
     private String determineAppointmentGroup(Task task) {
