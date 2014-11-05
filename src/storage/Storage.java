@@ -11,6 +11,7 @@ import exceptions.FileFormatNotSupportedException;
 import exceptions.InvalidDateFormatException;
 import exceptions.InvalidInputException;
 import exceptions.TaskNotFoundException;
+import exceptions.TimeIntervalOverlapException;
 import models.ApplicationLogger;
 import models.IntervalSearch;
 import storage.tagStorage.TagStorage;
@@ -59,7 +60,7 @@ public class Storage {
    }
 
 	// Add/Update a task to file
-	public void writeTaskToFile(Task task) throws TaskNotFoundException, IOException {
+	public void writeTaskToFile(Task task) throws TaskNotFoundException, IOException, TimeIntervalOverlapException {
 		ApplicationLogger.getApplicationLogger().log(Level.INFO, "Writing Task to file.");
 		taskFile.writeTaskToFile(task);
 		tagFile.updateTagToFile(task.getTags());
@@ -74,15 +75,21 @@ public class Storage {
 		return taskFile.getTask(taskID);
 	}
 
+	// Return a copy of existing task for update
+	public Task getTaskCopy(int taskID) throws TaskNotFoundException {
+		return taskFile.getTaskCopy(taskID);
+	}
+
 	// Get a list of all the Tasks
 	public ArrayList<Task> getAllTasks() {
 		return taskFile.getAllTasks();
 	}
-	
-	// Get a list of all the completed Tasks
-    public ArrayList<Task> getAllCompletedTasks() {
-        return taskFile.getAllCompletedTasks();
-    }
+
+	// Get a list of all the completed task
+	// This medthod is for clearing all the completed task
+	public ArrayList<Task> getAllCompletedTasks() {
+		return taskFile.getAllCompletedTasks();
+	}
 
 	// Get a list of tags
 	public ArrayList<String> getAllTags() {

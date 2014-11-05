@@ -239,25 +239,19 @@ public class IntervalSearch {
         return map.size();
     }
 
-    public Calendar getDateStart(int taskId) {
-        Calendar dateStart = Calendar.getInstance();
-        for (DateRange key : map.keySet()) {
+    public void remove(Task task) {
+        int taskId = task.getId();
+        Calendar dateStart, dateEnd;
+        HashMap<DateRange, Integer> clonedMap = (HashMap<DateRange, Integer>) map.clone();
+        
+        for (DateRange key : clonedMap.keySet()) {
             if (map.get(key) == taskId) {
+                dateStart = Calendar.getInstance();
                 dateStart.setTimeInMillis(key.getStartDate());
-                break;
-            }
-        }
-        return dateStart;
-    }
-
-    public Calendar getDateEnd(int taskId) {
-        Calendar dateEnd = Calendar.getInstance();
-        for (DateRange key : map.keySet()) {
-            if (map.get(key) == taskId) {
+                dateEnd = Calendar.getInstance();
                 dateEnd.setTimeInMillis(key.getEndDate());
-                break;
+                remove(dateStart, dateEnd);
             }
         }
-        return dateEnd;
     }
 }
