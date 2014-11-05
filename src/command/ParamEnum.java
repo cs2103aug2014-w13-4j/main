@@ -23,7 +23,8 @@ public enum ParamEnum {
     STATUS(" status", ""),
     BEFORE(" before", ""),
     AFTER(" after", ""),
-    ON(" on", "");
+    ON(" on", ""),
+    DURATION (" duration", "");
 
     private final String regex;
     private final String groupName;
