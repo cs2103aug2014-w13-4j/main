@@ -2,6 +2,8 @@ package common;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 
@@ -26,7 +28,7 @@ public class IntervalSearch {
      * @author xuanyi
      *
      */
-    public static class DateRange {
+    public static class DateRange implements Comparable<DateRange> {
         public long startDate;
         public long endDate;
 
@@ -44,8 +46,8 @@ public class IntervalSearch {
         }
 
         public boolean overlaps(DateRange range) {
-            return startDate <= range.getEndDate()
-                    && endDate >= range.getStartDate();
+            return startDate < range.getEndDate()
+                    && endDate > range.getStartDate();
         }
 
         @Override
@@ -69,6 +71,23 @@ public class IntervalSearch {
             return startDate == range.getStartDate()
                     && endDate == range.getEndDate();
         }
+
+        @Override
+        public int compareTo(DateRange o) {
+            if (startDate >= o.getStartDate()) {
+                return 1;
+            } else {
+                return -1;
+            }
+        }
+
+        public static Comparator<DateRange> DateRangeComparator = new Comparator<DateRange>() {
+
+            public int compare(DateRange date1, DateRange date2) {
+                return date1.compareTo(date2);
+            }
+
+        };
     }
 
     HashMap<DateRange, Integer> map = new HashMap<DateRange, Integer>();
@@ -92,6 +111,7 @@ public class IntervalSearch {
                 results.add(key);
             }
         }
+        Collections.sort(results, DateRange.DateRangeComparator);
         return results;
     }
 
