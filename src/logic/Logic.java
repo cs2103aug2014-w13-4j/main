@@ -341,7 +341,6 @@ public class Logic {
     Feedback suggest(Hashtable<ParamEnum, ArrayList<String>> param)
             throws InvalidDateFormatException, InvalidInputException {
         ArrayList<Task> taskList = storage.suggestedSearchTask(param);
-        System.out.println(taskList.size());
         
         suggestions.clear();
         Calendar startTime = roundToNearestBlock(DateParser.parseString(param
@@ -377,10 +376,6 @@ public class Logic {
                     newTask.setDateEnd(temp);
                     taskList.add(i + 1, newTask);
                     suggestions.add(newTask);
-                    System.out.println(newTask.getDateStart().get(
-                            Calendar.HOUR_OF_DAY));
-                    System.out.println(newTask.getDateEnd().get(
-                            Calendar.HOUR_OF_DAY));
                     break;
                 }
             }
