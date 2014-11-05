@@ -19,7 +19,8 @@ public enum CommandEnum {
 	TAG ("\\+", ParamEnum.KEYWORD),
 	LEVEL ("level", ParamEnum.KEYWORD),
 	CONFIRM ("confirm", ParamEnum.KEYWORD, ParamEnum.ID),
-	CLEAR ("clear", ParamEnum.KEYWORD);
+	CLEAR ("clear", ParamEnum.KEYWORD),
+    TAB ("tab", ParamEnum.KEYWORD);
 	
 	private final String regex;
 	private final ParamEnum commandKey;
