@@ -3,6 +3,7 @@ package tests;
 import static org.junit.Assert.*;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -22,6 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import command.ParamEnum;
+import exceptions.FileFormatNotSupportedException;
 
 public class LogicTest {
     Class<LogicApi> logicApiClass = LogicApi.class;
@@ -47,9 +49,8 @@ public class LogicTest {
 
     @Before
     public void getLogicAndStorage() throws IllegalArgumentException,
-            IllegalAccessException {
-        logicApiObject = new LogicApi();
-        logicApiObject.initialize();
+            IllegalAccessException, IOException, FileFormatNotSupportedException {
+        logicApiObject = LogicApi.getNewInstance();
         logicObject = (Logic) logic.get(logicApiObject);
     }
 
@@ -80,7 +81,6 @@ public class LogicTest {
         ArrayList<String> priorityList = new ArrayList<String>();
         priorityList.add("RED");
         params.put(ParamEnum.LEVEL, priorityList);
-
         Feedback feedback = (Feedback) add.invoke(logicObject, params);
         assertEquals(1, feedback.getTaskList().size());
         Task task = feedback.getTaskList().get(0);

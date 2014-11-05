@@ -1,14 +1,16 @@
 package models;
 
+import java.util.ArrayList;
+
 import command.CommandEnum;
 
 public class History {
 	private CommandEnum command;
-	private Task task;
+	private ArrayList<Task> tasks;
 
-	public History(CommandEnum command, Task task) {
+	public History(CommandEnum command, ArrayList<Task> tasks) {
 		this.setCommand(command);
-		this.setTask(task);
+		this.setTask(tasks);
 	}
 
 	public CommandEnum getCommand() {
@@ -19,11 +21,11 @@ public class History {
 		this.command = command;
 	}
 
-	public Task getTask() {
-		return task;
+	public ArrayList<Task> getTask() {
+		return tasks;
 	}
 
-	public void setTask(Task task) {
-		this.task = task;
+	public void setTask(ArrayList<Task> tasks) {
+		this.tasks = tasks;
 	}
 }

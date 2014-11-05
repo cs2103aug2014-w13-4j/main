@@ -30,6 +30,8 @@ import models.Task;
  *         search.
  */
 public class TaskStorage {
+    private static TaskStorage taskStorageInstance = null;
+
     private static final int MAX_DIFF_BETWEEN_WORDS = 3;
     private static final int MIN_INDEX = 1;
     private ArrayList<Task> taskBuffer;
@@ -49,11 +51,9 @@ public class TaskStorage {
      * @throws FileFormatNotSupportedException
      *             , IOException
      */
-    public TaskStorage(String fileName) throws IOException,
+    protected TaskStorage(String fileName) throws IOException,
             FileFormatNotSupportedException {
         Task task;
-        Calendar dateStart;
-        Calendar dateEnd;
         dataFile = new File(fileName);
 
         if (!dataFile.exists()) {
@@ -76,6 +76,19 @@ public class TaskStorage {
             }
             nextTaskIndex++;
         }
+    }
+
+    public static TaskStorage getInstance(String fileName) throws IOException,
+            FileFormatNotSupportedException {
+        if (taskStorageInstance == null) {
+            taskStorageInstance = new TaskStorage(fileName);
+        }
+        return taskStorageInstance;
+    }
+
+    public static TaskStorage getNewInstance(String fileName)
+            throws IOException, FileFormatNotSupportedException {
+        return new TaskStorage(fileName);
     }
 
     /**
@@ -118,7 +131,6 @@ public class TaskStorage {
         } else {
             throw new TaskNotFoundException(
                     "Cannot update task since the current task doesn't exist");
-
         }
     }
 
@@ -396,18 +408,16 @@ public class TaskStorage {
      * @return all tasks that are not deleted
      */
     public ArrayList<Task> getAllCompletedTasks() {
-        ArrayList<Task> allCompletedTaskList = new ArrayList<Task>();
+        ArrayList<Task> completedList = new ArrayList<Task>();
         if (taskBuffer == null) {
             return null;
         }
         for (Task task : taskBuffer) {
-            if (task.isDeleted() || !task.isCompleted()) {
-                continue;
-            } else {
-                allCompletedTaskList.add(task);
+            if (!task.isDeleted() && task.isCompleted()) {
+                completedList.add(task);
             }
         }
-        return allCompletedTaskList;
+        return completedList;
     }
 
     private boolean isSearchTargetByName(Task task, String name) {
@@ -543,7 +553,7 @@ public class TaskStorage {
         ArrayList<Task> parallelTaskList = (ArrayList<Task>) searchRange
                 .clone();
         ArrayList<String> params;
-        String firstParamElement, dateEnd, dateStart;
+        String firstParamElement, dateEnd;
 
         // exit if there is no keyword table
         if (keyWordTable == null) {

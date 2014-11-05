@@ -25,8 +25,12 @@ import models.Task;
  * It also supports power search.
  */
 public class Storage {
+	private static Storage storageInstance;
 	private TaskStorage taskFile;
 	private TagStorage tagFile;
+
+	private static final String FILE_NAME_TASK_STORAGE = "taskStorage.data";
+	private static final String FILE_NAME_TAG_STORAGE = "TagStorage.data";
 
 	/**
 	 * constructor
@@ -35,11 +39,25 @@ public class Storage {
 	 * This is to ensure that only there is exactly one instance of Storage class
 	 * @throws FileFormatNotSupportedException, IOException
 	 */
-	public Storage() throws IOException, FileFormatNotSupportedException{
-		ApplicationLogger.getApplicationLogger().log(Level.INFO, "Initializing Storage.");
-		taskFile = new TaskStorage("taskStorage.data");
-		tagFile = new TagStorage("TagStorage.data");
+	protected Storage() throws IOException, FileFormatNotSupportedException{
+	    ApplicationLogger.getApplicationLogger().log(Level.INFO, "Initializing Storage.");
 	}
+
+	public static Storage getInstance() throws IOException, FileFormatNotSupportedException {
+      if(storageInstance == null) {
+         storageInstance = new Storage();
+         storageInstance.taskFile = TaskStorage.getInstance(FILE_NAME_TASK_STORAGE);
+         storageInstance.tagFile = new TagStorage(FILE_NAME_TAG_STORAGE);
+      }
+      return storageInstance;
+    }
+	
+   public static Storage getNewInstance() throws IOException, FileFormatNotSupportedException {
+       storageInstance = new Storage();
+       storageInstance.taskFile = TaskStorage.getNewInstance(FILE_NAME_TASK_STORAGE);
+       storageInstance.tagFile = new TagStorage(FILE_NAME_TAG_STORAGE);
+       return storageInstance;
+   }
 
 	// Add/Update a task to file
 	public void writeTaskToFile(Task task) throws TaskNotFoundException, IOException, TimeIntervalOverlapException {

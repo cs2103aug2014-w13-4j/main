@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.logging.Level;
 
+import com.google.gson.JsonSyntaxException;
 import com.rits.cloning.Cloner;
 
 import models.ApplicationLogger;
 import storage.Storage;
+import command.CommandEnum;
 import command.ParamEnum;
 import models.Feedback;
 import models.History;
@@ -29,6 +31,7 @@ public class Logic {
     private static final String ERROR_UPDATE_CONDITIONAL_TASK_MESSAGE = "Task %1$s is a conditional task, so it should contain multiple start and end dates";
     private static final String ERROR_COMPLETE_MESSAGE = "Only confirmed and uncompleted tasks without an end date before can be completed";
     private static final String ERROR_DATE_INPUT_MESSAGE = "The date parameters provided are invalid.";
+    private static final String ERROR_CLEAR_MESSAGE = "The given parameters for clear are invalid.";
     private static final String ADD_MESSAGE = "%1$s is successfully added.";
     private static final String DELETE_MESSAGE = "%1$s is successfully deleted";
     private static final String EDIT_MESSAGE = "%1$s is successfully edited.";
@@ -40,12 +43,37 @@ public class Logic {
     private static final String ERROR_ALREADY_DELETED_MESSAGE = "Task %1$s is already deleted.";
     private static final String CONFIRM_MESSAGE = "%1$s is marked as confirmed.";
     private static final String UNDO_MESSAGE = "%1$s %2$s is undone";
+    private static final String UNDO_CLEAR_MESSAGE = "Clear is undone";
+    private static final String CLEAR_MESSAGE = "All completed task are cleared from the list";
     Storage storage = null;
     private LogicUndo logicUndo = new LogicUndo();
     // public LogicUndo logicUndo = LogicUndo.getInstance();
     private Cloner cloner = new Cloner();
 
-    Logic() {
+    private static Logic instance = null;
+
+    private Logic() {
+    }
+
+    public static Logic getInstance() throws IOException,
+            FileFormatNotSupportedException {
+        if (instance == null) {
+            instance = new Logic();
+            ApplicationLogger.getApplicationLogger().log(Level.INFO,
+                    "Initializing Logic.");
+            instance.storage = Storage.getInstance();
+        }
+        return instance;
+    }
+
+    // for debugging purposes. Always create a new instance
+    public static Logic getNewInstance() throws IOException,
+            FileFormatNotSupportedException {
+        instance = new Logic();
+        ApplicationLogger.getApplicationLogger().log(Level.INFO,
+                "Initializing Logic.");
+        instance.storage = Storage.getNewInstance();
+        return instance;
     }
 
     /**
@@ -163,6 +191,38 @@ public class Logic {
                 MessageCreator.createMessage(CONFIRM_MESSAGE, taskName, null),
                 storage.getAllTasks(), task);
     }
+    
+    /**
+     * Clear all the completed task in the task list
+     * 
+     * @param param
+     *            : the command created by commandParser
+     * @return feedback containing the list of tasks that are not completed in the file, and
+     *         the message.
+     * @throws TaskNotFoundException
+     * @throws IOException
+     * @throws InvalidInputException 
+     * @throws TimeIntervalOverlapException 
+     */
+    Feedback clear(Hashtable<ParamEnum, ArrayList<String>> param) throws TaskNotFoundException, IOException, InvalidInputException, TimeIntervalOverlapException {
+            String keyword = param.get(ParamEnum.KEYWORD).get(0).toLowerCase();
+            switch (keyword) {
+            case "completed": 
+            //get all completed task from storage
+                ArrayList<Task> completedTasks = storage.getAllCompletedTasks();
+                ArrayList<Task> cloneCompletedTasks = cloner.deepClone(completedTasks);
+                for (int i = 0; i < completedTasks.size(); i++) {
+                    Task task = completedTasks.get(i);
+                    TaskModifier.deleteTask(task);
+                    storage.writeTaskToFile(task);
+                }
+                logicUndo.pushClearCommandToHistory(cloneCompletedTasks);
+                return createTaskListFeedback(MessageCreator.createMessage(CLEAR_MESSAGE, null, null),
+                        storage.getAllTasks());
+            }
+            throw new InvalidInputException(MessageCreator.createMessage(
+                    ERROR_CLEAR_MESSAGE, null, null));
+    }
 
     /**
      * Deletes a task from the file
@@ -214,19 +274,6 @@ public class Logic {
         }
     }
 
-    Feedback initialize() {
-        try {
-            ApplicationLogger.getApplicationLogger().log(Level.INFO,
-                    "Initializing Logic Backend.");
-            storage = new Storage();
-            return displayAll();
-        } catch (IOException | FileFormatNotSupportedException e) {
-            ApplicationLogger.getApplicationLogger().log(Level.SEVERE,
-                    e.getMessage());
-            return createTaskListFeedback(ERROR_STORAGE_MESSAGE, null);
-        }
-    }
-
     /**
      * Search for tasks that contain the keyword in the name, description or
      * tags
@@ -264,12 +311,23 @@ public class Logic {
         if (lastAction == null) {
             throw new HistoryNotFoundException(ERROR_UNDO_MESSAGE);
         } else {
-            Task task = lastAction.getTask();
-            storage.writeTaskToFile(task);
-            Task displayTask = getTaskDisplayForUndo(task);
-            return createTaskAndTaskListFeedback(MessageCreator.createMessage(
-                    UNDO_MESSAGE, lastAction.getCommand().regex(),
-                    task.getName()), storage.getAllTasks(), displayTask);
+            ArrayList<Task> tasks = lastAction.getTask();
+            // Add all history task back to current task
+            for (Task task: tasks) {
+                storage.writeTaskToFile(task);
+            }
+            if (lastAction.getCommand() == CommandEnum.CLEAR) {
+                return createTaskAndTaskListFeedback(
+                        MessageCreator.createMessage(UNDO_CLEAR_MESSAGE, lastAction.getCommand()
+                                .regex(), null),
+                        storage.getAllTasks(), null);
+            } else {
+                Task task = tasks.get(0);
+                Task displayTask = getTaskDisplayForUndo(task);
+                return createTaskAndTaskListFeedback(MessageCreator.createMessage(
+                        UNDO_MESSAGE, lastAction.getCommand().regex(),
+                        task.getName()), storage.getAllTasks(), displayTask);
+            }
         }
     }
 
@@ -290,7 +348,7 @@ public class Logic {
             throws TaskNotFoundException, IOException,
             InvalidDateFormatException, InvalidInputException, TimeIntervalOverlapException {
         int taskId = getTaskId(param);
-        Task task = getTaskFromStorage(taskId);
+        Task task = cloner.deepClone(getTaskFromStorage(taskId));
         Task clonedTask = cloner.deepClone(task);
         if (task.isConditionalTask()) {
             updateConditionalTask(param, taskId, task);
@@ -330,7 +388,7 @@ public class Logic {
      *
      * @return feedback containing all the tasks in the file, and the message.
      */
-    private Feedback displayAll() {
+    Feedback displayAll() {
         ArrayList<Task> taskList = storage.getAllTasks();
         return createTaskListFeedback(
                 MessageCreator.createMessage(DISPLAY_MESSAGE, null, null),
@@ -514,8 +572,8 @@ public class Logic {
 
     private boolean hasUpdateTimedTaskParams(
             Hashtable<ParamEnum, ArrayList<String>> param) {
-            return !param.containsKey(ParamEnum.DUE_DATE)
-                    && !(hasMultipleEntries(param, ParamEnum.START_DATE) || hasMultipleEntries(
-                            param, ParamEnum.END_DATE));
+        return !param.containsKey(ParamEnum.DUE_DATE)
+                && !(hasMultipleEntries(param, ParamEnum.START_DATE) || hasMultipleEntries(
+                        param, ParamEnum.END_DATE));
     }
 }

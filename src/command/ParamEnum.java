@@ -1,5 +1,10 @@
 package command;
 
+/**
+ * This enum class describe the regex keyword that for each of the param command
+ * @author xuanyi
+ *
+ */
 public enum ParamEnum {
 	KEYWORD ("", ""),
 	DATE (" date", ""),
