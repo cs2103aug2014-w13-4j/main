@@ -68,9 +68,9 @@ public class TaskStorage {
             task = TaskConverter.stringToTask(fileScanner.nextLine());
             taskBuffer.add(task);
             // add in interval tree
-            if (isTaskTimeValid(task)) {
+            if (isTaskTimeValid(task) && !task.isDeleted()) {
                 addTimeIntervalToIntervalTree(task);
-            } else {
+            } else if (isTaskTimeValid(task) && !task.isDeleted()) {
                 throw new FileFormatNotSupportedException(
                         "Events are overlapping");
             }
@@ -103,13 +103,22 @@ public class TaskStorage {
         int taskID = task.getId();
         if (taskID == ID_FOR_NEW_TASK) {
             addTask(task);
-        } else {
-            if (isTaskExist(taskID)) {
-                updateTask(task);
+        } else if (isTaskExist(taskID)) {
+            if (task.isDeleted()) {
+                deleteTask(task);
             } else {
-                throw new TaskNotFoundException(
-                        "Cannot update task since the current task doesn't exist");
+                // check if it is an undo (task in task storage was deleted)
+                Task oldTask = getTask(task.getId());
+                if (oldTask.isDeleted()) {
+                    restoreTask(task);
+                } else {
+                    updateTask(task);
+                }
             }
+        } else {
+            throw new TaskNotFoundException(
+                    "Cannot update task since the current task doesn't exist");
+
         }
     }
 
@@ -262,6 +271,32 @@ public class TaskStorage {
             throw new TimeIntervalOverlapException(
                     "Updated task overlaps with exisitng time interval.");
         }
+    }
+
+    private void restoreTask(Task task) throws IOException,
+            TimeIntervalOverlapException {
+        int taskID = task.getId();
+        Calendar dateStart, dateEnd, oldStart, oldEnd;
+        if (isTaskTimeValid(task)) {
+            // Update task to task buffer
+            taskBuffer.set(taskID - 1, task);
+            // Update task to task file
+            updateTaskToStorage();
+            addTimeIntervalToIntervalTree(task);
+        } else {
+            throw new TimeIntervalOverlapException(
+                    "Updated task overlaps with exisitng time interval.");
+        }
+
+    }
+
+    private void deleteTask(Task task) throws IOException {
+        int taskID = task.getId();
+        // Update task to task buffer
+        taskBuffer.set(taskID - 1, task);
+        // Update task to task file
+        updateTaskToStorage();
+        removeTimeIntervalFromIntervalTree(task);
     }
 
     // append task string to the end of the file
