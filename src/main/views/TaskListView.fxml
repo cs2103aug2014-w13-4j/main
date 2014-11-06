@@ -15,12 +15,12 @@
                    prefWidth="400.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
                    AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <columns>
-                <TableColumn prefWidth="30.0" minWidth="30.0" maxWidth="30.0" text="ID">
+                <TableColumn fx:id="idTableColumn" prefWidth="30.0" minWidth="30.0" maxWidth="30.0" text="ID">
                     <cellValueFactory>
                         <PropertyValueFactory property="id"/>
                     </cellValueFactory>
                 </TableColumn>
-                <TableColumn prefWidth="30.0" minWidth="30.0" maxWidth="20.0" text="✓">
+                <TableColumn fx:id="doneTableColumn" prefWidth="30.0" minWidth="30.0" maxWidth="20.0" text="✓">
                     <cellValueFactory>
                         <PropertyValueFactory property="dateEnd"/>
                     </cellValueFactory>
@@ -28,7 +28,7 @@
                         <TaskDoneFactory/>
                     </cellFactory>
                 </TableColumn>
-                <TableColumn prefWidth="100.0" minWidth="100.0" text="Due">
+                <TableColumn fx:id="dueDateTableColumn" prefWidth="100.0" minWidth="100.0" text="Due">
                     <cellValueFactory>
                         <PropertyValueFactory property="dateDue"/>
                     </cellValueFactory>
@@ -36,7 +36,7 @@
                         <TaskDateFactory/>
                     </cellFactory>
                 </TableColumn>
-                <TableColumn prefWidth="100.0" minWidth="100.0" text="Start">
+                <TableColumn fx:id="startDateTableColumn" prefWidth="100.0" minWidth="100.0" text="Start">
                     <cellValueFactory>
                         <PropertyValueFactory property="dateStart"/>
                     </cellValueFactory>
@@ -44,7 +44,7 @@
                         <TaskDateFactory/>
                     </cellFactory>
                 </TableColumn>
-                <TableColumn prefWidth="100.0" minWidth="100.0" text="End">
+                <TableColumn fx:id="endDateTableColumn" prefWidth="100.0" minWidth="100.0" text="End">
                     <cellValueFactory>
                         <PropertyValueFactory property="dateEnd"/>
                     </cellValueFactory>
@@ -52,12 +52,12 @@
                         <TaskDateFactory/>
                     </cellFactory>
                 </TableColumn>
-                <TableColumn prefWidth="225.0" minWidth="225.0" text="Task Name">
+                <TableColumn fx:id="taskNameTableColumn" prefWidth="225.0" minWidth="225.0" text="Task Name">
                     <cellValueFactory>
                         <PropertyValueFactory property="name"/>
                     </cellValueFactory>
                 </TableColumn>
-                <TableColumn prefWidth="5.0" minWidth="5.0" maxWidth="5.0" text="">
+                <TableColumn fx:id="priorityLevelTableColumn" prefWidth="5.0" minWidth="5.0" maxWidth="5.0" text="">
                     <cellValueFactory>
                         <PropertyValueFactory property="priorityLevel"/>
                     </cellValueFactory>

@@ -7,12 +7,7 @@ import common.ApplicationLogger;
 import common.Command;
 import common.Feedback;
 import common.Task;
-import common.exceptions.HistoryNotFoundException;
-import common.exceptions.InvalidCommandUseException;
-import common.exceptions.InvalidDateFormatException;
-import common.exceptions.InvalidInputException;
-import common.exceptions.TaskNotFoundException;
-import common.exceptions.TimeIntervalOverlapException;
+import common.exceptions.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -178,7 +173,8 @@ public class RootLayoutController {
     private void executeGuiCommand(Command userCommand)
             throws HistoryNotFoundException, InvalidInputException,
             IOException, InvalidDateFormatException, TaskNotFoundException,
-            InvalidCommandUseException, TimeIntervalOverlapException {
+            InvalidCommandUseException, TimeIntervalOverlapException,
+            InvalidSortConditionException {
         CommandEnum commandType = userCommand.getCommand();
         Hashtable<ParamEnum, ArrayList<String>> param = userCommand.getParam();
         switch (commandType) {
@@ -195,6 +191,9 @@ public class RootLayoutController {
                 if (param.get(ParamEnum.KEYWORD).get(0).toLowerCase()
                     .isEmpty()) {
                     taskListViewController.sortTaskListByDueDate();
+                } else {
+                    String condition = param.get(ParamEnum.KEYWORD).get(0).toLowerCase();
+                    taskListViewController.sortTaskListByCondition(condition);
                 }
                 showNotification("Tasks sorted!");
                 break;
