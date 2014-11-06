@@ -28,12 +28,12 @@ public class TaskListViewController {
         ArrayList<Task> taskList = initialTasks.getTaskList();
         observableTaskList = FXCollections
                 .observableArrayList(taskList);
-        sortTaskListByDueDate();
         taskTableView.getItems().addAll(observableTaskList);
+        sortTaskListByDueDate();
     }
 
     private void sortTaskListByDueDate() {
-        Collections.sort(observableTaskList);
+        FXCollections.sort(taskTableView.getItems());
     }
 
     protected void updateTaskList(ArrayList<Task> taskList) {
@@ -42,7 +42,7 @@ public class TaskListViewController {
         taskTableView.getItems().clear();
         observableTaskList = FXCollections
                 .observableArrayList(taskList);
-        sortTaskListByDueDate();
         taskTableView.getItems().addAll(observableTaskList);
+        sortTaskListByDueDate();
     }
 }
