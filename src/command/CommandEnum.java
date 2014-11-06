@@ -26,7 +26,9 @@ public enum CommandEnum {
     LEVEL("level", ParamEnum.KEYWORD),
     CONFIRM("confirm", ParamEnum.KEYWORD, ParamEnum.ID),
     CLEAR("clear", ParamEnum.KEYWORD),
-    TAB("tab", ParamEnum.KEYWORD);
+    TAB("tab", ParamEnum.KEYWORD),
+    SUGGEST ("suggest", ParamEnum.NAME, ParamEnum.START_DATE, ParamEnum.END_DATE, ParamEnum.DURATION),
+    ACCEPT ("accept", ParamEnum.KEYWORD);
 
     private final String regex;
     private final ParamEnum commandKey;
@@ -57,4 +59,5 @@ public enum CommandEnum {
     public ParamEnum commandKey() {
         return commandKey;
     }
+
 }

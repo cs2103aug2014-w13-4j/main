@@ -36,20 +36,35 @@ public class LogicUndo {
         undoStack = new Stack<History>();
     }
 
+	/**
+	 * Creates a history object containing the newly added task that is set as
+	 * deleted, and stores it in the stack
+	 * 
+	 * @param task
+	 *            : the new task that is added, it is not set as deleted yet
+	 */
+	void pushAddCommandToHistory(Task task) {
+		TaskModifier.deleteTask(task);
+		ArrayList<Task> tasks = new ArrayList<Task>();
+		tasks.add(task);
+		History historyCommand = new History(CommandEnum.ADD, tasks);
+		undoStack.push(historyCommand);
+	}
+	
     /**
-     * Creates a history object containing the newly added task that is set as
+     * Creates a history object containing the newly accepted task that is set as
      * deleted, and stores it in the stack
      * 
      * @param task
      *            : the new task that is added, it is not set as deleted yet
      */
-    void pushAddCommandToHistory(Task task) {
-        TaskModifier.deleteTask(task);
+	void pushAcceptCommandToHistory(Task task) {
+	    TaskModifier.deleteTask(task);
         ArrayList<Task> tasks = new ArrayList<Task>();
         tasks.add(task);
-        History historyCommand = new History(CommandEnum.ADD, tasks);
+        History historyCommand = new History(CommandEnum.ACCEPT, tasks);
         undoStack.push(historyCommand);
-    }
+	}
 
     /**
      * Creates a history object containing the task before it was edited, and

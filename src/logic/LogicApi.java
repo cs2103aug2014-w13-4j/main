@@ -127,6 +127,10 @@ public class LogicApi {
                     return logic.confirm(param);
                 }
                 break;
+            case SUGGEST:
+                return logic.suggest(param);
+            case ACCEPT:
+                return logic.accept(param);
             case TAG:
                 break;
             default:

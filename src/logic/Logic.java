@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.logging.Level;
+import java.util.Calendar;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 import com.rits.cloning.Cloner;
 
@@ -11,6 +15,7 @@ import storage.Storage;
 import command.CommandEnum;
 import command.ParamEnum;
 import common.ApplicationLogger;
+import common.DateParser;
 import common.Feedback;
 import common.History;
 import common.MessageCreator;
@@ -68,12 +73,20 @@ public class Logic {
     private static final String UNDO_MESSAGE = "%1$s %2$s is undone";
     private static final String UNDO_CLEAR_MESSAGE = "Clear is undone";
     private static final String CLEAR_MESSAGE = "All completed task are cleared from the list";
+    private static final String SUGGESTION_MESSAGE = "We have some suggestions for you";
+    private static final String NO_SUGGESTION_MESSAGE = "Sorry, we couldn't find a good slot for you";
+    // Represent a thirty minutes block in milliseconds
+    private static long TIME_BLOCK = 1800000;
+    private static long HOUR_TO_MILLIS = 3600000;
+    private static int MAX_RESULT = 3;
+    private static int START_VALUE = 0;
     Storage storage = null;
 
     private LogicUndo logicUndo = new LogicUndo();
 
     // public LogicUndo logicUndo = LogicUndo.getInstance();
     private Cloner cloner = new Cloner();
+    private ArrayList<Task> suggestions = new ArrayList<Task>();
 
     private static Logic instance = null;
 
@@ -321,6 +334,122 @@ public class Logic {
         return createTaskListFeedback(
                 MessageCreator.createMessage(SEARCH_MESSAGE,
                         String.valueOf(taskList.size()), null), taskList);
+    }
+    
+    /**
+     * Return a calendar to the nearest thirty minutes block
+     * @param date
+     * @return a calendar object a with the nearest block
+     */
+    private Calendar roundToNearestBlock(Calendar date) {
+        long dateTime = date.getTimeInMillis();
+        if (dateTime % TIME_BLOCK == 0) {
+            return date;
+        } else {
+            dateTime = ((dateTime / TIME_BLOCK) + 1) * TIME_BLOCK;
+            Calendar nearestBlock = GregorianCalendar.getInstance();
+            nearestBlock.setTimeInMillis(dateTime);
+            return nearestBlock;
+        }
+    }
+    
+    /**
+     * Suggest a list of date that fulfill the user requirements
+     * 
+     * @param param
+     * @return
+     * @throws InvalidDateFormatException
+     * @throws InvalidInputException
+     */
+    Feedback suggest(Hashtable<ParamEnum, ArrayList<String>> param)
+            throws InvalidDateFormatException, InvalidInputException {
+        ArrayList<Task> taskList = storage.suggestedSearchTask(param);
+        
+        suggestions.clear();
+        Calendar startTime = roundToNearestBlock(DateParser.parseString(param
+                .get(ParamEnum.START_DATE).get(START_VALUE)));
+        Task startTask = new Task();
+        startTask.setDateEnd(startTime);
+        taskList.add(START_VALUE, startTask);
+        Calendar endTime = roundToNearestBlock(DateParser.parseString(param
+                .get(ParamEnum.END_DATE).get(START_VALUE)));
+        Task endTask = new Task();
+        endTask.setDateStart(endTime);
+        taskList.add(endTask);
+
+        int duration = Integer.parseInt(param.get(ParamEnum.DURATION).get(
+                START_VALUE));
+
+        while (suggestions.size() < MAX_RESULT) {
+            int i;
+            Calendar curr;
+            Calendar next;
+            for (i = 0; i < taskList.size() - 1; i++) {
+                curr = roundToNearestBlock(taskList.get(i).getDateEnd());
+                next = roundToNearestBlock(taskList.get(i + 1).getDateStart());
+
+                if (curr.getTimeInMillis() >= startTime.getTimeInMillis()
+                        && next.getTimeInMillis() <= endTime.getTimeInMillis()
+                        && (next.getTimeInMillis() - curr.getTimeInMillis()) >= (duration * HOUR_TO_MILLIS)) {
+                    Task newTask = new Task();
+                    TaskModifier.modifyTimedTask(param, newTask);
+                    newTask.setDateStart(curr);
+                    Calendar temp = (Calendar) curr.clone();
+                    temp.add(Calendar.HOUR_OF_DAY, duration);
+                    newTask.setDateEnd(temp);
+                    taskList.add(i + 1, newTask);
+                    suggestions.add(newTask);
+                    break;
+                }
+            }
+            // Exit from the loop if no results is found
+            if (i == taskList.size() - 1) {
+                break;
+            }
+        }
+
+        String message;
+        if (suggestions.isEmpty()) {
+            message = NO_SUGGESTION_MESSAGE;
+        } else {
+            message = SUGGESTION_MESSAGE;
+        }
+
+        return createTaskAndTaskListFeedback(
+                MessageCreator.createMessage(message, "", null), suggestions,
+                null);
+    }
+    
+    /**
+     * Accept a suggested date
+     * @return
+     * @throws InvalidInputException 
+     * @throws TaskNotFoundException 
+     * @throws IOException 
+     * @throws InvalidCommandUseException 
+     * @throws TimeIntervalOverlapException 
+     */
+    Feedback accept(Hashtable<ParamEnum, ArrayList<String>> param) throws InvalidInputException, TaskNotFoundException, IOException, InvalidCommandUseException, TimeIntervalOverlapException {
+        int taskId = getTaskId(param);
+        Task task = getTaskFromSuggestion(taskId);
+        String name = task.getName();
+        storage.writeTaskToFile(task);
+        Task clonedTask = cloner.deepClone(task);
+        logicUndo.pushAcceptCommandToHistory(clonedTask);
+        ArrayList<Task> taskList = storage.getAllTasks();
+        suggestions.clear();
+        return createTaskListFeedback(
+                MessageCreator.createMessage(ADD_MESSAGE, name, null),
+                taskList);
+    }
+
+    private Task getTaskFromSuggestion(int taskId) throws TaskNotFoundException {
+        try {
+            return suggestions.get(taskId);
+        } catch (IndexOutOfBoundsException e) {
+            throw new TaskNotFoundException(MessageCreator.createMessage(
+                    INVALID_TASK_ID_MESSAGE, Integer.toString(taskId), null));
+        }
     }
 
     /**
