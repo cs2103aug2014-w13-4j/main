@@ -113,7 +113,7 @@ public class Storage {
     public ArrayList<Task> searchTask(
             Hashtable<ParamEnum, ArrayList<String>> keyWordTable)
             throws InvalidDateFormatException, InvalidInputException {
-        return taskFile.searchTask(keyWordTable, getAllTasks());
+        return taskFile.searchTask(keyWordTable);
     }
 
     public IntervalSearch getIntervalTree() {

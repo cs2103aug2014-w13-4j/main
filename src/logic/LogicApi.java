@@ -146,19 +146,12 @@ public class LogicApi {
     private boolean hasSearchParams(
             Hashtable<ParamEnum, ArrayList<String>> params)
                     throws InvalidInputException {
-        List<ParamEnum> searchParams = Arrays.asList(CommandEnum.SEARCH
-                .params());
         if (hasBothBeforeAndAfterParams(params)) {
             throw new InvalidInputException(INVALID_BEFORE_AFTER_SEARCH_MESSAGE);
         } else if (hasOnlyFromOrToParams(params)) {
             throw new InvalidInputException(INVALID_FROM_TO_SEARCH_MESSAGE);
         } else {
-            for (ParamEnum param : params.keySet()) {
-                if (searchParams.contains(param)) {
-                    return true;
-                }
-            }
-            return false;
+            return true;
         }
     }
 
