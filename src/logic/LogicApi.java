@@ -2,9 +2,7 @@ package logic;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.logging.Level;
 
 import command.*;
@@ -19,7 +17,6 @@ import common.exceptions.InvalidInputException;
 import common.exceptions.TaskNotFoundException;
 import common.exceptions.TimeIntervalOverlapException;
 
-//TODO: Throw exceptions when mandatory fields are missing
 public class LogicApi {
     private Logic logic;
     private static final String INVALID_COMMAND_MESSAGE = "The command is invalid.";

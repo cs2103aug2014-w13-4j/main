@@ -122,8 +122,8 @@ public class Logic {
         Task clonedTask = cloner.deepClone(task);
         logicUndo.pushAddCommandToHistory(clonedTask);
         ArrayList<Task> taskList = storage.getAllActiveTasks();
-        return createTaskListFeedback(
-                MessageCreator.createMessage(ADD_MESSAGE, name, null), taskList);
+        return createTaskAndTaskListFeedback(
+                MessageCreator.createMessage(ADD_MESSAGE, name, null), taskList, task);
     }
 
     /**

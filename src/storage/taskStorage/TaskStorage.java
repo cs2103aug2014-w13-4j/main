@@ -32,7 +32,7 @@ import common.exceptions.TimeIntervalOverlapException;
  */
 public class TaskStorage {
     public static TaskStorage getInstance(String fileName) throws IOException,
-    FileFormatNotSupportedException {
+            FileFormatNotSupportedException {
         if (taskStorageInstance == null) {
             taskStorageInstance = new TaskStorage(fileName);
         }
@@ -73,7 +73,7 @@ public class TaskStorage {
      *             , IOException
      */
     protected TaskStorage(String fileName) throws IOException,
-    FileFormatNotSupportedException {
+            FileFormatNotSupportedException {
         Task task;
         dataFile = new File(fileName);
 
@@ -213,30 +213,40 @@ public class TaskStorage {
 
     public ArrayList<Task> searchTask(
             Hashtable<ParamEnum, ArrayList<String>> keyWordTable)
-                    throws InvalidDateFormatException, InvalidInputException {
+            throws InvalidDateFormatException, InvalidInputException {
         ArrayList<Task> searchRange = getSearchRange(keyWordTable);
         ArrayList<Task> taskList = (ArrayList<Task>) searchRange.clone();
         ArrayList<Task> parallelTaskList = (ArrayList<Task>) searchRange
                 .clone();
-        ArrayList<String> params;
-        String firstParamElement, dateEnd;
 
         // exit if there is no keyword table
         if (keyWordTable == null) {
             return taskList;
         }
 
+        getSearchResults(keyWordTable, searchRange, taskList, parallelTaskList);
+        if (taskList.isEmpty()) {
+            return parallelTaskList;
+        } else {
+            return taskList;
+        }
+    }
+
+    private void getSearchResults(
+            Hashtable<ParamEnum, ArrayList<String>> keyWordTable,
+            ArrayList<Task> searchRange, ArrayList<Task> taskList,
+            ArrayList<Task> parallelTaskList) throws InvalidDateFormatException {
         for (ParamEnum key : keyWordTable.keySet()) {
-            params = keyWordTable.get(key);
-            firstParamElement = params.get(0);
+            ArrayList<String> params = keyWordTable.get(key);
+            String firstParamElement = params.get(0);
             for (Task task : searchRange) {
                 switch (key) {
                 case NAME:
-                    if (!isSearchTargetByName(task, firstParamElement)) {
-                        taskList.remove(task);
-                    }
                     if (!isNearMatchSearchTargetByName(task, firstParamElement)) {
                         parallelTaskList.remove(task);
+                        taskList.remove(task);
+                    } else if (!isSearchTargetByName(task, firstParamElement)) {
+                        taskList.remove(task);
                     }
                     break;
                 case NOTE:
@@ -275,7 +285,8 @@ public class TaskStorage {
                     break;
                 case START_DATE:
                     assert keyWordTable.get(ParamEnum.END_DATE) != null;
-                    dateEnd = keyWordTable.get(ParamEnum.END_DATE).get(0);
+                    String dateEnd = keyWordTable.get(ParamEnum.END_DATE)
+                            .get(0);
                     if (!isSearchTargetByInterval(task, firstParamElement,
                             dateEnd)) {
                         taskList.remove(task);
@@ -293,11 +304,7 @@ public class TaskStorage {
             }
             searchRange = (ArrayList<Task>) parallelTaskList.clone();
         }
-        if (taskList.isEmpty()) {
-            return parallelTaskList;
-        } else {
-            return taskList;
-        }
+
     }
 
     /**
@@ -312,7 +319,7 @@ public class TaskStorage {
      * @throws TimeIntervalOverlapException
      */
     public void writeTaskToFile(Task task) throws TaskNotFoundException,
-    IOException, TimeIntervalOverlapException {
+            IOException, TimeIntervalOverlapException {
         int taskID = task.getId();
         if (taskID == ID_FOR_NEW_TASK) {
             addTask(task);
@@ -343,7 +350,7 @@ public class TaskStorage {
      *             : wrong IO operations
      */
     private void addTask(Task task) throws IOException,
-    TimeIntervalOverlapException {
+            TimeIntervalOverlapException {
         if (isTaskTimeValid(task)) {
             // Add new task to task file
             task.setId(nextTaskIndex);
@@ -403,7 +410,7 @@ public class TaskStorage {
 
     private ArrayList<Task> getSearchRange(
             Hashtable<ParamEnum, ArrayList<String>> keyWordTable)
-                    throws InvalidInputException {
+            throws InvalidInputException {
         ArrayList<Task> searchRange;
         String keyWordString = keyWordTable.get(ParamEnum.KEYWORD).get(0)
                 .toLowerCase();
@@ -425,11 +432,15 @@ public class TaskStorage {
     }
 
     private boolean isNearMatch(String stringToMatch, String stringInTask) {
-        return StringUtils.getLevenshteinDistance(
-                stringInTask.substring(
-                        0,
-                        Integer.min(stringInTask.length(),
-                                stringToMatch.length())), stringToMatch) <= MAX_DIFF_BETWEEN_WORDS;
+        if (stringInTask.isEmpty()) {
+            return false;
+        } else {
+            return StringUtils.getLevenshteinDistance(
+                    stringInTask.substring(
+                            0,
+                            Integer.min(stringInTask.length(),
+                                    stringToMatch.length())), stringToMatch) <= MAX_DIFF_BETWEEN_WORDS;
+        }
     }
 
     private boolean isNearMatchSearchTargetByName(Task task,
@@ -439,7 +450,7 @@ public class TaskStorage {
 
     private boolean isNearMatchSearchTargetByNote(Task task,
             String firstParamElement) {
-        return isNearMatch(firstParamElement, task.getName());
+        return isNearMatch(firstParamElement, task.getNote());
     }
 
     private boolean isNearMatchSearchTargetByTag(Task task,
@@ -624,7 +635,7 @@ public class TaskStorage {
     }
 
     private void restoreTask(Task task) throws IOException,
-    TimeIntervalOverlapException {
+            TimeIntervalOverlapException {
         int taskID = task.getId();
         if (isTaskTimeValid(task)) {
             // Update task to task buffer
@@ -648,7 +659,7 @@ public class TaskStorage {
      *             : wrong IO operations
      */
     private void updateTask(Task task) throws IOException,
-    TimeIntervalOverlapException {
+            TimeIntervalOverlapException {
         int taskID = task.getId();
         if (isTaskTimeValid(task)) {
             // Update task to task buffer
