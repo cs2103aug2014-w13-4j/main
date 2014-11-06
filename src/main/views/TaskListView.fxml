@@ -20,7 +20,7 @@
                         <PropertyValueFactory property="id"/>
                     </cellValueFactory>
                 </TableColumn>
-                <TableColumn fx:id="doneTableColumn" prefWidth="30.0" minWidth="30.0" maxWidth="20.0" text="✓">
+                <TableColumn prefWidth="30.0" minWidth="30.0" maxWidth="20.0" text="✓">
                     <cellValueFactory>
                         <PropertyValueFactory property="dateEnd"/>
                     </cellValueFactory>
@@ -28,7 +28,7 @@
                         <TaskDoneFactory/>
                     </cellFactory>
                 </TableColumn>
-                <TableColumn fx:id="dueDateTableColumn" prefWidth="100.0" minWidth="100.0" maxWidth="100.0" text="Due">
+                <TableColumn prefWidth="100.0" minWidth="100.0" maxWidth="100.0" text="Due">
                     <cellValueFactory>
                         <PropertyValueFactory property="dateDue"/>
                     </cellValueFactory>
