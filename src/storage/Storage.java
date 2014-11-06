@@ -116,6 +116,13 @@ public class Storage {
         return taskFile.searchTask(keyWordTable);
     }
 
+    // Search a list of tasks within certain interval only
+    public ArrayList<Task> suggestedSearchTask(Hashtable<ParamEnum, ArrayList<String>> keyWordTable) throws InvalidDateFormatException, InvalidInputException {
+        Hashtable<ParamEnum, ArrayList<String>> searchKeyWordTable = (Hashtable<ParamEnum, ArrayList<String>>) keyWordTable.clone();
+        searchKeyWordTable.remove(ParamEnum.NAME);
+        return searchTask(searchKeyWordTable);
+    }
+
     public IntervalSearch getIntervalTree() {
         return taskFile.getIntervalTree();
     }
