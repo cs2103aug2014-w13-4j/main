@@ -453,14 +453,14 @@ public class Logic {
             if (lastAction.getCommand() == CommandEnum.CLEAR) {
                 return createTaskAndTaskListFeedback(
                         MessageCreator.createMessage(UNDO_CLEAR_MESSAGE,
-                                lastAction.getCommand().regex(), null),
+                                lastAction.getCommand().action(), null),
                                 storage.getAllTasks(), null);
             } else {
                 Task task = tasks.get(0);
                 Task displayTask = getTaskDisplayForUndo(task);
                 return createTaskAndTaskListFeedback(
                         MessageCreator.createMessage(UNDO_MESSAGE, lastAction
-                                .getCommand().regex(), task.getName()),
+                                .getCommand().action(), task.getName()),
                                 storage.getAllTasks(), displayTask);
             }
         }
