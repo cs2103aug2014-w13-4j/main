@@ -20,10 +20,6 @@ import common.Task;
 public class TaskListViewController {
     @FXML
     private TableView<Task> taskTableView;
-    @FXML
-    private TableColumn dueDateTableColumn;
-    @FXML
-    private TableColumn startDateTableColumn;
 
     private ObservableList<Task> observableTaskList;
 
