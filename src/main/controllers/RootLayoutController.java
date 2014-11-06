@@ -58,7 +58,6 @@ public class RootLayoutController {
         initScene();
         initNotificationPane();
         initTaskListView(allActiveTasks);
-        // initCalendarView(allActiveTasks);
         initTaskDisplayView();
         initUserInputView(allActiveTasks);
         showStage(primaryStage);
