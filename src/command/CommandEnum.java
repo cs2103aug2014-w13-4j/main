@@ -30,26 +30,26 @@ public enum CommandEnum {
     SUGGEST ("suggest", ParamEnum.NAME, ParamEnum.START_DATE, ParamEnum.END_DATE, ParamEnum.DURATION),
     ACCEPT ("accept", ParamEnum.KEYWORD);
 
-    private final String regex;
+    private final String action;
     private final ParamEnum commandKey;
     private final ParamEnum[] params;
 
     /**
      *
-     * @param regex
-     *            The regex pattern of the command
+     * @param action
+     *            The action of the command
      * @param associatedParams
      *            Additional params associated with the command
      */
-    CommandEnum(String regex, ParamEnum commandKey,
+    CommandEnum(String action, ParamEnum commandKey,
             ParamEnum... associatedParams) {
-        this.regex = regex;
+        this.action = action;
         this.commandKey = commandKey;
         params = associatedParams;
     }
 
-    public String regex() {
-        return regex;
+    public String action() {
+        return action;
     }
 
     public ParamEnum[] params() {
