@@ -194,9 +194,8 @@ public class RootLayoutController {
             case SORT:
                 if (param.get(ParamEnum.KEYWORD).get(0).toLowerCase()
                     .isEmpty()) {
-
+                    taskListViewController.sortTaskListByDueDate();
                 }
-                taskListViewController.sortTaskListByCondition();
                 showNotification("Tasks sorted!");
                 break;
             default:

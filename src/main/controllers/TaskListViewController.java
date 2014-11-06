@@ -32,7 +32,7 @@ public class TaskListViewController {
         sortTaskListByDueDate();
     }
 
-    private void sortTaskListByDueDate() {
+    protected void sortTaskListByDueDate() {
         FXCollections.sort(taskTableView.getItems());
     }
 
