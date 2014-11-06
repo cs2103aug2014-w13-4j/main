@@ -170,7 +170,6 @@ public class RootLayoutController {
                 Command userCommand = commandParser.parseCommand(userInput);
 
                 executeGuiCommand(userCommand);
-                // executeLogicCommand(userCommand);
             } catch (Exception e) {
                 showNotification(e.getMessage());
                 e.printStackTrace();
