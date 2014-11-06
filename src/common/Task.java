@@ -3,9 +3,7 @@ package common;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import common.PriorityLevelEnum;
-
-public class Task {
+public class Task implements Comparable<Task> {
     private int id = 0;
     private String name = "";
     private Calendar dateDue = null;
@@ -181,5 +179,30 @@ public class Task {
 
     public void setTags(ArrayList<String> tags) {
         this.tags = tags;
+    }
+
+    @Override
+    public int compareTo(Task otherTask) {
+        Calendar firstDate = this.getDateForComparison();
+        Calendar secondDate = otherTask.getDateForComparison();
+        if (firstDate == null && secondDate == null) {
+            return 0;
+        } else if (firstDate == null) {
+            return 1;
+        } else if (secondDate == null) {
+            return -1;
+        } else {
+            return (firstDate.compareTo(secondDate));
+        }
+    }
+
+    public Calendar getDateForComparison() {
+        if (isDeadlineTask()) {
+            return getDateDue();
+        } else if (isTimedTask()) {
+            return getDateStart();
+        } else {
+            return null;
+        }
     }
 }

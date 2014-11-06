@@ -26,7 +26,8 @@ public enum CommandEnum {
     LEVEL("level", ParamEnum.KEYWORD),
     CONFIRM("confirm", ParamEnum.KEYWORD, ParamEnum.ID),
     CLEAR("clear", ParamEnum.KEYWORD),
-    TAB("tab", ParamEnum.KEYWORD);
+    TAB("tab", ParamEnum.KEYWORD),
+    SORT("sort", ParamEnum.KEYWORD);
 
     private final String regex;
     private final ParamEnum commandKey;
