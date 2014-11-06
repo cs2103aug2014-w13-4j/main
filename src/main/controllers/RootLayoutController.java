@@ -168,7 +168,6 @@ public class RootLayoutController {
         if (validateUserInput(userInput)) {
             try {
                 Command userCommand = commandParser.parseCommand(userInput);
-
                 executeGuiCommand(userCommand);
             } catch (Exception e) {
                 showNotification(e.getMessage());
