@@ -58,7 +58,6 @@ public class RootLayoutController {
         initScene();
         initNotificationPane();
         initTaskListView(allActiveTasks);
-        // initCalendarView(allActiveTasks);
         initTaskDisplayView();
         initUserInputView(allActiveTasks);
         showStage(primaryStage);
@@ -168,9 +167,7 @@ public class RootLayoutController {
         if (validateUserInput(userInput)) {
             try {
                 Command userCommand = commandParser.parseCommand(userInput);
-
                 executeGuiCommand(userCommand);
-                // executeLogicCommand(userCommand);
             } catch (Exception e) {
                 showNotification(e.getMessage());
                 e.printStackTrace();
@@ -218,9 +215,7 @@ public class RootLayoutController {
         }
 
         Task taskToDisplay = userCommandFeedback.getTaskDisplay();
-        if (taskToDisplay != null) {
-            taskDisplayViewController.updateTaskPanel(taskToDisplay);
-        }
+        taskDisplayViewController.updateTaskPanel(taskToDisplay);
     }
 
     private void showNotification(String feedbackMessage) {

@@ -1,5 +1,6 @@
 package common;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -12,7 +13,8 @@ import com.joestelmach.natty.Parser;
 import common.exceptions.InvalidDateFormatException;
 
 public class DateParser {
-    private static final String STORE_DATE_FORMAT = "%d-%d-%d %02d:%02d";
+    private static final String DISPLAY_DATE_FORMAT = "%d %s %02d:%02d";
+    private static final String FULL_DISPLAY_DATE_FORMAT = "%d %s %d %02d:%02d";
     private static final String CONVERSION_DATE_FORMAT = "\\d\\d[\\\\\\-\\.]\\d\\d[\\\\\\-\\.]\\d{2}(?:\\d{2})?";
     private static final String CORRECT_DATE_FORMAT = "%1$s-%2$s-%3$s";
     private static final String DATE_SPLIT_FORMAT = "[\\\\\\-\\.]";
@@ -76,20 +78,33 @@ public class DateParser {
      */
     public static String parseCalendar(Calendar date) {
         if (date != null) {
+            int thisYear = Calendar.getInstance().get(Calendar.YEAR);
             int day = date.get(Calendar.DAY_OF_MONTH);
-            int month = date.get(Calendar.MONTH) + 1;
+            //int month = date.get(Calendar.MONTH) + 1;
+            String month = new SimpleDateFormat("MMM").format(new Date(date.getTimeInMillis()));
             int year = date.get(Calendar.YEAR);
             int hour = date.get(Calendar.HOUR_OF_DAY);
             int minute = date.get(Calendar.MINUTE);
-            return createString(day, month, year, hour, minute);
+
+            if (thisYear == year) {
+                return createStringWithoutDate(day, month, hour, minute);
+            } else {
+                return createString(day, month, year, hour, minute);
+            }
         } else {
             return null;
         }
     }
 
-    private static String createString(int day, int month, int year, int hour,
+    private static String createString(int day, String month, int year, int hour,
             int minute) {
-        return String.format(STORE_DATE_FORMAT, day, month, year, hour, minute);
+        return String.format(FULL_DISPLAY_DATE_FORMAT, day, month, year, hour, minute);
+    }
+
+    private static String createStringWithoutDate(int day, String month, int hour,
+                                                  int minute) {
+
+        return String.format(DISPLAY_DATE_FORMAT, day, month, hour, minute);
     }
 
     /**

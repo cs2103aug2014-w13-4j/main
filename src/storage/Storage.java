@@ -34,7 +34,7 @@ public class Storage {
      * constructor This constructor follows the singleton pattern It can only be
      * called with in the current class (Storage.getInstance()) This is to
      * ensure that only there is exactly one instance of Storage class
-     * 
+     *
      * @throws FileFormatNotSupportedException
      *             , IOException
      */
@@ -91,32 +91,39 @@ public class Storage {
         return taskFile.getAllTasks();
     }
 
+    // Get a list of all active tasks
+    // To be the default display.
+    public ArrayList<Task> getAllActiveTasks() {
+        return taskFile.getAllActiveTasks();
+    }
+
     // Get a list of all the completed task
     // This medthod is for clearing all the completed task
     public ArrayList<Task> getAllCompletedTasks() {
         return taskFile.getAllCompletedTasks();
     }
 
-	// Get a list of tags
-	public ArrayList<String> getAllTags() {
-		return tagFile.getAllTags();
-	}
+    // Get a list of tags
+    public ArrayList<String> getAllTags() {
+        return tagFile.getAllTags();
+    }
 
-	// Search a list of tasks with certain key words
-	// Assume keywords of name and note is only one string
-	public ArrayList<Task> searchTask(Hashtable<ParamEnum, ArrayList<String>> keyWordTable) 
-			throws InvalidDateFormatException, InvalidInputException {
-		return taskFile.searchTask(keyWordTable, getAllTasks());
-	}
-	
-	// Search a list of tasks within certain interval only
-	public ArrayList<Task> suggestedSearchTask(Hashtable<ParamEnum, ArrayList<String>> keyWordTable) throws InvalidDateFormatException, InvalidInputException {
-	    Hashtable<ParamEnum, ArrayList<String>> searchKeyWordTable = (Hashtable<ParamEnum, ArrayList<String>>) keyWordTable.clone();
-	    searchKeyWordTable.remove(ParamEnum.NAME);
-	    return searchTask(searchKeyWordTable);
-	}
+    // Search a list of tasks with certain key words
+    // Assume keywords of name and note is only one string
+    public ArrayList<Task> searchTask(
+            Hashtable<ParamEnum, ArrayList<String>> keyWordTable)
+            throws InvalidDateFormatException, InvalidInputException {
+        return taskFile.searchTask(keyWordTable);
+    }
 
-	public IntervalSearch getIntervalTree() {
-		return taskFile.getIntervalTree();
-	}
+    // Search a list of tasks within certain interval only
+    public ArrayList<Task> suggestedSearchTask(Hashtable<ParamEnum, ArrayList<String>> keyWordTable) throws InvalidDateFormatException, InvalidInputException {
+        Hashtable<ParamEnum, ArrayList<String>> searchKeyWordTable = (Hashtable<ParamEnum, ArrayList<String>>) keyWordTable.clone();
+        searchKeyWordTable.remove(ParamEnum.NAME);
+        return searchTask(searchKeyWordTable);
+    }
+
+    public IntervalSearch getIntervalTree() {
+        return taskFile.getIntervalTree();
+    }
 }

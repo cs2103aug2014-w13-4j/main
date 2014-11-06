@@ -7,6 +7,9 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 
 import common.Feedback;
 import common.Task;
@@ -16,8 +19,9 @@ import common.Task;
  */
 public class TaskListViewController {
     @FXML
-    public TableView<Task> taskTableView;
-    public TableColumn dueDateTableColumn;
+    private TableView<Task> taskTableView;
+
+    private ObservableList<Task> observableTaskList;
 
     public void initialize(Feedback initialTasks) {
         initializeGuiTaskList(initialTasks);
@@ -25,24 +29,52 @@ public class TaskListViewController {
 
     private void initializeGuiTaskList(Feedback initialTasks) {
         ArrayList<Task> taskList = initialTasks.getTaskList();
-        ObservableList<Task> observableList = FXCollections
+        observableTaskList = FXCollections
                 .observableArrayList(taskList);
-        taskTableView.getItems().addAll(observableList);
         sortTaskListByDueDate();
+        taskTableView.getItems().addAll(observableTaskList);
     }
 
     private void sortTaskListByDueDate() {
-        dueDateTableColumn.setSortType(TableColumn.SortType.ASCENDING);
-        taskTableView.getSortOrder().add(dueDateTableColumn);
+        sortTasks();
     }
 
     protected void updateTaskList(ArrayList<Task> taskList) {
         assert (taskList != null && taskList.size() >= 0);
 
         taskTableView.getItems().clear();
-        ObservableList<Task> observableList = FXCollections
+        observableTaskList = FXCollections
                 .observableArrayList(taskList);
-        taskTableView.getItems().addAll(observableList);
         sortTaskListByDueDate();
+        taskTableView.getItems().addAll(observableTaskList);
+    }
+
+    protected void sortTasks() {
+        Collections.sort(observableTaskList, new Comparator<Task>() {
+            @Override
+            public int compare(Task o1, Task o2) {
+                Calendar firstDate = getDateForComparison(o1);
+                Calendar secondDate = getDateForComparison(o2);
+                if (firstDate == null && secondDate == null) {
+                    return 0;
+                } else if (firstDate == null) {
+                    return 1;
+                } else if (secondDate == null) {
+                    return -1;
+                } else {
+                    return (firstDate.compareTo(secondDate));
+                }
+            }
+        });
+    }
+
+    private Calendar getDateForComparison(Task task) {
+        if (task.isDeadlineTask()) {
+            return task.getDateDue();
+        } else if (task.isTimedTask()) {
+            return task.getDateStart();
+        } else {
+            return null;
+        }
     }
 }

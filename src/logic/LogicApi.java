@@ -2,9 +2,7 @@ package logic;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.logging.Level;
 
 import command.*;
@@ -19,7 +17,6 @@ import common.exceptions.InvalidInputException;
 import common.exceptions.TaskNotFoundException;
 import common.exceptions.TimeIntervalOverlapException;
 
-//TODO: Throw exceptions when mandatory fields are missing
 public class LogicApi {
     private Logic logic;
     private static final String INVALID_COMMAND_MESSAGE = "The command is invalid.";
@@ -142,26 +139,19 @@ public class LogicApi {
         }
     }
 
-    public Feedback displayAll() {
-        return logic.displayAll();
+    public Feedback displayAllActive() {
+        return logic.displayAllActive();
     }
 
     private boolean hasSearchParams(
             Hashtable<ParamEnum, ArrayList<String>> params)
                     throws InvalidInputException {
-        List<ParamEnum> searchParams = Arrays.asList(CommandEnum.SEARCH
-                .params());
         if (hasBothBeforeAndAfterParams(params)) {
             throw new InvalidInputException(INVALID_BEFORE_AFTER_SEARCH_MESSAGE);
         } else if (hasOnlyFromOrToParams(params)) {
             throw new InvalidInputException(INVALID_FROM_TO_SEARCH_MESSAGE);
         } else {
-            for (ParamEnum param : params.keySet()) {
-                if (searchParams.contains(param)) {
-                    return true;
-                }
-            }
-            return false;
+            return true;
         }
     }
 

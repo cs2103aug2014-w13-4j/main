@@ -34,6 +34,7 @@ public class LogicTest {
     Method add = logicClass.getDeclaredMethod("add", Hashtable.class);
     Method complete = logicClass.getDeclaredMethod("complete", Hashtable.class);
     Method delete = logicClass.getDeclaredMethod("delete", Hashtable.class);
+    Method display = logicClass.getDeclaredMethod("display", Hashtable.class);
     LogicApi logicApiObject;
     Logic logicObject;
 
@@ -67,6 +68,7 @@ public class LogicTest {
         complete.setAccessible(true);
         delete.setAccessible(true);
         update.setAccessible(true);
+        display.setAccessible(true);
     }
 
     @Test
@@ -143,11 +145,18 @@ public class LogicTest {
         ArrayList<String> numList = new ArrayList<String>();
         numList.add("1");
         completeParams.put(ParamEnum.KEYWORD, numList);
-        Feedback completeFeedback = (Feedback) complete.invoke(logicObject,
+        complete.invoke(logicObject,
                 completeParams);
-        assertEquals(1, completeFeedback.getTaskList().size());
 
-        Task task = completeFeedback.getTaskList().get(0);
+        Hashtable<ParamEnum, ArrayList<String>> displayParams = new Hashtable<ParamEnum, ArrayList<String>>();
+        ArrayList<String> displayList = new ArrayList<String>();
+        displayList.add("completed");
+        displayParams.put(ParamEnum.KEYWORD, displayList);
+        Feedback displayFeedback = (Feedback) display.invoke(logicObject,
+                displayParams);
+        assertEquals(1, displayFeedback.getTaskList().size());
+
+        Task task = displayFeedback.getTaskList().get(0);
         assertTrue(task.isCompleted());
     }
 
@@ -168,7 +177,7 @@ public class LogicTest {
         noteList.add("Test is good");
         updateParams.put(ParamEnum.NOTE, noteList);
         ArrayList<String> dueDateList = new ArrayList<String>();
-        dueDateList.add("20 Oct 2014 9am");
+        dueDateList.add("20 Oct 2015 9am");
         updateParams.put(ParamEnum.DUE_DATE, dueDateList);
         ArrayList<String> numList = new ArrayList<String>();
         numList.add("1");
@@ -176,10 +185,11 @@ public class LogicTest {
         Feedback updateFeedback = (Feedback) update.invoke(logicObject,
                 updateParams);
         assertEquals(1, updateFeedback.getTaskList().size());
+        task = updateFeedback.getTaskList().get(0);
 
         assertEquals("Test is good", task.getNote());
         assertTrue(task.isDeadlineTask());
-        assertEquals("20-10-2014 09:00",
+        assertEquals("20-10-2015 09:00",
                 DateParser.parseCalendar(task.getDateDue()));
     }
 
@@ -191,7 +201,7 @@ public class LogicTest {
         nameList.add("test test");
         params.put(ParamEnum.NAME, nameList);
         ArrayList<String> dueDateList = new ArrayList<String>();
-        dueDateList.add("20 Oct 2014 9am");
+        dueDateList.add("20 Oct 2015 9am");
         params.put(ParamEnum.DUE_DATE, dueDateList);
         Feedback feedback = (Feedback) add.invoke(logicObject, params);
 
@@ -200,10 +210,10 @@ public class LogicTest {
 
         Hashtable<ParamEnum, ArrayList<String>> updateParams = new Hashtable<ParamEnum, ArrayList<String>>();
         ArrayList<String> startDateList = new ArrayList<String>();
-        startDateList.add("23 Oct 2014 09:00");
+        startDateList.add("23 Oct 2015 09:00");
         updateParams.put(ParamEnum.START_DATE, startDateList);
         ArrayList<String> endDateList = new ArrayList<String>();
-        endDateList.add("23 Oct 2014 11:00");
+        endDateList.add("23 Oct 2015 11:00");
         updateParams.put(ParamEnum.END_DATE, endDateList);
         ArrayList<String> numList = new ArrayList<String>();
         numList.add("1");
@@ -211,11 +221,12 @@ public class LogicTest {
         Feedback updateFeedback = (Feedback) update.invoke(logicObject,
                 updateParams);
         assertEquals(1, updateFeedback.getTaskList().size());
+        task = updateFeedback.getTaskList().get(0);
 
         assertTrue(task.isTimedTask());
-        assertEquals("23-10-2014 09:00",
+        assertEquals("23-10-2015 09:00",
                 DateParser.parseCalendar(task.getDateStart()));
-        assertEquals("23-10-2014 11:00",
+        assertEquals("23-10-2015 11:00",
                 DateParser.parseCalendar(task.getDateEnd()));
     }
 }
