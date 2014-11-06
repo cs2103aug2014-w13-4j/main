@@ -215,9 +215,7 @@ public class RootLayoutController {
         }
 
         Task taskToDisplay = userCommandFeedback.getTaskDisplay();
-        if (taskToDisplay != null) {
-            taskDisplayViewController.updateTaskPanel(taskToDisplay);
-        }
+        taskDisplayViewController.updateTaskPanel(taskToDisplay);
     }
 
     private void showNotification(String feedbackMessage) {

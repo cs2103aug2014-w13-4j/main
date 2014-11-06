@@ -58,21 +58,30 @@ public class TaskDisplayViewController {
     }
 
     protected void updateTaskPanel(Task taskToDisplay) {
-        setLabelValueInGui(idLabelValue,
-                Integer.toString(taskToDisplay.getId()));
-        setLabelValueInGui(taskNameLabelValue, taskToDisplay.getName());
-        setLabelValueInGui(dueDateLabelValue,
-                DateParser.parseCalendar(taskToDisplay.getDateDue()));
-        setLabelValueInGui(startDateLabelValue,
-                DateParser.parseCalendar(taskToDisplay.getDateStart()));
-        setLabelValueInGui(endDateLabelValue,
-                DateParser.parseCalendar(taskToDisplay.getDateEnd()));
-        setLabelValueInGui(priorityLevelLabelValue,
-                (taskToDisplay.getPriorityLevel() == null ? null
-                        : taskToDisplay.getPriorityLevel().name()));
-        setLabelValueInGui(noteLabelValue, taskToDisplay.getNote());
-        updateTaskPanelForConditionalDates(taskToDisplay);
-        updateTaskPanelForTags(taskToDisplay);
+        if (taskToDisplay == null) {
+            StringProperty[] labelValueList = {idLabelValue, taskNameLabelValue, dueDateLabelValue,
+                startDateLabelValue, endDateLabelValue, priorityLevelLabelValue, noteLabelValue,
+                conditionalDateLabelValue, tagLabelValue};
+            for (StringProperty labelValue: labelValueList) {
+                setLabelValueInGui(labelValue, null);
+            }
+        } else {
+            setLabelValueInGui(idLabelValue,
+                    Integer.toString(taskToDisplay.getId()));
+            setLabelValueInGui(taskNameLabelValue, taskToDisplay.getName());
+            setLabelValueInGui(dueDateLabelValue,
+                    DateParser.parseCalendar(taskToDisplay.getDateDue()));
+            setLabelValueInGui(startDateLabelValue,
+                    DateParser.parseCalendar(taskToDisplay.getDateStart()));
+            setLabelValueInGui(endDateLabelValue,
+                    DateParser.parseCalendar(taskToDisplay.getDateEnd()));
+            setLabelValueInGui(priorityLevelLabelValue,
+                    (taskToDisplay.getPriorityLevel() == null ? null
+                            : taskToDisplay.getPriorityLevel().name()));
+            setLabelValueInGui(noteLabelValue, taskToDisplay.getNote());
+            updateTaskPanelForConditionalDates(taskToDisplay);
+            updateTaskPanelForTags(taskToDisplay);
+        }
     }
 
     private void updateTaskPanelForConditionalDates(Task taskToDisplay) {
