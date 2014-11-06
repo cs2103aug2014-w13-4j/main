@@ -20,7 +20,6 @@ public enum ParamEnum {
     OR_END(" or to ", " to"),
     NAME(" name", ""),
     ID(" id", ""),
-    STATUS(" status", ""),
     BEFORE(" before", ""),
     AFTER(" after", ""),
     ON(" on", ""),

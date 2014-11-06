@@ -17,7 +17,7 @@ public enum CommandEnum {
         ParamEnum.END_DATE,ParamEnum.LEVEL, ParamEnum.NOTE, ParamEnum.TAG, ParamEnum.NAME),
     UNDO("undo", ParamEnum.KEYWORD),
     SEARCH("search", ParamEnum.KEYWORD, ParamEnum.NAME, ParamEnum.NOTE,
-        ParamEnum.TAG, ParamEnum.STATUS, ParamEnum.AFTER, ParamEnum.BEFORE,
+        ParamEnum.TAG, ParamEnum.AFTER, ParamEnum.BEFORE,
         ParamEnum.START_DATE, ParamEnum.END_DATE, ParamEnum.ON),
     DISPLAY("display", ParamEnum.KEYWORD),
     DONE("done", ParamEnum.KEYWORD, ParamEnum.DATE),
