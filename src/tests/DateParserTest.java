@@ -28,7 +28,7 @@ public class DateParserTest {
         assertEquals("Date seems to be parsed wrongly", expectedDateString, dateString);
 
         int thisYear = Calendar.getInstance().get(Calendar.YEAR);
-        date = DateParser.parseString("20-10-"+thisYear+" 23:00");
+        date = DateParser.parseString("20-10-" + thisYear + " 23:00");
         dateString = DateParser.parseCalendar(date);
         expectedDateString = "20 Oct 23:00";
         assertEquals("Date this year seems to be parsed wrongly", expectedDateString, dateString);
@@ -40,6 +40,6 @@ public class DateParserTest {
         Calendar calendarDate = DateParser.parseString(dateString);
         Calendar expectedCalendarDate = new GregorianCalendar();
         expectedCalendarDate.set(2014, Calendar.DECEMBER, 31);
-        assertEquals("", expectedCalendarDate.getTime(), calendarDate.getTime());
+        assertEquals("Parsed date doesn't match user entered date", expectedCalendarDate.getTime(), calendarDate.getTime());
     }
 }
