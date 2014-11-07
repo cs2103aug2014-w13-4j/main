@@ -53,6 +53,10 @@ public class TaskModifier {
         }
     }
 
+    static void resetId(Task task) {
+        task.setId(Task.ID_FOR_NEW_TASK);
+    }
+
     static void deleteTask(Task task) {
         task.setDeleted(true);
     }
