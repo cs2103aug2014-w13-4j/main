@@ -476,7 +476,7 @@ public class Logic {
             if (lastAction.getCommand() == CommandEnum.CLEAR) {
                 return createTaskAndTaskListFeedback(
                         MessageCreator.createMessage(UNDO_CLEAR_MESSAGE,
-                                lastAction.getCommand().regex(), null),
+                                lastAction.getCommand().action(), null),
                                 storage.getAllActiveTasks(), null);
 
             } else {
