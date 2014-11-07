@@ -3,9 +3,14 @@ package common;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+//@author A0114368E
+/**
+ * This class stores all the attributes of a task. Currently, 4 types of tasks
+ * are supported: Deadline Task, Floating Task, Timed Task and Conditional Task
+ *
+ */
 public class Task {
     public static final int ID_FOR_NEW_TASK = 0;
-
     private int id = 0;
     private String name = "";
     private Calendar dateDue = null;
@@ -172,8 +177,6 @@ public class Task {
     }
 
     public void setStartDueDateFromConditional(int id) {
-        // conditional dates must be present to set start and due date
-        // assume id starts counting from 1
         assert (conditionalDates != null && id >= conditionalDates.size());
         dateStart = conditionalDates.get(id - 1).getStartDate();
         dateEnd = conditionalDates.get(id - 1).getDueDate();
