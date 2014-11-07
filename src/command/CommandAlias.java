@@ -1,7 +1,5 @@
 package command;
 
-import java.util.ArrayList;
-
 public enum CommandAlias {
     ADD(CommandEnum.ADD, "add"),
     DELETE(CommandEnum.DELETE, "delete", "remove"),
@@ -11,7 +9,7 @@ public enum CommandAlias {
     DISPLAY(CommandEnum.DISPLAY, "display", "show"),
     DONE(CommandEnum.DONE, "done", "complete"),
     TAG(CommandEnum.TAG, "\\+"),
-    LEVEL(CommandEnum.LEVEL, "level", "prioirty"),
+    LEVEL(CommandEnum.LEVEL, "level", "priority"),
     CONFIRM(CommandEnum.CONFIRM, "confirm"),
     CLEAR(CommandEnum.CLEAR, "clear"),
     TAB(CommandEnum.TAB, "tab"),
