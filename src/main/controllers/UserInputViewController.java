@@ -15,15 +15,15 @@ import org.controlsfx.control.textfield.TextFields;
 public class UserInputViewController {
 
     public TextField userInputField;
-    private RootLayoutController rootLayoutController;
+    private RootController rootController;
 
     private AutoCompletionBinding<String> autoCompletionBinding;
     private boolean autoCompleteCommandInitialized = false;
     private ObservableList<String> autoCompleteStringList = FXCollections
             .observableArrayList();
 
-    public void initialize(RootLayoutController rootLayoutController) {
-        this.rootLayoutController = rootLayoutController;
+    public void initialize(RootController rootController) {
+        this.rootController = rootController;
         initializeAutoComplete();
         setFocusToUserInputField();
     }
@@ -55,7 +55,7 @@ public class UserInputViewController {
         String userInput = userInputField.getText();
         if (userInput.split(" ")[0].equalsIgnoreCase(String
                 .valueOf(CommandEnum.SEARCH))) {
-            rootLayoutController.executeCommand(userInput);
+            rootController.executeCommand(userInput);
         }
         System.out.println(userInput);
     }
@@ -65,7 +65,7 @@ public class UserInputViewController {
     }
 
     public void handleUserInput() {
-        rootLayoutController.executeCommand(userInputField.getText());
+        rootController.executeCommand(userInputField.getText());
         userInputField.clear();
     }
 }
