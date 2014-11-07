@@ -110,7 +110,6 @@ public class LogicApi {
             case CLEAR:
                 return logic.clear(param);
             case DONE:
-            case COMPLETE:
                 if (!isKeywordParamEmpty(param)) {
                     return logic.complete(param);
                 }

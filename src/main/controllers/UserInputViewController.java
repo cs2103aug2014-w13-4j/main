@@ -1,9 +1,11 @@
 package main.controllers;
 
+import command.CommandAlias;
 import command.CommandEnum;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TextField;
+
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
 
@@ -36,9 +38,11 @@ public class UserInputViewController {
                 autoCompletionBinding.dispose();
             }
             autoCompleteStringList.clear();
-            for (CommandEnum command : CommandEnum.values()) {
-                autoCompleteStringList.add(String.valueOf(command)
-                        .toLowerCase() + " ");
+            for (CommandAlias commandAlias : CommandAlias.values()) {
+                for (String alias: commandAlias.alias()) {
+                    autoCompleteStringList.add(String.valueOf(alias)
+                            .toLowerCase() + " ");
+                }
             }
 
             autoCompletionBinding = TextFields.bindAutoCompletion(

@@ -478,13 +478,15 @@ public class Logic {
                         MessageCreator.createMessage(UNDO_CLEAR_MESSAGE,
                                 lastAction.getCommand().regex(), null),
                                 storage.getAllActiveTasks(), null);
+
             } else {
                 Task task = tasks.get(0);
                 Task displayTask = getTaskDisplayForUndo(task);
                 return createTaskAndTaskListFeedback(
                         MessageCreator.createMessage(UNDO_MESSAGE, lastAction
-                                .getCommand().regex(), task.getName()),
-                                storage.getAllActiveTasks(), displayTask);
+                                .getCommand().action(), task.getName()),
+                                storage.getAllTasks(), displayTask);
+
             }
         }
     }
