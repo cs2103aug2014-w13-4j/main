@@ -14,7 +14,6 @@ import common.exceptions.InvalidDateFormatException;
 import common.exceptions.InvalidInputException;
 import common.exceptions.TaskNotFoundException;
 import common.exceptions.TimeIntervalOverlapException;
-import storage.tagStorage.TagStorage;
 import storage.taskStorage.TaskStorage;
 
 /**
@@ -25,10 +24,8 @@ import storage.taskStorage.TaskStorage;
 public class Storage {
     private static Storage storageInstance;
     private TaskStorage taskFile;
-    private TagStorage tagFile;
 
     private static final String FILE_NAME_TASK_STORAGE = "taskStorage.data";
-    private static final String FILE_NAME_TAG_STORAGE = "TagStorage.data";
 
     /**
      * constructor This constructor follows the singleton pattern It can only be
@@ -49,7 +46,6 @@ public class Storage {
             storageInstance = new Storage();
             storageInstance.taskFile = TaskStorage
                     .getInstance(FILE_NAME_TASK_STORAGE);
-            storageInstance.tagFile = new TagStorage(FILE_NAME_TAG_STORAGE);
         }
         return storageInstance;
     }
@@ -59,7 +55,6 @@ public class Storage {
         storageInstance = new Storage();
         storageInstance.taskFile = TaskStorage
                 .getNewInstance(FILE_NAME_TASK_STORAGE);
-        storageInstance.tagFile = new TagStorage(FILE_NAME_TAG_STORAGE);
         return storageInstance;
     }
 
@@ -69,11 +64,6 @@ public class Storage {
         ApplicationLogger.getApplicationLogger().log(Level.INFO,
                 "Writing Task to file.");
         taskFile.writeTaskToFile(task);
-        tagFile.updateTagToFile(task.getTags());
-    }
-
-    public void updateTagToFile(ArrayList<String> tags) throws IOException {
-        tagFile.updateTagToFile(tags);
     }
 
     // Get a task by task ID
@@ -101,11 +91,6 @@ public class Storage {
     // This medthod is for clearing all the completed task
     public ArrayList<Task> getAllCompletedTasks() {
         return taskFile.getAllCompletedTasks();
-    }
-
-    // Get a list of tags
-    public ArrayList<String> getAllTags() {
-        return tagFile.getAllTags();
     }
 
     // Search a list of tasks with certain key words
