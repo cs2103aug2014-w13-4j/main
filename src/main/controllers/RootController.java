@@ -53,13 +53,13 @@ public class RootController {
     public void initialize(Stage primaryStage, Feedback allActiveTasks,
             LogicApi logicApi) throws IOException {
         setLogic(logicApi);
-        initRootLayout(primaryStage);
+        initRootLayout();
         initTabLayout();
         initScene();
         initNotificationPane();
         initTaskListView(allActiveTasks);
         initTaskDisplayView();
-        initUserInputView(allActiveTasks);
+        initUserInputView();
         showStage(primaryStage);
 
         // Initialised after showStage due to JavaFX known issue with CSS
@@ -71,7 +71,7 @@ public class RootController {
         this.logicApi = logicApi;
     }
 
-    private void initRootLayout(Stage primaryStage) throws IOException {
+    private void initRootLayout() throws IOException {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(Main.class.getResource("views/RootLayout.fxml"));
         rootLayout = loader.load();
@@ -141,7 +141,7 @@ public class RootController {
         taskDisplayViewController.initialize();
     }
 
-    private void initUserInputView(Feedback allActiveTasks) throws IOException {
+    private void initUserInputView() throws IOException {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(Main.class.getResource("views/UserInputView.fxml"));
         AnchorPane userInput = loader.load();
