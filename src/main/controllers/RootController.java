@@ -32,7 +32,7 @@ import java.util.logging.Level;
 /**
  * @author szhlibrary
  */
-public class RootLayoutController {
+public class RootController {
     protected LogicApi logicApi;
 
     private BorderPane rootLayout;
