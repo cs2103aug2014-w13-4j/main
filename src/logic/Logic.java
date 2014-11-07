@@ -354,17 +354,17 @@ public class Logic {
     }
     
     /**
-     * Suggest a list of date that fulfill the user requirements
-     * 
+     * Suggest a list of dates that fulfill the user requirements
+     *
      * @param param
-     * @return
+     * @return Feedback
      * @throws InvalidDateFormatException
      * @throws InvalidInputException
      */
     Feedback suggest(Hashtable<ParamEnum, ArrayList<String>> param)
             throws InvalidDateFormatException, InvalidInputException {
         ArrayList<Task> taskList = storage.suggestedSearchTask(param);
-        
+
         suggestions.clear();
         Calendar startTime = roundToNearestBlock(DateParser.parseString(param
                 .get(ParamEnum.START_DATE).get(START_VALUE)));
@@ -392,6 +392,7 @@ public class Logic {
                         && next.getTimeInMillis() <= endTime.getTimeInMillis()
                         && (next.getTimeInMillis() - curr.getTimeInMillis()) >= (duration * HOUR_TO_MILLIS)) {
                     Task newTask = new Task();
+                    newTask.setId(i);
                     TaskModifier.modifyTimedTask(param, newTask);
                     newTask.setDateStart(curr);
                     Calendar temp = (Calendar) curr.clone();
@@ -429,10 +430,13 @@ public class Logic {
      * @throws InvalidCommandUseException 
      * @throws TimeIntervalOverlapException 
      */
-    Feedback accept(Hashtable<ParamEnum, ArrayList<String>> param) throws InvalidInputException, TaskNotFoundException, IOException, InvalidCommandUseException, TimeIntervalOverlapException {
+    Feedback accept(Hashtable<ParamEnum, ArrayList<String>> param)
+            throws InvalidInputException, TaskNotFoundException, IOException,
+            InvalidCommandUseException, TimeIntervalOverlapException {
         int taskId = getTaskId(param);
         Task task = getTaskFromSuggestion(taskId);
         String name = task.getName();
+        TaskModifier.resetId(task);
         storage.writeTaskToFile(task);
         Task clonedTask = cloner.deepClone(task);
         logicUndo.pushAcceptCommandToHistory(clonedTask);
