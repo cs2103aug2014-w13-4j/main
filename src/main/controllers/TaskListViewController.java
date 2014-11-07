@@ -6,9 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableView;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 
 import common.Feedback;
 import common.Task;
@@ -30,12 +28,12 @@ public class TaskListViewController {
         ArrayList<Task> taskList = initialTasks.getTaskList();
         observableTaskList = FXCollections
                 .observableArrayList(taskList);
-        sortTaskListByDueDate();
         taskTableView.getItems().addAll(observableTaskList);
+        sortTaskListByDueDate();
     }
 
     private void sortTaskListByDueDate() {
-        sortTasks();
+        FXCollections.sort(taskTableView.getItems());
     }
 
     void updateTaskList(ArrayList<Task> taskList) {
@@ -44,36 +42,7 @@ public class TaskListViewController {
         taskTableView.getItems().clear();
         observableTaskList = FXCollections
                 .observableArrayList(taskList);
-        sortTaskListByDueDate();
         taskTableView.getItems().addAll(observableTaskList);
-    }
-
-    void sortTasks() {
-        Collections.sort(observableTaskList, new Comparator<Task>() {
-            @Override
-            public int compare(Task o1, Task o2) {
-                Calendar firstDate = getDateForComparison(o1);
-                Calendar secondDate = getDateForComparison(o2);
-                if (firstDate == null && secondDate == null) {
-                    return 0;
-                } else if (firstDate == null) {
-                    return 1;
-                } else if (secondDate == null) {
-                    return -1;
-                } else {
-                    return (firstDate.compareTo(secondDate));
-                }
-            }
-        });
-    }
-
-    private Calendar getDateForComparison(Task task) {
-        if (task.isDeadlineTask()) {
-            return task.getDateDue();
-        } else if (task.isTimedTask()) {
-            return task.getDateStart();
-        } else {
-            return null;
-        }
+        sortTaskListByDueDate();
     }
 }

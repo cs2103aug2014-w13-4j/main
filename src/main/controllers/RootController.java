@@ -182,17 +182,17 @@ public class RootController {
         CommandEnum commandType = userCommand.getCommand();
         Hashtable<ParamEnum, ArrayList<String>> param = userCommand.getParam();
         switch (commandType) {
-        case TAB:
-            if (param.get(ParamEnum.KEYWORD).get(0).toLowerCase()
+            case TAB:
+                if (param.get(ParamEnum.KEYWORD).get(0).toLowerCase()
                     .equals("calendar")) {
-                selectionModel.select(calendarTab);
-            } else if (param.get(ParamEnum.KEYWORD).get(0).toLowerCase()
+                    selectionModel.select(calendarTab);
+                } else if (param.get(ParamEnum.KEYWORD).get(0).toLowerCase()
                     .equals("tasks")) {
-                selectionModel.select(taskListTab);
-            }
-            break;
-        default:
-            executeLogicCommand(userCommand);
+                    selectionModel.select(taskListTab);
+                }
+                break;
+            default:
+                executeLogicCommand(userCommand);
         }
     }
 
