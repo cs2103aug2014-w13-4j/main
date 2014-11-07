@@ -33,7 +33,7 @@ import java.util.logging.Level;
  * @author szhlibrary
  */
 public class RootController {
-    protected LogicApi logicApi;
+    LogicApi logicApi;
 
     private BorderPane rootLayout;
     private NotificationPane notificationPane;
@@ -162,7 +162,7 @@ public class RootController {
         scene = new Scene(rootLayout);
     }
 
-    protected void executeCommand(String userInput) {
+    void executeCommand(String userInput) {
         CommandParser commandParser = new CommandParser();
         if (validateUserInput(userInput)) {
             try {

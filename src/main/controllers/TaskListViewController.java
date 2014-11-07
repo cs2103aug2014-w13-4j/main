@@ -39,7 +39,7 @@ public class TaskListViewController {
         sortTasks();
     }
 
-    protected void updateTaskList(ArrayList<Task> taskList) {
+    void updateTaskList(ArrayList<Task> taskList) {
         assert (taskList != null && taskList.size() >= 0);
 
         taskTableView.getItems().clear();
@@ -49,7 +49,7 @@ public class TaskListViewController {
         taskTableView.getItems().addAll(observableTaskList);
     }
 
-    protected void sortTasks() {
+    void sortTasks() {
         Collections.sort(observableTaskList, new Comparator<Task>() {
             @Override
             public int compare(Task o1, Task o2) {
