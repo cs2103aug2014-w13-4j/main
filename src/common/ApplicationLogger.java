@@ -39,7 +39,7 @@ public class ApplicationLogger {
         return applicationLogger;
     }
 
-    public static Logger getApplicationLogger() {
+    public static Logger getLogger() {
         return getInstance().logger;
     }
 }

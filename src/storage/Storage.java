@@ -39,7 +39,7 @@ public class Storage {
      *             , IOException
      */
     protected Storage() throws IOException, FileFormatNotSupportedException {
-        ApplicationLogger.getApplicationLogger().log(Level.INFO,
+        ApplicationLogger.getLogger().log(Level.INFO,
                 "Initializing Storage.");
     }
 
@@ -66,7 +66,7 @@ public class Storage {
     // Add/Update a task to file
     public void writeTaskToFile(Task task) throws TaskNotFoundException,
             IOException, TimeIntervalOverlapException {
-        ApplicationLogger.getApplicationLogger().log(Level.INFO,
+        ApplicationLogger.getLogger().log(Level.INFO,
                 "Writing Task to file.");
         taskFile.writeTaskToFile(task);
         tagFile.updateTagToFile(task.getTags());

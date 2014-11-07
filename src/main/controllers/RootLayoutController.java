@@ -205,7 +205,7 @@ public class RootLayoutController {
 
         showNotification(feedbackMessage);
 
-        ApplicationLogger.getApplicationLogger().log(Level.INFO,
+        ApplicationLogger.getLogger().log(Level.INFO,
                 "Message shown: " + feedbackMessage);
 
         ArrayList<Task> taskList = userCommandFeedback.getTaskList();
