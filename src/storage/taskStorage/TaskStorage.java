@@ -570,11 +570,11 @@ public class TaskStorage {
     }
 
     /**
-     * Check whether a task overlaps with the exising time interval
+     * Check whether a task overlaps with the existing time interval
      *
-     * @param taskID
+     * @param task
      *            : the task id to be checked
-     * @return boolean: whether a task overlaps with the exising time interval
+     * @return boolean: whether a task overlaps with the existing time interval
      */
     private boolean isTaskTimeValid(Task task) {
         int taskId = task.getId();
@@ -601,13 +601,13 @@ public class TaskStorage {
     }
 
     /**
-     * Check whether a time interval overlaps with the exising time interval
+     * Check whether a time interval overlaps with the existing time interval
      *
      * @param dateStart
      *            : start time
      * @param dateEnd
      *            : end date
-     * @return boolean: whether a task overlaps with the exising time interval
+     * @return boolean: whether a task overlaps with the existing time interval
      */
     private boolean isTimeIntervalValid(int taskId, Calendar dateStart,
             Calendar dateEnd) {

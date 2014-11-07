@@ -3,8 +3,6 @@ package common;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import common.PriorityLevelEnum;
-
 public class Task {
     private int id = 0;
     private String name = "";
