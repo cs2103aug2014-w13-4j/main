@@ -1,5 +1,6 @@
 package main.controllers;
 
+import common.StartEndDatePair;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.control.Label;
@@ -7,7 +8,6 @@ import javafx.scene.control.Label;
 import java.util.ArrayList;
 
 import common.DateParser;
-import common.StartDueDatePair;
 import common.Task;
 
 /**
@@ -85,19 +85,19 @@ public class TaskDisplayViewController {
     }
 
     private void updateTaskPanelForConditionalDates(Task taskToDisplay) {
-        ArrayList<StartDueDatePair> conditionalDateList = taskToDisplay
+        ArrayList<StartEndDatePair> conditionalDateList = taskToDisplay
                 .getConditionalDates();
         String conditionalDates = "";
         if (conditionalDateList != null) {
             int dateId = 1;
-            for (StartDueDatePair conditionalDatePair : conditionalDateList) {
+            for (StartEndDatePair conditionalDatePair : conditionalDateList) {
                 conditionalDates += dateId
                         + ": "
                         + DateParser.parseCalendar(conditionalDatePair
                                 .getStartDate())
                         + " - "
                         + DateParser.parseCalendar(conditionalDatePair
-                                .getDueDate()) + "\n";
+                                .getEndDate()) + "\n";
                 dateId++;
             }
             setLabelValueInGui(conditionalDateLabelValue, conditionalDates);
