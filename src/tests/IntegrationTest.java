@@ -143,7 +143,7 @@ public class IntegrationTest {
      * @throws Exception
      */
     @Test(expected = InvalidInputException.class)
-    public final void testCannotAddTaskWithInvalidPrioriyInt() throws Exception {
+    public final void testCannotAddTaskWithInvalidPriorityInt() throws Exception {
         Command addCommand = parser.parseCommand("add test level -1");
         logicApiObject.executeCommand(addCommand);
     }
@@ -154,7 +154,7 @@ public class IntegrationTest {
      * @throws Exception
      */
     @Test(expected = InvalidInputException.class)
-    public final void testCannotAddTaskWithInvalidPrioriyInt2()
+    public final void testCannotAddTaskWithInvalidPriorityInt2()
             throws Exception {
         Command addCommand = parser.parseCommand("add test level 4");
         logicApiObject.executeCommand(addCommand);
@@ -166,7 +166,7 @@ public class IntegrationTest {
      * @throws Exception
      */
     @Test(expected = InvalidInputException.class)
-    public final void testCannotAddTaskWithInvalidPrioriyString()
+    public final void testCannotAddTaskWithInvalidPriorityString()
             throws Exception {
         Command addCommand = parser.parseCommand("add test level gren");
         logicApiObject.executeCommand(addCommand);
@@ -222,7 +222,7 @@ public class IntegrationTest {
                 .parseCommand("add eat my pet dog note I don't know why I want that? level 2");
         Feedback feedback = logicApiObject.executeCommand(addCommand);
         Task task = feedback.getTaskList().get(0);
-        assertTrue(task.isDeleted() == false);
+        assertTrue(!task.isDeleted());
         Command deleteCommand = parser.parseCommand("delete 1");
         Feedback deletedFeedback = logicApiObject.executeCommand(deleteCommand);
         assertEquals(new ArrayList<Task>(), deletedFeedback.getTaskList());
@@ -415,7 +415,7 @@ public class IntegrationTest {
                 .parseCommand("add eat my pet dog due 20 Feb 2015 note I don't know why I want that? level 2");
         Feedback feedback = logicApiObject.executeCommand(addCommand);
         Task task = feedback.getTaskList().get(0);
-        assertTrue(task.isDeleted() == false);
+        assertTrue(!task.isDeleted());
         Command deleteCommand = parser.parseCommand("delete 1");
         Feedback completedFeedback = logicApiObject
                 .executeCommand(deleteCommand);
@@ -467,7 +467,7 @@ public class IntegrationTest {
         logicApiObject.executeCommand(addCommand);
         Command completeCommand = parser.parseCommand("done 1");
         logicApiObject.executeCommand(completeCommand);
-        addCommand = parser.parseCommand("Add nocompleted task");
+        addCommand = parser.parseCommand("Add uncompleted task");
         logicApiObject.executeCommand(addCommand);
         Command filterCommand = parser.parseCommand("display");
         Feedback feedback = logicApiObject.executeCommand(filterCommand);
@@ -488,7 +488,7 @@ public class IntegrationTest {
         logicApiObject.executeCommand(addCommand);
         Command completeCommand = parser.parseCommand("done 1");
         logicApiObject.executeCommand(completeCommand);
-        addCommand = parser.parseCommand("Add nocompleted task");
+        addCommand = parser.parseCommand("Add uncompleted task");
         logicApiObject.executeCommand(addCommand);
         Command filterCommand = parser.parseCommand("display completed");
         Feedback feedback = logicApiObject.executeCommand(filterCommand);

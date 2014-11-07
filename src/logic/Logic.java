@@ -85,7 +85,7 @@ public class Logic {
     private static final String ERROR_COMPLETE_MESSAGE = "Only confirmed and uncompleted tasks without an end date before can be completed";
     private static final String ERROR_DATE_INPUT_MESSAGE = "The date parameters provided are invalid.";
     private static final String ERROR_CLEAR_MESSAGE = "The given parameters for clear are invalid.";
-    private static final String ERROR_DISPLAY_MESSAGE = "The display keword: %1$s is invalid.";
+    private static final String ERROR_DISPLAY_MESSAGE = "The display keyword: %1$s is invalid.";
     private static final String ADD_MESSAGE = "%1$s is successfully added.";
     private static final String DELETE_MESSAGE = "%1$s is successfully deleted";
     private static final String EDIT_MESSAGE = "%1$s is successfully edited.";
@@ -133,10 +133,11 @@ public class Logic {
         int taskId = getTaskId(param);
         Task task = getTaskFromSuggestion(taskId);
         String name = task.getName();
+        TaskModifier.resetId(task);
         storage.writeTaskToFile(task);
         Task clonedTask = cloner.deepClone(task);
         logicUndo.pushAcceptCommandToHistory(clonedTask);
-        ArrayList<Task> taskList = storage.getAllTasks();
+        ArrayList<Task> taskList = storage.getAllActiveTasks();
         suggestions.clear();
         return createTaskListFeedback(
                 MessageCreator.createMessage(ADD_MESSAGE, name, null), taskList);
@@ -369,12 +370,11 @@ public class Logic {
      * Search for tasks that contain the keyword in the different attributes of
      * the task, such as name, description, tags and dates
      *
-     * @param command
+     * @param param
      *            : the command created by CommandParser
      * @return feedback containing all the tasks in the file, and the message
      * @throws InvalidInputException
      * @throws InvalidDateFormatException
-     * @throws EmptySearchResultException
      */
 
     Feedback search(Hashtable<ParamEnum, ArrayList<String>> param)
@@ -387,11 +387,15 @@ public class Logic {
     }
 
     /**
-     * Suggest a list of date that fulfill the user requirements
+     * <<<<<<< HEAD Suggest a list of date that fulfill the user requirements
      *
      * @param param
      *            : the requirements specified by the user
-     * @return feedback containing the list of free slots
+     * @return feedback containing the list of free slots ======= Suggest a list
+     *         of dates that fulfill the user requirements
+     *
+     * @param param
+     * @return Feedback >>>>>>> 35341e05d1bc48bebffd10648d4d00756db6897e
      * @throws InvalidDateFormatException
      * @throws InvalidInputException
      */
@@ -426,6 +430,7 @@ public class Logic {
                         && next.getTimeInMillis() <= endTime.getTimeInMillis()
                         && (next.getTimeInMillis() - curr.getTimeInMillis()) >= (duration * HOUR_TO_MILLIS)) {
                     Task newTask = new Task();
+                    newTask.setId(i);
                     TaskModifier.modifyTimedTask(param, newTask);
                     newTask.setDateStart(curr);
                     Calendar temp = (Calendar) curr.clone();
@@ -478,14 +483,14 @@ public class Logic {
             if (lastAction.getCommand() == CommandEnum.CLEAR) {
                 return createTaskAndTaskListFeedback(
                         MessageCreator.createMessage(UNDO_CLEAR_MESSAGE,
-                                lastAction.getCommand().regex(), null),
+                                lastAction.getCommand().action(), null),
                         storage.getAllActiveTasks(), null);
             } else {
                 Task task = tasks.get(0);
                 Task displayTask = getTaskDisplayForUndo(task);
                 return createTaskAndTaskListFeedback(
                         MessageCreator.createMessage(UNDO_MESSAGE, lastAction
-                                .getCommand().regex(), task.getName()),
+                                .getCommand().action(), task.getName()),
                         storage.getAllActiveTasks(), displayTask);
             }
         }

@@ -93,7 +93,7 @@ public class LogicTest {
     }
 
     @Test
-    public void testAddWithIntPrioritylevel() throws IllegalAccessException,
+    public void testAddWithIntPriorityLevel() throws IllegalAccessException,
     IllegalArgumentException, InvocationTargetException {
         Hashtable<ParamEnum, ArrayList<String>> params = new Hashtable<ParamEnum, ArrayList<String>>();
         ArrayList<String> nameList = new ArrayList<String>();

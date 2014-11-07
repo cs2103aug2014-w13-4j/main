@@ -37,7 +37,7 @@ public class CalendarViewController {
                 new Agenda.AppointmentGroupImpl().withStyleClass("group12"));
     }
 
-    protected void updateCalendarView(ArrayList<Task> taskList) {
+    void updateCalendarView(ArrayList<Task> taskList) {
         calendarView.appointments().clear();
         addTasksToCalendarView(taskList);
     }

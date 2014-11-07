@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.scene.layout.*?>
-<?import org.controlsfx.control.NotificationPane?>
-
+<?import javafx.scene.layout.BorderPane?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
             minWidth="-Infinity" xmlns="http://javafx.com/javafx/8"
-            fx:controller="main.controllers.RootLayoutController"/>
+            fx:controller="main.controllers.RootController"/>

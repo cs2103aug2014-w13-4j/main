@@ -55,7 +55,6 @@ public class TaskStorage {
     private File dataFile;
     private IntervalSearch intervalTree;
 
-    private static final int ID_FOR_NEW_TASK = 0;
     private static final int ID_FOR_FIRST_TASK = 1;
 
     private static final String COMPLETED = "completed";
@@ -321,7 +320,7 @@ public class TaskStorage {
     public void writeTaskToFile(Task task) throws TaskNotFoundException,
             IOException, TimeIntervalOverlapException {
         int taskID = task.getId();
-        if (taskID == ID_FOR_NEW_TASK) {
+        if (taskID == Task.ID_FOR_NEW_TASK) {
             addTask(task);
         } else if (isTaskExist(taskID)) {
             if (task.isDeleted()) {
@@ -362,7 +361,7 @@ public class TaskStorage {
             addTimeIntervalToIntervalTree(task);
         } else {
             throw new TimeIntervalOverlapException(
-                    "New timed task overlaps with exisitng time interval.");
+                    "New timed task overlaps with existing time interval.");
         }
     }
 
@@ -570,11 +569,11 @@ public class TaskStorage {
     }
 
     /**
-     * Check whether a task overlaps with the exising time interval
+     * Check whether a task overlaps with the existing time interval
      *
-     * @param taskID
+     * @param task
      *            : the task id to be checked
-     * @return boolean: whether a task overlaps with the exising time interval
+     * @return boolean: whether a task overlaps with the existing time interval
      */
     private boolean isTaskTimeValid(Task task) {
         int taskId = task.getId();
@@ -601,13 +600,13 @@ public class TaskStorage {
     }
 
     /**
-     * Check whether a time interval overlaps with the exising time interval
+     * Check whether a time interval overlaps with the existing time interval
      *
      * @param dateStart
      *            : start time
      * @param dateEnd
      *            : end date
-     * @return boolean: whether a task overlaps with the exising time interval
+     * @return boolean: whether a task overlaps with the existing time interval
      */
     private boolean isTimeIntervalValid(int taskId, Calendar dateStart,
             Calendar dateEnd) {
@@ -645,7 +644,7 @@ public class TaskStorage {
             addTimeIntervalToIntervalTree(task);
         } else {
             throw new TimeIntervalOverlapException(
-                    "Updated task overlaps with exisitng time interval.");
+                    "Updated task overlaps with existing time interval.");
         }
 
     }
@@ -670,7 +669,7 @@ public class TaskStorage {
             addTimeIntervalToIntervalTree(task);
         } else {
             throw new TimeIntervalOverlapException(
-                    "Updated task overlaps with exisitng time interval.");
+                    "Updated task overlaps with existing time interval.");
         }
     }
 

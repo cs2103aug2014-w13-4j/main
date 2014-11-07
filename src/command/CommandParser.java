@@ -44,9 +44,11 @@ public class CommandParser {
      */
     public Command parseCommand(String commandString) throws Exception {
         CommandEnum commandType = getCommandType(commandString);
+        String commandTypeString = getFirstWord(commandString);
 
         Command userCommand = new Command(commandType);
-        parseCommandStringToCommand(userCommand, commandString);
+        parseCommandStringToCommand(userCommand, commandString,
+                commandTypeString);
         return userCommand;
     }
 
@@ -57,11 +59,12 @@ public class CommandParser {
      * @param commandString
      */
     private void parseCommandStringToCommand(Command userCommand,
-            String commandString) {
+            String commandString, String commandTypeString) {
         CommandEnum commandType = userCommand.getCommand();
 
-        String commandPatternString = makeCommandPatternString(commandType);
-        String patternString = makePatternString(commandType);
+        String commandPatternString = makeCommandPatternString(commandType,
+                commandTypeString);
+        String patternString = makePatternString(commandType, commandTypeString);
 
         addParams(userCommand, commandString, commandPatternString,
                 patternString);
@@ -118,10 +121,11 @@ public class CommandParser {
         userCommand.addCommandString(commandString);
     }
 
-    private String makeCommandPatternString(CommandEnum commandType) {
+    private String makeCommandPatternString(CommandEnum commandType,
+            String commandTypeString) {
         String paramsStartPatternString = makeParamsPatternString(commandType);
         String commandPatternString = String.format(COMMAND_PATTERN,
-                commandType.regex(), paramsStartPatternString);
+                commandTypeString, paramsStartPatternString);
 
         return commandPatternString;
     }
@@ -132,10 +136,11 @@ public class CommandParser {
      * @param commandType
      * @return
      */
-    private String makePatternString(CommandEnum commandType) {
+    private String makePatternString(CommandEnum commandType,
+            String commandTypeString) {
         String paramsPatternString = makeParamsPatternString(commandType);
         String completePattern = String.format(COMPLETE_PATTERN,
-                commandType.regex(), paramsPatternString, paramsPatternString);
+                commandTypeString, paramsPatternString, paramsPatternString);
         return completePattern;
     }
 
@@ -180,8 +185,10 @@ public class CommandParser {
     }
 
     private void initializeCommandTable() {
-        for (CommandEnum command : CommandEnum.values()) {
-            commandEnumTable.put(command.regex(), command);
+        for (CommandAlias commandAlias : CommandAlias.values()) {
+            for (String regex : commandAlias.alias()) {
+                commandEnumTable.put(regex, commandAlias.command());
+            }
         }
     }
 

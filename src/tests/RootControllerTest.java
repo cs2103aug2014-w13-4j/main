@@ -1,6 +1,6 @@
 package tests;
 
-import main.controllers.RootLayoutController;
+import main.controllers.RootController;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -8,13 +8,13 @@ import java.lang.reflect.Method;
 
 import static org.junit.Assert.*;
 
-public class RootLayoutControllerTest {
+public class RootControllerTest {
 
-    private Class<RootLayoutController> rootLayoutControllerClass = RootLayoutController.class;
+    private Class<RootController> rootLayoutControllerClass = RootController.class;
     private Method validateUserInput = rootLayoutControllerClass
             .getDeclaredMethod("validateUserInput", String.class);
 
-    public RootLayoutControllerTest() throws NoSuchMethodException {
+    public RootControllerTest() throws NoSuchMethodException {
     }
 
     @Before
@@ -29,7 +29,7 @@ public class RootLayoutControllerTest {
 
     @Test
     public void testValidateUserInput() throws Exception {
-        RootLayoutController controller = new RootLayoutController();
+        RootController controller = new RootController();
         assertEquals("Empty input did not validate to false!", false,
                 validateUserInput.invoke(controller, ""));
         assertEquals("Valid input did not validate to true!", true,

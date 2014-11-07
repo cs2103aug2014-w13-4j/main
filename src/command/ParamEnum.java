@@ -34,10 +34,10 @@ public enum ParamEnum {
     }
 
     public String regex() {
-        return regex;
+        return this.regex;
     }
 
     public String groupName() {
-        return groupName.isEmpty() ? regex : groupName;
+        return this.groupName.isEmpty() ? this.regex : this.groupName;
     }
 }

@@ -25,7 +25,7 @@ public class CommandParserTest {
      * Test command parser on adding multiple conditional dates
      * @throws Exception
      */
-    public void testMuplipleConditionalDate() throws Exception {
+    public void testMultipleConditionalDate() throws Exception {
         // This is the boundary case for adding only one due date
         String oneDate = "add test1 due 12-12-12";
         Command oneDateResult = cp.parseCommand(oneDate);
@@ -48,7 +48,7 @@ public class CommandParserTest {
 
         // This is the boundary for a multiple case of date pair
         String multipleDate = "add test2 from 11-11-11 to 11-11-12 or from 12-12-11 to 12-12-12";
-        Command mutipleDateResult = cp.parseCommand(multipleDate);
+        Command multipleDateResult = cp.parseCommand(multipleDate);
         ArrayList<String> multipleDueDateArray = new ArrayList<String>();
         multipleDueDateArray.add("11-11-12");
         multipleDueDateArray.add("12-12-12");
@@ -56,9 +56,9 @@ public class CommandParserTest {
         multipleFromDateArray.add("11-11-11");
         multipleFromDateArray.add("12-12-11");
         assertEquals(multipleDueDateArray,
-                mutipleDateResult.getParam().get(ParamEnum.END_DATE));
+            multipleDateResult.getParam().get(ParamEnum.END_DATE));
         assertEquals(multipleFromDateArray,
-                mutipleDateResult.getParam().get(ParamEnum.START_DATE));
+            multipleDateResult.getParam().get(ParamEnum.START_DATE));
     }
 
 }

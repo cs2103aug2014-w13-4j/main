@@ -57,7 +57,7 @@ public class TaskDisplayViewController {
         tagLabel.textProperty().bind(tagLabelValue);
     }
 
-    protected void updateTaskPanel(Task taskToDisplay) {
+    void updateTaskPanel(Task taskToDisplay) {
         if (taskToDisplay == null) {
             StringProperty[] labelValueList = {idLabelValue, taskNameLabelValue, dueDateLabelValue,
                 startDateLabelValue, endDateLabelValue, priorityLevelLabelValue, noteLabelValue,
