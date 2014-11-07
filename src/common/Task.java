@@ -21,7 +21,7 @@ public class Task implements Comparable<Task> {
     private ArrayList<String> tags = new ArrayList<String>();
     private ArrayList<Integer> parentTasks = new ArrayList<Integer>();
     private ArrayList<Integer> childTasks = new ArrayList<Integer>();
-    private ArrayList<StartDueDatePair> conditionalDates = new ArrayList<StartDueDatePair>();
+    private ArrayList<StartEndDatePair> conditionalDates = new ArrayList<StartEndDatePair>();
     private boolean isDeleted = false;
 
     public Task() {
@@ -33,7 +33,7 @@ public class Task implements Comparable<Task> {
     }
 
     public void appendConditionalDates(
-            ArrayList<StartDueDatePair> conditionalDates) {
+            ArrayList<StartEndDatePair> conditionalDates) {
         this.conditionalDates.addAll(conditionalDates);
     }
 
@@ -41,7 +41,7 @@ public class Task implements Comparable<Task> {
         return childTasks;
     }
 
-    public ArrayList<StartDueDatePair> getConditionalDates() {
+    public ArrayList<StartEndDatePair> getConditionalDates() {
         return conditionalDates;
     }
 
@@ -136,7 +136,7 @@ public class Task implements Comparable<Task> {
         this.childTasks = childTasks;
     }
 
-    public void setConditionalDates(ArrayList<StartDueDatePair> conditionalDates) {
+    public void setConditionalDates(ArrayList<StartEndDatePair> conditionalDates) {
         this.conditionalDates = conditionalDates;
     }
 
@@ -179,7 +179,7 @@ public class Task implements Comparable<Task> {
     public void setStartDueDateFromConditional(int id) {
         assert (conditionalDates != null && id >= conditionalDates.size());
         dateStart = conditionalDates.get(id - 1).getStartDate();
-        dateEnd = conditionalDates.get(id - 1).getDueDate();
+        dateEnd = conditionalDates.get(id - 1).getEndDate();
     }
 
     public void setTags(ArrayList<String> tags) {
