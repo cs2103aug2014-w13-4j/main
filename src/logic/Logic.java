@@ -440,7 +440,7 @@ public class Logic {
         storage.writeTaskToFile(task);
         Task clonedTask = cloner.deepClone(task);
         logicUndo.pushAcceptCommandToHistory(clonedTask);
-        ArrayList<Task> taskList = storage.getAllTasks();
+        ArrayList<Task> taskList = storage.getAllActiveTasks();
         suggestions.clear();
         return createTaskListFeedback(
                 MessageCreator.createMessage(ADD_MESSAGE, name, null),
