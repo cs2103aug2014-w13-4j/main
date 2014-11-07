@@ -319,12 +319,11 @@ public class Logic {
      * Search for tasks that contain the keyword in the name, description or
      * tags
      *
-     * @param command
+     * @param param
      *            : the command created by CommandParser
      * @return feedback containing all the tasks in the file, and the message
      * @throws InvalidInputException
      * @throws InvalidDateFormatException
-     * @throws EmptySearchResultException
      */
 
     Feedback search(Hashtable<ParamEnum, ArrayList<String>> param)
