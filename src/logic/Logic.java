@@ -489,7 +489,7 @@ public class Logic {
                 return createTaskAndTaskListFeedback(
                         MessageCreator.createMessage(UNDO_MESSAGE, lastAction
                                 .getCommand().action(), task.getName()),
-                                storage.getAllTasks(), displayTask);
+                                storage.getAllActiveTasks(), displayTask);
 
             }
         }
