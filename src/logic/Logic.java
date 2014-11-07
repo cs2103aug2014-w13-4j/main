@@ -60,7 +60,7 @@ public class Logic {
     private static final String ERROR_COMPLETE_MESSAGE = "Only confirmed and uncompleted tasks without an end date before can be completed";
     private static final String ERROR_DATE_INPUT_MESSAGE = "The date parameters provided are invalid.";
     private static final String ERROR_CLEAR_MESSAGE = "The given parameters for clear are invalid.";
-    private static final String ERROR_DISPLAY_MESSAGE = "The display keword: %1$s is invalid.";
+    private static final String ERROR_DISPLAY_MESSAGE = "The display keyword: %1$s is invalid.";
     private static final String ADD_MESSAGE = "%1$s is successfully added.";
     private static final String DELETE_MESSAGE = "%1$s is successfully deleted";
     private static final String EDIT_MESSAGE = "%1$s is successfully edited.";

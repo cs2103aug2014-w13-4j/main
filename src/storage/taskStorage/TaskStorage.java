@@ -361,7 +361,7 @@ public class TaskStorage {
             addTimeIntervalToIntervalTree(task);
         } else {
             throw new TimeIntervalOverlapException(
-                    "New timed task overlaps with exisitng time interval.");
+                    "New timed task overlaps with existing time interval.");
         }
     }
 
@@ -644,7 +644,7 @@ public class TaskStorage {
             addTimeIntervalToIntervalTree(task);
         } else {
             throw new TimeIntervalOverlapException(
-                    "Updated task overlaps with exisitng time interval.");
+                    "Updated task overlaps with existing time interval.");
         }
 
     }
@@ -669,7 +669,7 @@ public class TaskStorage {
             addTimeIntervalToIntervalTree(task);
         } else {
             throw new TimeIntervalOverlapException(
-                    "Updated task overlaps with exisitng time interval.");
+                    "Updated task overlaps with existing time interval.");
         }
     }
 

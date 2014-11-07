@@ -98,7 +98,7 @@ public class Storage {
     }
 
     // Get a list of all the completed task
-    // This medthod is for clearing all the completed task
+    // This method is for clearing all the completed tasks
     public ArrayList<Task> getAllCompletedTasks() {
         return taskFile.getAllCompletedTasks();
     }

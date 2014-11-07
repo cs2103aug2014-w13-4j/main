@@ -100,7 +100,7 @@ public class IntervalSearch {
      *            of the date interval
      * @param end
      *            of the date interval
-     * @return a list of daterange that contains all the overlapping objects.
+     * @return a list of date ranges that contains all the overlapping objects.
      */
     public ArrayList<DateRange> searchInterval(Calendar start, Calendar end) {
         DateRange target = new DateRange(start, end);
@@ -178,7 +178,7 @@ public class IntervalSearch {
     }
 
     /**
-     * This operaton adds a given start and end date to the hashmap to be check
+     * This operation adds a given start and end date to the hashmap to be check
      * against other date
      *
      * @param start
