@@ -55,7 +55,6 @@ public class TaskStorage {
     private File dataFile;
     private IntervalSearch intervalTree;
 
-    private static final int ID_FOR_NEW_TASK = 0;
     private static final int ID_FOR_FIRST_TASK = 1;
 
     private static final String COMPLETED = "completed";
@@ -321,7 +320,7 @@ public class TaskStorage {
     public void writeTaskToFile(Task task) throws TaskNotFoundException,
             IOException, TimeIntervalOverlapException {
         int taskID = task.getId();
-        if (taskID == ID_FOR_NEW_TASK) {
+        if (taskID == Task.ID_FOR_NEW_TASK) {
             addTask(task);
         } else if (isTaskExist(taskID)) {
             if (task.isDeleted()) {

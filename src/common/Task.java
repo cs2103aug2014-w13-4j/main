@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 public class Task {
+    public static final int ID_FOR_NEW_TASK = 0;
+
     private int id = 0;
     private String name = "";
     private Calendar dateDue = null;
