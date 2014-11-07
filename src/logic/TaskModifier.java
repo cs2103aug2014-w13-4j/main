@@ -5,11 +5,8 @@ import java.util.Calendar;
 import java.util.Hashtable;
 
 import command.ParamEnum;
-import common.DateParser;
-import common.MessageCreator;
-import common.PriorityLevelEnum;
-import common.StartDueDatePair;
-import common.Task;
+import common.*;
+import common.StartEndDatePair;
 import common.exceptions.InvalidDateFormatException;
 import common.exceptions.InvalidInputException;
 import common.exceptions.InvalidPriorityLevelException;
@@ -44,11 +41,11 @@ public class TaskModifier {
         } else if (event.isConfirmed()) {
             throw new InvalidInputException(INVALID_CONFIRMED_TASK_MESSAGE);
         } else {
-            StartDueDatePair conditionalDatesToConfirm = event
+            StartEndDatePair conditionalDatesToConfirm = event
                     .getConditionalDates().get(dateIndex);
             Calendar startDate = conditionalDatesToConfirm.getStartDate();
             event.setDateStart(startDate);
-            Calendar endDate = conditionalDatesToConfirm.getDueDate();
+            Calendar endDate = conditionalDatesToConfirm.getEndDate();
             event.setDateEnd(endDate);
         }
     }
@@ -183,14 +180,14 @@ public class TaskModifier {
                 && param.containsKey(ParamEnum.END_DATE)) {
             ArrayList<String> startDates = param.get(ParamEnum.START_DATE);
             ArrayList<String> endDates = param.get(ParamEnum.END_DATE);
-            ArrayList<StartDueDatePair> conditionalDates = new ArrayList<StartDueDatePair>();
+            ArrayList<StartEndDatePair> conditionalDates = new ArrayList<StartEndDatePair>();
             for (int i = 0; i < startDates.size(); i++) {
                 String startDateString = startDates.get(i);
                 String endDateString = endDates.get(i);
                 Calendar startDate = DateParser.parseString(startDateString);
                 Calendar endDate = DateParser.parseString(endDateString);
                 checkStartDateIsBeforeEndDate(startDate, endDate);
-                StartDueDatePair datePair = new StartDueDatePair(startDate,
+                StartEndDatePair datePair = new StartEndDatePair(startDate,
                         endDate);
                 conditionalDates.add(datePair);
             }

@@ -5,9 +5,9 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import common.StartEndDatePair;
 import org.junit.Test;
 
-import common.StartDueDatePair;
 import common.Task;
 
 public class TaskTest {
@@ -33,9 +33,9 @@ public class TaskTest {
     @Test
     public final void testConditional() {
         Task conditionalTask = new Task();
-        StartDueDatePair dates = new StartDueDatePair(Calendar.getInstance(),
+        StartEndDatePair dates = new StartEndDatePair(Calendar.getInstance(),
                 Calendar.getInstance());
-        ArrayList<StartDueDatePair> conditionalDates = new ArrayList<StartDueDatePair>();
+        ArrayList<StartEndDatePair> conditionalDates = new ArrayList<StartEndDatePair>();
         conditionalDates.add(dates);
         conditionalTask.setConditionalDates(conditionalDates);
         assertFalse(conditionalTask.isConfirmed());

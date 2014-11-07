@@ -10,7 +10,7 @@ import java.util.Hashtable;
 import command.ParamEnum;
 import common.DateParser;
 import common.PriorityLevelEnum;
-import common.StartDueDatePair;
+import common.StartEndDatePair;
 import common.Task;
 import common.exceptions.InvalidPriorityLevelException;
 
@@ -30,7 +30,7 @@ public class TaskStorageTest {
     }
 
     private Task createTaskForTest(int id, String name, int priorityLevel,
-            String note, boolean isDeleted, ArrayList<StartDueDatePair> datePair)
+            String note, boolean isDeleted, ArrayList<StartEndDatePair> datePair)
                     throws InvalidPriorityLevelException {
         Task task = new Task();
         task.setId(id);
@@ -47,11 +47,11 @@ public class TaskStorageTest {
         try {
             TaskStorage taskStorage = TaskStorage
                     .getNewInstance("taskStorage.data");
-            ArrayList<StartDueDatePair> datePairArrayList = new ArrayList<StartDueDatePair>();
-            StartDueDatePair datePairA = new StartDueDatePair(
+            ArrayList<StartEndDatePair> datePairArrayList = new ArrayList<StartEndDatePair>();
+            StartEndDatePair datePairA = new StartEndDatePair(
                     DateParser.parseString("23.10.2010"),
                     DateParser.parseString("24.10.2010"));
-            StartDueDatePair datePairB = new StartDueDatePair(
+            StartEndDatePair datePairB = new StartEndDatePair(
                     DateParser.parseString("25.10.2010"),
                     DateParser.parseString("27.10.2010"));
             datePairArrayList.add(datePairA);

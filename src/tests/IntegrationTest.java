@@ -340,12 +340,12 @@ public class IntegrationTest {
                 "First due date is correct",
                 "23-12-2002 00:00",
                 DateParser.parseCalendar(task.getConditionalDates().get(0)
-                        .getDueDate()));
+                        .getEndDate()));
         assertEquals(
                 "Second due date is correct",
                 "8-10-2014 00:00",
                 DateParser.parseCalendar(task.getConditionalDates().get(1)
-                        .getDueDate()));
+                        .getEndDate()));
     }
 
     /**
@@ -368,7 +368,7 @@ public class IntegrationTest {
                 .getConditionalDates().get(1).getStartDate(),
                 task.getDateStart());
         assertEquals("Confirmed due date is correct", task
-                .getConditionalDates().get(1).getDueDate(), task.getDateEnd());
+                .getConditionalDates().get(1).getEndDate(), task.getDateEnd());
     }
 
     /**
