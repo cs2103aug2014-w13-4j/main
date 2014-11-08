@@ -311,17 +311,7 @@ public class TaskStorage {
         if (taskID == Task.ID_FOR_NEW_TASK) {
             addTask(task);
         } else if (isTaskExist(taskID)) {
-            if (task.isDeleted()) {
-                deleteTask(task);
-            } else {
-                // check if it is an undo (task in task storage was deleted)
-                Task oldTask = getTask(task.getId());
-                if (oldTask.isDeleted()) {
-                    restoreTask(task);
-                } else {
-                    updateTask(task);
-                }
-            }
+        	updateTask(task);
         } else {
             throw new TaskNotFoundException(
                     "Cannot update task since the current task doesn't exist");
@@ -384,15 +374,6 @@ public class TaskStorage {
                 intervalTree.add(dateStart, dateEnd, taskId);
             }
         }
-    }
-
-    private void deleteTask(Task task) throws IOException {
-        int taskID = task.getId();
-        // Update task to task buffer
-        taskBuffer.set(taskID - 1, task);
-        // Update task to task file
-        updateTaskToStorage();
-        removeTimeIntervalFromIntervalTree(task);
     }
 
     private ArrayList<Task> getSearchRange(
@@ -621,22 +602,6 @@ public class TaskStorage {
         intervalTree.remove(task);
     }
 
-    private void restoreTask(Task task) throws IOException,
-            TimeIntervalOverlapException {
-        int taskID = task.getId();
-        if (isTaskTimeValid(task)) {
-            // Update task to task buffer
-            taskBuffer.set(taskID - 1, task);
-            // Update task to task file
-            updateTaskToStorage();
-            addTimeIntervalToIntervalTree(task);
-        } else {
-            throw new TimeIntervalOverlapException(
-                    "Updated task overlaps with existing time interval.");
-        }
-
-    }
-
     /**
      * Update a task
      *
@@ -644,17 +609,29 @@ public class TaskStorage {
      *            : task to be updated
      * @throws IOException
      *             : wrong IO operations
+     * @throws TaskNotFoundException 
      */
     private void updateTask(Task task) throws IOException,
-            TimeIntervalOverlapException {
+            TimeIntervalOverlapException, TaskNotFoundException {
         int taskID = task.getId();
+        Task oldTask = getTask(task.getId());
         if (isTaskTimeValid(task)) {
             // Update task to task buffer
             taskBuffer.set(taskID - 1, task);
             // Update task to task file
             updateTaskToStorage();
-            removeTimeIntervalFromIntervalTree(task);
-            addTimeIntervalToIntervalTree(task);
+            // Update task to Interval tree
+            if (task.isDeleted()) {
+            	// check if it is a delete 
+                removeTimeIntervalFromIntervalTree(task);
+            } else if (oldTask.isDeleted()) {
+                // check if it is an undo (task in task storage was deleted)
+                addTimeIntervalToIntervalTree(task);
+            } else {          
+            	// normal update operation      
+	            removeTimeIntervalFromIntervalTree(task);
+	            addTimeIntervalToIntervalTree(task);
+            }
         } else {
             throw new TimeIntervalOverlapException(
                     "Updated task overlaps with existing time interval.");
