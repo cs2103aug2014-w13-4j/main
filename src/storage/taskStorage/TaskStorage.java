@@ -148,15 +148,6 @@ public class TaskStorage {
     }
 
     /**
-     * Return an interval tree for the whole list of tasks
-     *
-     * @return IntervalSearch: the interval tree for the whole list of tasks
-     */
-    public IntervalSearch getIntervalTree() {
-        return intervalTree;
-    }
-
-    /**
      * Get a task by its id
      *
      * @param taskID

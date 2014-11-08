@@ -107,8 +107,4 @@ public class Storage {
         searchKeyWordTable.remove(ParamEnum.NAME);
         return searchTask(searchKeyWordTable);
     }
-
-    public IntervalSearch getIntervalTree() {
-        return taskFile.getIntervalTree();
-    }
 }
