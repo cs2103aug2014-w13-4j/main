@@ -9,16 +9,13 @@ import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Scanner;
 
+import common.*;
 import org.apache.commons.lang3.StringUtils;
 
 import com.rits.cloning.Cloner;
 
 import command.ParamEnum;
-import common.DateParser;
-import common.IntervalSearch;
-import common.MessageCreator;
-import common.StartDueDatePair;
-import common.Task;
+import common.StartEndDatePair;
 import common.exceptions.FileFormatNotSupportedException;
 import common.exceptions.InvalidDateFormatException;
 import common.exceptions.InvalidInputException;
@@ -361,7 +358,7 @@ public class TaskStorage {
             addTimeIntervalToIntervalTree(task);
         } else {
             throw new TimeIntervalOverlapException(
-                    "New timed task overlaps with exisitng time interval.");
+                    "New timed task overlaps with existing time interval.");
         }
     }
 
@@ -383,16 +380,16 @@ public class TaskStorage {
     private void addTimeIntervalToIntervalTree(Task task) {
         int taskId = task.getId();
         Calendar dateStart, dateEnd;
-        ArrayList<StartDueDatePair> conditionalDates;
+        ArrayList<StartEndDatePair> conditionalDates;
         if (task.isTimedTask()) {
             dateStart = task.getDateStart();
             dateEnd = task.getDateEnd();
             intervalTree.add(dateStart, dateEnd, taskId);
         } else if (task.isConditionalTask()) {
             conditionalDates = task.getConditionalDates();
-            for (StartDueDatePair datePair : conditionalDates) {
+            for (StartEndDatePair datePair : conditionalDates) {
                 dateStart = datePair.getStartDate();
-                dateEnd = datePair.getDueDate();
+                dateEnd = datePair.getEndDate();
                 intervalTree.add(dateStart, dateEnd, taskId);
             }
         }
@@ -579,7 +576,7 @@ public class TaskStorage {
         int taskId = task.getId();
         Calendar dateStart, dateEnd;
         boolean isValid = true;
-        ArrayList<StartDueDatePair> conditionalDates;
+        ArrayList<StartEndDatePair> conditionalDates;
 
         if (task.isTimedTask()) {
             dateStart = task.getDateStart();
@@ -587,9 +584,9 @@ public class TaskStorage {
             isValid = isTimeIntervalValid(taskId, dateStart, dateEnd);
         } else if (task.isConditionalTask()) {
             conditionalDates = task.getConditionalDates();
-            for (StartDueDatePair datePair : conditionalDates) {
+            for (StartEndDatePair datePair : conditionalDates) {
                 dateStart = datePair.getStartDate();
-                dateEnd = datePair.getDueDate();
+                dateEnd = datePair.getEndDate();
                 if (!isTimeIntervalValid(taskId, dateStart, dateEnd)) {
                     isValid = false;
                     break;
@@ -644,7 +641,7 @@ public class TaskStorage {
             addTimeIntervalToIntervalTree(task);
         } else {
             throw new TimeIntervalOverlapException(
-                    "Updated task overlaps with exisitng time interval.");
+                    "Updated task overlaps with existing time interval.");
         }
 
     }
@@ -669,7 +666,7 @@ public class TaskStorage {
             addTimeIntervalToIntervalTree(task);
         } else {
             throw new TimeIntervalOverlapException(
-                    "Updated task overlaps with exisitng time interval.");
+                    "Updated task overlaps with existing time interval.");
         }
     }
 

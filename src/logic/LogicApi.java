@@ -17,42 +17,64 @@ import common.exceptions.InvalidInputException;
 import common.exceptions.TaskNotFoundException;
 import common.exceptions.TimeIntervalOverlapException;
 
+//@author A0114368E
+/**
+ * Exhibits the facade pattern. It serves as a wrapper class for the Logic
+ * component, and hides the complexity of the logic component from the Main
+ * component
+ *
+ *
+ */
 public class LogicApi {
+
     private Logic logic;
+    private static LogicApi instance = null;
     private static final String INVALID_COMMAND_MESSAGE = "The command is invalid.";
     private static final String INVALID_BEFORE_AFTER_SEARCH_MESSAGE = "Before and After cannot be searched together.";
     private static final String INVALID_FROM_TO_SEARCH_MESSAGE = "Both start and end date are required.";
 
     /**
-     * constructor This constructor follows the singleton pattern It can only be
-     * called with in the current class (Logic.getInstance()) This is to ensure
-     * that only there is exactly one instance of Logic class
-     **/
-
-    private static LogicApi instance = null;
-
-    private LogicApi() {
-    }
-
+     * This constructor follows the singleton pattern It can only be called with
+     * in the current class (LogicApi.getInstance()) This is to ensure that only
+     * there is exactly one instance of LogicApi class
+     *
+     * @return an object instance of LogicApi class.
+     * @throws IOException
+     * @throws FileFormatNotSupportedException
+     */
     public static LogicApi getInstance() throws IOException,
             FileFormatNotSupportedException {
         if (instance == null) {
             instance = new LogicApi();
-            ApplicationLogger.getApplicationLogger().log(Level.INFO,
+            ApplicationLogger.getLogger().log(Level.INFO,
                     "Initializing Logic API.");
             instance.logic = Logic.getInstance();
         }
         return instance;
     }
 
-    // for debugging purposes. Always create a new instance
+    /**
+     * Always creates a new instance of the LogicApi class. For debugging
+     * purposes.
+     *
+     * @return an object instance of the LogicApi class.
+     * @throws IOException
+     * @throws FileFormatNotSupportedException
+     */
     public static LogicApi getNewInstance() throws IOException,
             FileFormatNotSupportedException {
         instance = new LogicApi();
-        ApplicationLogger.getApplicationLogger().log(Level.INFO,
-                "Initializing Logic API.");
+        ApplicationLogger.getLogger()
+                .log(Level.INFO, "Initializing Logic API.");
         instance.logic = Logic.getNewInstance();
         return instance;
+    }
+
+    private LogicApi() {
+    }
+
+    public Feedback displayAllActive() {
+        return logic.displayAllActive();
     }
 
     /**
@@ -79,7 +101,7 @@ public class LogicApi {
         if (logic.storage == null) {
             throw new IOException();
         } else {
-            ApplicationLogger.getApplicationLogger().log(
+            ApplicationLogger.getLogger().log(
                     Level.INFO,
                     "Executing command: " + command.getCommand() + " "
                             + command.getParam());
@@ -114,8 +136,6 @@ public class LogicApi {
                     return logic.complete(param);
                 }
                 break;
-            case LEVEL:
-                return null;
             case SEARCH:
                 if (hasSearchParams(param)) {
                     return logic.search(param);
@@ -130,35 +150,11 @@ public class LogicApi {
                 return logic.suggest(param);
             case ACCEPT:
                 return logic.accept(param);
-            case TAG:
-                break;
             default:
                 break;
             }
             throw new InvalidInputException(INVALID_COMMAND_MESSAGE);
         }
-    }
-
-    public Feedback displayAllActive() {
-        return logic.displayAllActive();
-    }
-
-    private boolean hasSearchParams(
-            Hashtable<ParamEnum, ArrayList<String>> params)
-                    throws InvalidInputException {
-        if (hasBothBeforeAndAfterParams(params)) {
-            throw new InvalidInputException(INVALID_BEFORE_AFTER_SEARCH_MESSAGE);
-        } else if (hasOnlyFromOrToParams(params)) {
-            throw new InvalidInputException(INVALID_FROM_TO_SEARCH_MESSAGE);
-        } else {
-            return true;
-        }
-    }
-
-    private boolean hasOnlyFromOrToParams(
-            Hashtable<ParamEnum, ArrayList<String>> params) {
-        return (params.containsKey(ParamEnum.START_DATE) ^ params
-                .containsKey(ParamEnum.END_DATE));
     }
 
     private boolean hasBothBeforeAndAfterParams(
@@ -178,6 +174,24 @@ public class LogicApi {
 
     private boolean hasNameParam(Hashtable<ParamEnum, ArrayList<String>> param) {
         return param.containsKey(ParamEnum.NAME);
+    }
+
+    private boolean hasOnlyFromOrToParams(
+            Hashtable<ParamEnum, ArrayList<String>> params) {
+        return (params.containsKey(ParamEnum.START_DATE) ^ params
+                .containsKey(ParamEnum.END_DATE));
+    }
+
+    private boolean hasSearchParams(
+            Hashtable<ParamEnum, ArrayList<String>> params)
+            throws InvalidInputException {
+        if (hasBothBeforeAndAfterParams(params)) {
+            throw new InvalidInputException(INVALID_BEFORE_AFTER_SEARCH_MESSAGE);
+        } else if (hasOnlyFromOrToParams(params)) {
+            throw new InvalidInputException(INVALID_FROM_TO_SEARCH_MESSAGE);
+        } else {
+            return true;
+        }
     }
 
     private boolean isKeywordParamEmpty(

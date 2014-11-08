@@ -1,5 +1,6 @@
 package main.controllers;
 
+import common.StartEndDatePair;
 import javafx.fxml.FXML;
 import jfxtras.scene.control.agenda.Agenda;
 
@@ -7,7 +8,6 @@ import java.util.*;
 
 import common.Feedback;
 import common.PriorityLevelEnum;
-import common.StartDueDatePair;
 import common.Task;
 
 /**
@@ -37,7 +37,7 @@ public class CalendarViewController {
                 new Agenda.AppointmentGroupImpl().withStyleClass("group12"));
     }
 
-    protected void updateCalendarView(ArrayList<Task> taskList) {
+    void updateCalendarView(ArrayList<Task> taskList) {
         calendarView.appointments().clear();
         addTasksToCalendarView(taskList);
     }
@@ -86,11 +86,11 @@ public class CalendarViewController {
         assert (appointmentGroupMap != null) : "appointmentGroupMap was not initialized!";
         assert !task.getConditionalDates().isEmpty() : "Conditional task has no conditional dates!";
         String appointmentGroup = determineAppointmentGroup(task);
-        for (StartDueDatePair datePair : task.getConditionalDates()) {
+        for (StartEndDatePair datePair : task.getConditionalDates()) {
             calendarView.appointments().add(
                     new Agenda.AppointmentImpl()
                     .withStartTime(datePair.getStartDate())
-                    .withEndTime(datePair.getDueDate())
+                    .withEndTime(datePair.getEndDate())
                     .withSummary("ID: " + task.getId())
                     .withDescription(task.getName())
                     .withAppointmentGroup(

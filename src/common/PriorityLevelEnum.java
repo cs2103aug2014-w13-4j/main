@@ -2,6 +2,14 @@ package common;
 
 import common.exceptions.InvalidPriorityLevelException;
 
+//@author A0114368E
+
+/**
+ * This is the enum class for the priority level. There are currently 4
+ * different levels (default, green, orange and red). The user can indicate the
+ * priority level by number, name, or the first letter of the name of the level.
+ *
+ */
 public enum PriorityLevelEnum {
     DEFAULT(0, "default"), GREEN(1, "green"), ORANGE(2, "orange"), RED(3, "red");
 
@@ -29,11 +37,11 @@ public enum PriorityLevelEnum {
     }
 
     /**
-     * Returns the corresponding priority level enum given the integer level.
+     * Returns the corresponding priority level Enum given the integer level.
      *
      * @param level
      *            : the priority level
-     * @return: priority level snum
+     * @return: priority level Enum
      * @throws InvalidPriorityLevelException
      */
     public static PriorityLevelEnum fromInteger(int level)
@@ -42,11 +50,11 @@ public enum PriorityLevelEnum {
     }
 
     /**
-     * Returns the corresponding priority level enum given the string name.
+     * Returns the corresponding priority level Enum given the string name.
      *
-     * @param level
+     * @param name
      *            : the name of the priority level
-     * @return: priority level enum
+     * @return: priority level Enum
      * @throws InvalidPriorityLevelException
      */
     public static PriorityLevelEnum fromString(String name)

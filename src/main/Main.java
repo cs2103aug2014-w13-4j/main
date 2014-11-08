@@ -3,7 +3,7 @@ package main;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import logic.LogicApi;
-import main.controllers.RootLayoutController;
+import main.controllers.RootController;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -22,7 +22,7 @@ public class Main extends Application {
 
     private Stage primaryStage;
 
-    private RootLayoutController rootLayoutController;
+    private RootController rootController;
 
     public static void main(String[] args) {
         launch(args);
@@ -30,7 +30,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        ApplicationLogger.getApplicationLogger().log(Level.INFO,
+        ApplicationLogger.getLogger().log(Level.INFO,
                 "Initializing JavaFX UI.");
 
         initPrimaryStage(primaryStage);
@@ -46,18 +46,18 @@ public class Main extends Application {
         assert (primaryStage != null);
         try {
             Feedback allActiveTasks = initLogicAndGetAllActiveTasks();
-            rootLayoutController = new RootLayoutController();
-            rootLayoutController.initialize(primaryStage, allActiveTasks,
+            rootController = new RootController();
+            rootController.initialize(primaryStage, allActiveTasks,
                     logicApi);
         } catch (IOException e) {
-            ApplicationLogger.getApplicationLogger().log(Level.SEVERE,
+            ApplicationLogger.getLogger().log(Level.SEVERE,
                     e.getMessage());
         }
     }
 
     private Feedback initLogicAndGetAllActiveTasks() throws IOException,
             FileFormatNotSupportedException {
-        ApplicationLogger.getApplicationLogger().log(Level.INFO,
+        ApplicationLogger.getLogger().log(Level.INFO,
                 "Initializing Logic.");
         logicApi = LogicApi.getInstance();
         return logicApi.displayAllActive();

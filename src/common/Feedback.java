@@ -2,6 +2,15 @@ package common;
 
 import java.util.ArrayList;
 
+//@author A0114368E
+
+/**
+ * This class is used to update the display in GUI following the action by the
+ * user. It contains the feedback message that will be shown in the notification
+ * pane, the task list that is shown in the table view, and the individual task
+ * that is shown in the task display.
+ *
+ */
 public class Feedback {
 
     private String feedbackMessage;

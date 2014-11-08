@@ -32,8 +32,8 @@ import java.util.logging.Level;
 /**
  * @author szhlibrary
  */
-public class RootLayoutController {
-    protected LogicApi logicApi;
+public class RootController {
+    LogicApi logicApi;
 
     private BorderPane rootLayout;
     private NotificationPane notificationPane;
@@ -53,13 +53,13 @@ public class RootLayoutController {
     public void initialize(Stage primaryStage, Feedback allActiveTasks,
             LogicApi logicApi) throws IOException {
         setLogic(logicApi);
-        initRootLayout(primaryStage);
+        initRootLayout();
         initTabLayout();
         initScene();
         initNotificationPane();
         initTaskListView(allActiveTasks);
         initTaskDisplayView();
-        initUserInputView(allActiveTasks);
+        initUserInputView();
         showStage(primaryStage);
 
         // Initialised after showStage due to JavaFX known issue with CSS
@@ -71,7 +71,7 @@ public class RootLayoutController {
         this.logicApi = logicApi;
     }
 
-    private void initRootLayout(Stage primaryStage) throws IOException {
+    private void initRootLayout() throws IOException {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(Main.class.getResource("views/RootLayout.fxml"));
         rootLayout = loader.load();
@@ -141,7 +141,7 @@ public class RootLayoutController {
         taskDisplayViewController.initialize();
     }
 
-    private void initUserInputView(Feedback allActiveTasks) throws IOException {
+    private void initUserInputView() throws IOException {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(Main.class.getResource("views/UserInputView.fxml"));
         AnchorPane userInput = loader.load();
@@ -162,7 +162,7 @@ public class RootLayoutController {
         scene = new Scene(rootLayout);
     }
 
-    protected void executeCommand(String userInput) {
+    void executeCommand(String userInput) {
         CommandParser commandParser = new CommandParser();
         if (validateUserInput(userInput)) {
             try {
@@ -182,17 +182,17 @@ public class RootLayoutController {
         CommandEnum commandType = userCommand.getCommand();
         Hashtable<ParamEnum, ArrayList<String>> param = userCommand.getParam();
         switch (commandType) {
-        case TAB:
-            if (param.get(ParamEnum.KEYWORD).get(0).toLowerCase()
+            case TAB:
+                if (param.get(ParamEnum.KEYWORD).get(0).toLowerCase()
                     .equals("calendar")) {
-                selectionModel.select(calendarTab);
-            } else if (param.get(ParamEnum.KEYWORD).get(0).toLowerCase()
+                    selectionModel.select(calendarTab);
+                } else if (param.get(ParamEnum.KEYWORD).get(0).toLowerCase()
                     .equals("tasks")) {
-                selectionModel.select(taskListTab);
-            }
-            break;
-        default:
-            executeLogicCommand(userCommand);
+                    selectionModel.select(taskListTab);
+                }
+                break;
+            default:
+                executeLogicCommand(userCommand);
         }
     }
 
@@ -205,7 +205,7 @@ public class RootLayoutController {
 
         showNotification(feedbackMessage);
 
-        ApplicationLogger.getApplicationLogger().log(Level.INFO,
+        ApplicationLogger.getLogger().log(Level.INFO,
                 "Message shown: " + feedbackMessage);
 
         ArrayList<Task> taskList = userCommandFeedback.getTaskList();

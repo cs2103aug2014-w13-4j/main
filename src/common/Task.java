@@ -3,9 +3,14 @@ package common;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class Task {
+//@author A0114368E
+/**
+ * This class stores all the attributes of a task. Currently, 4 types of tasks
+ * are supported: Deadline Task, Floating Task, Timed Task and Conditional Task
+ *
+ */
+public class Task implements Comparable<Task> {
     public static final int ID_FOR_NEW_TASK = 0;
-
     private int id = 0;
     private String name = "";
     private Calendar dateDue = null;
@@ -16,7 +21,7 @@ public class Task {
     private ArrayList<String> tags = new ArrayList<String>();
     private ArrayList<Integer> parentTasks = new ArrayList<Integer>();
     private ArrayList<Integer> childTasks = new ArrayList<Integer>();
-    private ArrayList<StartDueDatePair> conditionalDates = new ArrayList<StartDueDatePair>();
+    private ArrayList<StartEndDatePair> conditionalDates = new ArrayList<StartEndDatePair>();
     private boolean isDeleted = false;
 
     public Task() {
@@ -28,7 +33,7 @@ public class Task {
     }
 
     public void appendConditionalDates(
-            ArrayList<StartDueDatePair> conditionalDates) {
+            ArrayList<StartEndDatePair> conditionalDates) {
         this.conditionalDates.addAll(conditionalDates);
     }
 
@@ -36,7 +41,7 @@ public class Task {
         return childTasks;
     }
 
-    public ArrayList<StartDueDatePair> getConditionalDates() {
+    public ArrayList<StartEndDatePair> getConditionalDates() {
         return conditionalDates;
     }
 
@@ -131,7 +136,7 @@ public class Task {
         this.childTasks = childTasks;
     }
 
-    public void setConditionalDates(ArrayList<StartDueDatePair> conditionalDates) {
+    public void setConditionalDates(ArrayList<StartEndDatePair> conditionalDates) {
         this.conditionalDates = conditionalDates;
     }
 
@@ -172,14 +177,37 @@ public class Task {
     }
 
     public void setStartDueDateFromConditional(int id) {
-        // conditional dates must be present to set start and due date
-        // assume id starts counting from 1
         assert (conditionalDates != null && id >= conditionalDates.size());
         dateStart = conditionalDates.get(id - 1).getStartDate();
-        dateEnd = conditionalDates.get(id - 1).getDueDate();
+        dateEnd = conditionalDates.get(id - 1).getEndDate();
     }
 
     public void setTags(ArrayList<String> tags) {
         this.tags = tags;
+    }
+
+    @Override
+    public int compareTo(Task otherTask) {
+        Calendar firstDate = this.getDateForComparison();
+        Calendar secondDate = otherTask.getDateForComparison();
+        if (firstDate == null && secondDate == null) {
+            return 0;
+        } else if (firstDate == null) {
+            return 1;
+        } else if (secondDate == null) {
+            return -1;
+        } else {
+            return (firstDate.compareTo(secondDate));
+        }
+    }
+
+    public Calendar getDateForComparison() {
+        if (isDeadlineTask()) {
+            return getDateDue();
+        } else if (isTimedTask()) {
+            return getDateStart();
+        } else {
+            return null;
+        }
     }
 }

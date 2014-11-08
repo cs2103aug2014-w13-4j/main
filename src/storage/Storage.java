@@ -36,7 +36,7 @@ public class Storage {
      *             , IOException
      */
     protected Storage() throws IOException, FileFormatNotSupportedException {
-        ApplicationLogger.getApplicationLogger().log(Level.INFO,
+        ApplicationLogger.getLogger().log(Level.INFO,
                 "Initializing Storage.");
     }
 
@@ -61,7 +61,7 @@ public class Storage {
     // Add/Update a task to file
     public void writeTaskToFile(Task task) throws TaskNotFoundException,
             IOException, TimeIntervalOverlapException {
-        ApplicationLogger.getApplicationLogger().log(Level.INFO,
+        ApplicationLogger.getLogger().log(Level.INFO,
                 "Writing Task to file.");
         taskFile.writeTaskToFile(task);
     }
@@ -88,7 +88,7 @@ public class Storage {
     }
 
     // Get a list of all the completed task
-    // This medthod is for clearing all the completed task
+    // This method is for clearing all the completed tasks
     public ArrayList<Task> getAllCompletedTasks() {
         return taskFile.getAllCompletedTasks();
     }

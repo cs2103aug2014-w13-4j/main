@@ -14,8 +14,8 @@ public class ApplicationLogger {
     private static ApplicationLogger applicationLogger;
 
     /*
-     * constructor This construtor follows the singleton pattern. It can only be
-     * called via AppplicationLogger.getInstance(). This is to ensure that there
+     * constructor This constructor follows the singleton pattern. It can only be
+     * called via ApplicationLogger.getInstance(). This is to ensure that there
      * is only one instance of the ApplicationLogger object.
      * 
      * @throws IOException
@@ -39,7 +39,7 @@ public class ApplicationLogger {
         return applicationLogger;
     }
 
-    public static Logger getApplicationLogger() {
+    public static Logger getLogger() {
         return getInstance().logger;
     }
 }

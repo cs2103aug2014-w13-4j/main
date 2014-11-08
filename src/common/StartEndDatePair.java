@@ -2,13 +2,13 @@ package common;
 
 import java.util.Calendar;
 
-public class StartDueDatePair {
+public class StartEndDatePair {
     private Calendar startDate;
-    private Calendar dueDate;
+    private Calendar endDate;
 
-    public StartDueDatePair(Calendar startDate, Calendar dueDate) {
+    public StartEndDatePair(Calendar startDate, Calendar endDate) {
         this.startDate = startDate;
-        this.dueDate = dueDate;
+        this.endDate = endDate;
     }
 
     public Calendar getStartDate() {
@@ -19,12 +19,12 @@ public class StartDueDatePair {
         this.startDate = startDate;
     }
 
-    public Calendar getDueDate() {
-        return dueDate;
+    public Calendar getEndDate() {
+        return endDate;
     }
 
-    public void setDueDate(Calendar dueDate) {
-        this.dueDate = dueDate;
+    public void setEndDate(Calendar endDate) {
+        this.endDate = endDate;
     }
 
 }
