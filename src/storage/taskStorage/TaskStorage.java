@@ -402,15 +402,25 @@ public class TaskStorage {
     }
 
     private boolean isNearMatch(String stringToMatch, String stringInTask) {
-        if (stringInTask.isEmpty()) {
-            return false;
-        } else {
-            return StringUtils.getLevenshteinDistance(
-                    stringInTask.substring(
-                            0,
-                            Integer.min(stringInTask.length(),
-                                    stringToMatch.length())), stringToMatch) <= MAX_DIFF_BETWEEN_WORDS;
+        if (!stringInTask.isEmpty()) {
+            if (stringToMatch.length() > stringInTask.length()) {
+                return StringUtils.getLevenshteinDistance(stringInTask,
+                        stringToMatch) <= MAX_DIFF_BETWEEN_WORDS;
+            } else {
+                //compare index by index to find the best substring to compare with
+                for (int i = 0; i <= stringInTask.length()
+                        - stringToMatch.length(); i++) {
+                    String subString = stringInTask.substring(i, stringToMatch.length()
+                            + i);
+                    Boolean result = StringUtils.getLevenshteinDistance(
+                            subString, stringToMatch) <= MAX_DIFF_BETWEEN_WORDS;
+                    if (result) {
+                        return result;
+                    }
+                }
+            }
         }
+        return false;
     }
 
     private boolean isNearMatchSearchTargetByName(Task task,
