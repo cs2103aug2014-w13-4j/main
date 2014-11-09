@@ -387,7 +387,7 @@ public class Logic {
     }
 
     /**
-     * <<<<<<< HEAD Suggest a list of date that fulfill the user requirements
+     * Suggest a list of date that fulfill the user requirements
      *
      * @param param
      *            : the requirements specified by the user
@@ -395,7 +395,7 @@ public class Logic {
      *         of dates that fulfill the user requirements
      *
      * @param param
-     * @return Feedback >>>>>>> 35341e05d1bc48bebffd10648d4d00756db6897e
+     * @return Feedback 
      * @throws InvalidDateFormatException
      * @throws InvalidInputException
      */
@@ -420,6 +420,7 @@ public class Logic {
 
         while (suggestions.size() < MAX_RESULT) {
             int i;
+            int suggestionCounter = 0;
             Calendar curr;
             Calendar next;
             for (i = 0; i < taskList.size() - 1; i++) {
@@ -430,7 +431,7 @@ public class Logic {
                         && next.getTimeInMillis() <= endTime.getTimeInMillis()
                         && (next.getTimeInMillis() - curr.getTimeInMillis()) >= (duration * HOUR_TO_MILLIS)) {
                     Task newTask = new Task();
-                    newTask.setId(i);
+                    newTask.setId(suggestionCounter++);
                     TaskModifier.modifyTimedTask(param, newTask);
                     newTask.setDateStart(curr);
                     Calendar temp = (Calendar) curr.clone();
@@ -475,7 +476,7 @@ public class Logic {
         if (lastAction == null) {
             throw new HistoryNotFoundException(ERROR_UNDO_MESSAGE);
         } else {
-            ArrayList<Task> tasks = lastAction.getTask();
+            ArrayList<Task> tasks = lastAction.getTasks();
             // Add all history task back to current task
             for (Task task : tasks) {
                 storage.writeTaskToFile(task);

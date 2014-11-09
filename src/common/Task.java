@@ -19,8 +19,6 @@ public class Task implements Comparable<Task> {
     private PriorityLevelEnum priorityLevel = PriorityLevelEnum.DEFAULT;
     private String note = "";
     private ArrayList<String> tags = new ArrayList<String>();
-    private ArrayList<Integer> parentTasks = new ArrayList<Integer>();
-    private ArrayList<Integer> childTasks = new ArrayList<Integer>();
     private ArrayList<StartEndDatePair> conditionalDates = new ArrayList<StartEndDatePair>();
     private boolean isDeleted = false;
 
@@ -35,10 +33,6 @@ public class Task implements Comparable<Task> {
     public void appendConditionalDates(
             ArrayList<StartEndDatePair> conditionalDates) {
         this.conditionalDates.addAll(conditionalDates);
-    }
-
-    public ArrayList<Integer> getChildTasks() {
-        return childTasks;
     }
 
     public ArrayList<StartEndDatePair> getConditionalDates() {
@@ -67,10 +61,6 @@ public class Task implements Comparable<Task> {
 
     public String getNote() {
         return note;
-    }
-
-    public ArrayList<Integer> getParentTasks() {
-        return parentTasks;
     }
 
     public PriorityLevelEnum getPriorityLevel() {
@@ -132,10 +122,6 @@ public class Task implements Comparable<Task> {
         return dateDue == null && dateStart != null && dateEnd != null;
     }
 
-    public void setChildTasks(ArrayList<Integer> childTasks) {
-        this.childTasks = childTasks;
-    }
-
     public void setConditionalDates(ArrayList<StartEndDatePair> conditionalDates) {
         this.conditionalDates = conditionalDates;
     }
@@ -166,10 +152,6 @@ public class Task implements Comparable<Task> {
 
     public void setNote(String note) {
         this.note = note;
-    }
-
-    public void setParentTasks(ArrayList<Integer> parentTasks) {
-        this.parentTasks = parentTasks;
     }
 
     public void setPriorityLevel(PriorityLevelEnum priorityLevel) {
