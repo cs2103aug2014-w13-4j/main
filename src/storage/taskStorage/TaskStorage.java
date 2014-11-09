@@ -23,11 +23,23 @@ import common.exceptions.TaskNotFoundException;
 import common.exceptions.TimeIntervalOverlapException;
 
 /**
+ * This is the task storage class. It supports writing tasks to storage 
+ * as well as reading tasks from storage. Moreover, it also includes search 
+ * functionalities.
  *
- * @author Chuyu This class reads/writes task to file. It also supports power
- *         search.
+ * @author Chuyu 
  */
 public class TaskStorage {
+	/**
+     * Always creates a new instance of the TaskStorage class. 
+     * This follows the singleton pattern.
+     *
+     * @param fileName 
+     *				: Name of the File
+     * @return An object instance of the TaskStorage class.
+     * @throws IOException
+     * @throws FileFormatNotSupportedException
+     */
     public static TaskStorage getInstance(String fileName) throws IOException,
             FileFormatNotSupportedException {
         if (taskStorageInstance == null) {
@@ -36,6 +48,16 @@ public class TaskStorage {
         return taskStorageInstance;
     }
 
+    /**
+     * Always creates a new instance of the TaskStorage class. 
+     * For debugging purposes.
+     *
+     * @param fileName 
+     *				: Name of the File
+     * @return an object instance of the TaskStorage class.
+     * @throws IOException
+     * @throws FileFormatNotSupportedException
+     */
     public static TaskStorage getNewInstance(String fileName)
             throws IOException, FileFormatNotSupportedException {
         taskStorageInstance = new TaskStorage(fileName);
@@ -54,6 +76,8 @@ public class TaskStorage {
 
     private static final int ID_FOR_FIRST_TASK = 1;
 
+    private static final int MIN_LENGTH_FOR_KEY_WORD_IN_SEARCH = 2;
+
     private static final String COMPLETED = "completed";
 
     private static final String ACTIVE = "active";
@@ -63,10 +87,15 @@ public class TaskStorage {
     private Scanner fileScanner;
 
     /**
-     * constructor``
+     * This constructor follows the singleton pattern.
+     * It can only be called within the current class (TaskStorage.getInstance()) 
+     * This is to ensure that only there is exactly one instance of TaskStorage class
      *
+     * @param fileName 
+     *				: Name of the File
+     * @return an object instance of the TaskStorage class.
+     * @throws IOException
      * @throws FileFormatNotSupportedException
-     *             , IOException
      */
     protected TaskStorage(String fileName) throws IOException,
             FileFormatNotSupportedException {
@@ -84,18 +113,23 @@ public class TaskStorage {
         while (fileScanner.hasNextLine()) {
             task = TaskConverter.stringToTask(fileScanner.nextLine());
             taskBuffer.add(task);
-            // add in interval tree
+            // add the new task into the interval tree
             if (isTaskTimeValid(task) && !task.isDeleted()) {
                 addTimeIntervalToIntervalTree(task);
             } else if (!isTaskTimeValid(task) && !task.isDeleted()) {
                 throw new FileFormatNotSupportedException(
                         "Events are overlapping");
             }
-            nextTaskIndex++;
+            nextTaskIndex ++;
         }
         fileScanner.close();
     }
 
+    /**
+     * Get all tasks that are active
+     *
+     * @return all tasks that are active
+     */
     public ArrayList<Task> getAllActiveTasks() {
         ArrayList<Task> activeList = new ArrayList<Task>();
         if (taskBuffer == null) {
@@ -112,7 +146,7 @@ public class TaskStorage {
     /**
      * Get all tasks that are completed but not deleted
      *
-     * @return all tasks that are not deleted
+     * @return all tasks that completed but not deleted
      */
     public ArrayList<Task> getAllCompletedTasks() {
         ArrayList<Task> completedList = new ArrayList<Task>();
@@ -138,22 +172,11 @@ public class TaskStorage {
             return null;
         }
         for (Task task : taskBuffer) {
-            if (task.isDeleted()) {
-                continue;
-            } else {
+            if (!task.isDeleted()) {                
                 allTaskList.add(task);
-            }
+            } 
         }
         return allTaskList;
-    }
-
-    /**
-     * Return an interval tree for the whole list of tasks
-     *
-     * @return IntervalSearch: the interval tree for the whole list of tasks
-     */
-    public IntervalSearch getIntervalTree() {
-        return intervalTree;
     }
 
     /**
@@ -207,6 +230,15 @@ public class TaskStorage {
         return requiredTask;
     }
 
+    /**
+     * Search tasks by the given keyword table
+     *
+     * @param keyWordTable
+     *            : the key word table to be searched
+     * @return the search result
+     * @throws InvalidDateFormatException
+     * @throws InvalidInputException 
+     */
     public ArrayList<Task> searchTask(
             Hashtable<ParamEnum, ArrayList<String>> keyWordTable)
             throws InvalidDateFormatException, InvalidInputException {
@@ -320,17 +352,7 @@ public class TaskStorage {
         if (taskID == Task.ID_FOR_NEW_TASK) {
             addTask(task);
         } else if (isTaskExist(taskID)) {
-            if (task.isDeleted()) {
-                deleteTask(task);
-            } else {
-                // check if it is an undo (task in task storage was deleted)
-                Task oldTask = getTask(task.getId());
-                if (oldTask.isDeleted()) {
-                    restoreTask(task);
-                } else {
-                    updateTask(task);
-                }
-            }
+        	updateTask(task);
         } else {
             throw new TaskNotFoundException(
                     "Cannot update task since the current task doesn't exist");
@@ -348,9 +370,9 @@ public class TaskStorage {
     private void addTask(Task task) throws IOException,
             TimeIntervalOverlapException {
         if (isTaskTimeValid(task)) {
-            // Add new task to task file
             task.setId(nextTaskIndex);
-            nextTaskIndex++;
+            nextTaskIndex++;            
+            // Add new task to task file
             addTaskToStorage(task);
             // Add new task to task buffer
             taskBuffer.add(task);
@@ -362,7 +384,6 @@ public class TaskStorage {
         }
     }
 
-    // append task string to the end of the file
     private void addTaskToStorage(Task task) throws IOException {
         BufferedWriter bufferedWriter = null;
         String taskString = TaskConverter.taskToString(task);
@@ -380,13 +401,12 @@ public class TaskStorage {
     private void addTimeIntervalToIntervalTree(Task task) {
         int taskId = task.getId();
         Calendar dateStart, dateEnd;
-        ArrayList<StartEndDatePair> conditionalDates;
         if (task.isTimedTask()) {
             dateStart = task.getDateStart();
             dateEnd = task.getDateEnd();
             intervalTree.add(dateStart, dateEnd, taskId);
         } else if (task.isConditionalTask()) {
-            conditionalDates = task.getConditionalDates();
+            ArrayList<StartEndDatePair> conditionalDates = task.getConditionalDates();
             for (StartEndDatePair datePair : conditionalDates) {
                 dateStart = datePair.getStartDate();
                 dateEnd = datePair.getEndDate();
@@ -395,19 +415,10 @@ public class TaskStorage {
         }
     }
 
-    private void deleteTask(Task task) throws IOException {
-        int taskID = task.getId();
-        // Update task to task buffer
-        taskBuffer.set(taskID - 1, task);
-        // Update task to task file
-        updateTaskToStorage();
-        removeTimeIntervalFromIntervalTree(task);
-    }
-
     private ArrayList<Task> getSearchRange(
             Hashtable<ParamEnum, ArrayList<String>> keyWordTable)
             throws InvalidInputException {
-        ArrayList<Task> searchRange;
+        ArrayList<Task> searchRange = null;
         String keyWordString = keyWordTable.get(ParamEnum.KEYWORD).get(0)
                 .toLowerCase();
         if (keyWordString.equals(ALL)) {
@@ -428,15 +439,25 @@ public class TaskStorage {
     }
 
     private boolean isNearMatch(String stringToMatch, String stringInTask) {
-        if (stringInTask.isEmpty()) {
-            return false;
-        } else {
-            return StringUtils.getLevenshteinDistance(
-                    stringInTask.substring(
-                            0,
-                            Integer.min(stringInTask.length(),
-                                    stringToMatch.length())), stringToMatch) <= MAX_DIFF_BETWEEN_WORDS;
+        if (!stringInTask.isEmpty()) {
+            if (stringToMatch.length() > stringInTask.length()) {
+                return StringUtils.getLevenshteinDistance(stringInTask,
+                        stringToMatch) <= MAX_DIFF_BETWEEN_WORDS;
+            } else {
+                //compare index by index to find the best substring to compare with
+                for (int i = 0; i <= stringInTask.length()
+                        - stringToMatch.length(); i++) {
+                    String subString = stringInTask.substring(i, stringToMatch.length()
+                            + i);
+                    Boolean result = StringUtils.getLevenshteinDistance(
+                            subString, stringToMatch) <= MAX_DIFF_BETWEEN_WORDS;
+                    if (result) {
+                        return result;
+                    }
+                }
+            }
         }
+        return false;
     }
 
     private boolean isNearMatchSearchTargetByName(Task task,
@@ -479,7 +500,6 @@ public class TaskStorage {
         if (task.isConditionalTask() || task.isFloatingTask()) {
             return false;
         } else if (task.isDeadlineTask()) {
-            // Is this considered as magic number?
             return task.getDateDue().compareTo(date) != -1;
         } else {
             return intervalTree.getTasksFrom(date).contains(task.getId());
@@ -492,7 +512,6 @@ public class TaskStorage {
         if (task.isConditionalTask() || task.isFloatingTask()) {
             return false;
         } else if (task.isDeadlineTask()) {
-            // Is this considered as magic number?
             return task.getDateDue().compareTo(date) != 1;
         } else {
             return intervalTree.getTasksBefore(date).contains(task.getId());
@@ -512,11 +531,42 @@ public class TaskStorage {
     }
 
     private boolean isSearchTargetByName(Task task, String name) {
-        return task.getName().contains(name);
+        return isSearchTargetByContent(task, name, true, false);
     }
 
     private boolean isSearchTargetByNote(Task task, String note) {
-        return task.getNote().contains(note);
+    	return isSearchTargetByContent(task, note, false, true);
+    }
+
+    private boolean isSearchTargetByContent(Task task, String text, boolean isSearchingName,
+    										boolean isSearchingNote) {
+    	assert task != null;
+    	assert text != null;
+
+    	boolean result = true;
+    	if (isSearchingName) {
+    		result &= containsKeywordsInText(task.getName(), text);
+    	}
+    	if (isSearchingNote) {
+    		result &= containsKeywordsInText(task.getNote(), text);
+    	}
+    	return result;
+    }
+
+    private boolean containsKeywordsInText(String text, String keywords) {
+    	assert keywords != null;
+    	assert text != null;
+    	boolean result;
+    	String[] keywordsArray = keywords.split(" ");
+    	for (String keyword : keywordsArray) {
+    		if (keyword.length() >= MIN_LENGTH_FOR_KEY_WORD_IN_SEARCH) {
+    			result = text.toLowerCase().contains(keyword.toLowerCase());
+    			if (!result) {
+    				return false;
+    			}
+    		}
+    	}
+    	return true;
     }
 
     private boolean isSearchTargetByOn(Task task, String dateString)
@@ -630,22 +680,6 @@ public class TaskStorage {
         intervalTree.remove(task);
     }
 
-    private void restoreTask(Task task) throws IOException,
-            TimeIntervalOverlapException {
-        int taskID = task.getId();
-        if (isTaskTimeValid(task)) {
-            // Update task to task buffer
-            taskBuffer.set(taskID - 1, task);
-            // Update task to task file
-            updateTaskToStorage();
-            addTimeIntervalToIntervalTree(task);
-        } else {
-            throw new TimeIntervalOverlapException(
-                    "Updated task overlaps with existing time interval.");
-        }
-
-    }
-
     /**
      * Update a task
      *
@@ -653,17 +687,29 @@ public class TaskStorage {
      *            : task to be updated
      * @throws IOException
      *             : wrong IO operations
+     * @throws TaskNotFoundException 
      */
     private void updateTask(Task task) throws IOException,
-            TimeIntervalOverlapException {
+            TimeIntervalOverlapException, TaskNotFoundException {
         int taskID = task.getId();
+        Task oldTask = getTask(task.getId());
         if (isTaskTimeValid(task)) {
             // Update task to task buffer
             taskBuffer.set(taskID - 1, task);
             // Update task to task file
             updateTaskToStorage();
-            removeTimeIntervalFromIntervalTree(task);
-            addTimeIntervalToIntervalTree(task);
+            // Update task to Interval tree
+            if (task.isDeleted()) {
+            	// check if it is a delete 
+                removeTimeIntervalFromIntervalTree(task);
+            } else if (oldTask.isDeleted()) {
+                // check if it is an undo (task in task storage was deleted)
+                addTimeIntervalToIntervalTree(task);
+            } else {          
+            	// normal update operation      
+	            removeTimeIntervalFromIntervalTree(task);
+	            addTimeIntervalToIntervalTree(task);
+            }
         } else {
             throw new TimeIntervalOverlapException(
                     "Updated task overlaps with existing time interval.");
