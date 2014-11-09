@@ -97,14 +97,11 @@ public class TaskStorageTest {
             ArrayList<String> taskPriorityLevel = new ArrayList<String>();
             taskPriorityLevel.add("1");
             ArrayList<String> taskStatus = new ArrayList<String>();
-            taskStatus.add("completed");
+            taskStatus.add("completed");            
+            keyWordTable.put(ParamEnum.KEYWORD, taskStatus);
             keyWordTable.put(ParamEnum.NAME, taskName);
             keyWordTable.put(ParamEnum.LEVEL, taskPriorityLevel);
             ArrayList<Task> searchResult = taskStorage.searchTask(keyWordTable);
-            assertEquals(taskStorage.getAllTasks().size(), searchResult.size());
-
-            keyWordTable.put(ParamEnum.KEYWORD, taskStatus);
-            searchResult = taskStorage.searchTask(keyWordTable);
             assertEquals(0, searchResult.size());
         } catch (Exception e) {
             e.printStackTrace();

@@ -54,6 +54,8 @@ public class TaskStorage {
 
     private static final int ID_FOR_FIRST_TASK = 1;
 
+    private static final int MIN_LENGTH_FOR_KEY_WORD_IN_SEARCH = 2;
+
     private static final String COMPLETED = "completed";
 
     private static final String ACTIVE = "active";
@@ -484,11 +486,42 @@ public class TaskStorage {
     }
 
     private boolean isSearchTargetByName(Task task, String name) {
-        return task.getName().contains(name);
+        return isSearchTargetByContent(task, name, true, false);
     }
 
     private boolean isSearchTargetByNote(Task task, String note) {
-        return task.getNote().contains(note);
+    	return isSearchTargetByContent(task, note, false, true);
+    }
+
+    private boolean isSearchTargetByContent(Task task, String text, boolean isSearchingName,
+    										boolean isSearchingNote) {
+    	assert task != null;
+    	assert text != null;
+
+    	boolean result = true;
+    	if (isSearchingName) {
+    		result &= containsKeywordsInText(task.getName(), text);
+    	}
+    	if (isSearchingNote) {
+    		result &= containsKeywordsInText(task.getNote(), text);
+    	}
+    	return result;
+    }
+
+    private boolean containsKeywordsInText(String text, String keywords) {
+    	assert keywords != null;
+    	assert text != null;
+    	boolean result;
+    	String[] keywordsArray = keywords.split(" ");
+    	for (String keyword : keywordsArray) {
+    		if (keyword.length() >= MIN_LENGTH_FOR_KEY_WORD_IN_SEARCH) {
+    			result = text.toLowerCase().contains(keyword.toLowerCase());
+    			if (!result) {
+    				return false;
+    			}
+    		}
+    	}
+    	return true;
     }
 
     private boolean isSearchTargetByOn(Task task, String dateString)
