@@ -2,6 +2,7 @@ package storage;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.logging.Level;
 
@@ -120,7 +121,9 @@ public class Storage {
     public ArrayList<Task> suggestedSearchTask(Hashtable<ParamEnum, ArrayList<String>> keyWordTable) throws InvalidDateFormatException, InvalidInputException {
         Hashtable<ParamEnum, ArrayList<String>> searchKeyWordTable = (Hashtable<ParamEnum, ArrayList<String>>) keyWordTable.clone();
         searchKeyWordTable.remove(ParamEnum.NAME);
-        return searchTask(searchKeyWordTable);
+        ArrayList<Task> taskList = searchTask(searchKeyWordTable);
+        Collections.sort(taskList);
+        return taskList;
     }
 
     public IntervalSearch getIntervalTree() {
