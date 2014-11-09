@@ -43,6 +43,7 @@ public class CommandParser {
      * @throws Exception
      */
     public Command parseCommand(String commandString) throws Exception {
+        assert commandString != null;
         CommandEnum commandType = getCommandType(commandString);
         String commandTypeString = getFirstWord(commandString);
 
@@ -138,6 +139,7 @@ public class CommandParser {
      */
     private String makePatternString(CommandEnum commandType,
             String commandTypeString) {
+        assert commandType != null;
         String paramsPatternString = makeParamsPatternString(commandType);
         String completePattern = String.format(COMPLETE_PATTERN,
                 commandTypeString, paramsPatternString, paramsPatternString);
@@ -152,9 +154,10 @@ public class CommandParser {
      * @return
      */
     private String makeParamsPatternString(CommandEnum commandType) {
+        assert commandType != null;
         ParamEnum[] params = commandType.params();
         String paramsPattern = "";
-
+        
         for (ParamEnum param : params) {
             paramsPattern += String.format(INDIVIDUAL_PARAM_PATTERN,
                     param.regex());
@@ -164,6 +167,7 @@ public class CommandParser {
     }
 
     private CommandEnum getCommandType(String commandString) throws Exception {
+        assert commandString != null;
         String firstWord = getFirstWord(commandString).toLowerCase();
         if (commandEnumTable.containsKey(firstWord)) {
             return commandEnumTable.get(firstWord);
