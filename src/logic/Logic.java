@@ -402,15 +402,18 @@ public class Logic {
     Feedback suggest(Hashtable<ParamEnum, ArrayList<String>> param)
             throws InvalidDateFormatException, InvalidInputException {
         ArrayList<Task> taskList = storage.suggestedSearchTask(param);
-
         suggestions.clear();
+        
+        // Round off dates to nearest block
         Calendar startTime = roundToNearestBlock(DateParser.parseString(param
                 .get(ParamEnum.START_DATE).get(START_VALUE)));
+        Calendar endTime = roundToNearestBlock(DateParser.parseString(param
+                .get(ParamEnum.END_DATE).get(START_VALUE)));
+        
+        // Add start and end time into taskList to facilitate search
         Task startTask = new Task();
         startTask.setDateEnd(startTime);
         taskList.add(START_VALUE, startTask);
-        Calendar endTime = roundToNearestBlock(DateParser.parseString(param
-                .get(ParamEnum.END_DATE).get(START_VALUE)));
         Task endTask = new Task();
         endTask.setDateStart(endTime);
         taskList.add(endTask);
@@ -418,35 +421,7 @@ public class Logic {
         int duration = Integer.parseInt(param.get(ParamEnum.DURATION).get(
                 START_VALUE));
 
-        while (suggestions.size() < MAX_RESULT) {
-            int i;
-            int suggestionCounter = 0;
-            Calendar curr;
-            Calendar next;
-            for (i = 0; i < taskList.size() - 1; i++) {
-                curr = roundToNearestBlock(taskList.get(i).getDateEnd());
-                next = roundToNearestBlock(taskList.get(i + 1).getDateStart());
-
-                if (curr.getTimeInMillis() >= startTime.getTimeInMillis()
-                        && next.getTimeInMillis() <= endTime.getTimeInMillis()
-                        && (next.getTimeInMillis() - curr.getTimeInMillis()) >= (duration * HOUR_TO_MILLIS)) {
-                    Task newTask = new Task();
-                    newTask.setId(suggestionCounter++);
-                    TaskModifier.modifyTimedTask(param, newTask);
-                    newTask.setDateStart(curr);
-                    Calendar temp = (Calendar) curr.clone();
-                    temp.add(Calendar.HOUR_OF_DAY, duration);
-                    newTask.setDateEnd(temp);
-                    taskList.add(i + 1, newTask);
-                    suggestions.add(newTask);
-                    break;
-                }
-            }
-            // Exit from the loop if no results is found
-            if (i == taskList.size() - 1) {
-                break;
-            }
-        }
+        searchForEmptySlot(param, taskList, startTime, endTime, duration);
 
         String message;
         if (suggestions.isEmpty()) {
@@ -458,6 +433,58 @@ public class Logic {
         return createTaskAndTaskListFeedback(
                 MessageCreator.createMessage(message, "", null), suggestions,
                 null);
+    }
+
+    /**
+     * Search for empty slot within a given list of tasks
+     * 
+     * @param param
+     *            : the requirements specified by the user
+     * @param taskList
+     * @param startTime
+     * @param endTime
+     * @param duration
+     * @throws InvalidDateFormatException
+     * @throws InvalidInputException
+     */
+    private void searchForEmptySlot(
+            Hashtable<ParamEnum, ArrayList<String>> param,
+            ArrayList<Task> taskList, Calendar startTime, Calendar endTime,
+            int duration) throws InvalidDateFormatException,
+            InvalidInputException {
+        while (suggestions.size() < MAX_RESULT) {
+            int currentCounter;
+            int suggestionCounter = 0;
+            Calendar curr;
+            Calendar next;
+            for (currentCounter = 0; currentCounter < taskList.size() - 1; currentCounter++) {
+                // Get the adjacent two block to compare
+                curr = roundToNearestBlock(taskList.get(currentCounter).getDateEnd());
+                next = roundToNearestBlock(taskList.get(currentCounter + 1).getDateStart());
+
+                // Check if there exist a empty slot that satisfy the start and end time requirement
+                // as well as the duration.
+                if (curr.getTimeInMillis() >= startTime.getTimeInMillis()
+                        && next.getTimeInMillis() <= endTime.getTimeInMillis()
+                        && (next.getTimeInMillis() - curr.getTimeInMillis()) >= (duration * HOUR_TO_MILLIS)) {
+                    // If found, modify the task according to user input and add it to task and suggestion list
+                    Task newTask = new Task();
+                    newTask.setId(suggestionCounter++);
+                    TaskModifier.modifyTimedTask(param, newTask);
+                    newTask.setDateStart(curr);
+                    Calendar temp = (Calendar) curr.clone();
+                    temp.add(Calendar.HOUR_OF_DAY, duration);
+                    newTask.setDateEnd(temp);
+                    taskList.add(currentCounter + 1, newTask);
+                    suggestions.add(newTask);
+                    break;
+                }
+            }
+            // Exit from the loop if no results is found
+            if (currentCounter == taskList.size() - 1) {
+                break;
+            }
+        }
     }
 
     /**
