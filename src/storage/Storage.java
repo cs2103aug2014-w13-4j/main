@@ -25,21 +25,29 @@ public class Storage {
     private static Storage storageInstance;
     private TaskStorage taskFile;
 
-    private static final String FILE_NAME_TASK_STORAGE = "taskStorage.data";
+    private static final String FILE_NAME_TASK_STORAGE = "TaskStorage.data";
 
     /**
-     * constructor This constructor follows the singleton pattern It can only be
-     * called with in the current class (Storage.getInstance()) This is to
-     * ensure that only there is exactly one instance of Storage class
+     * This constructor follows the singleton pattern.
+     * It can only be called within the current class (Storage.getInstance()) 
+     * This is to ensure that only there is exactly one instance of Storage class
      *
      * @throws FileFormatNotSupportedException
-     *             , IOException
+     * @throws IOException
      */
     protected Storage() throws IOException, FileFormatNotSupportedException {
         ApplicationLogger.getLogger().log(Level.INFO,
                 "Initializing Storage.");
     }
 
+    /**
+     * Always creates a new instance of the Storage class. 
+     * This follows the singleton pattern.
+     *
+     * @return An object instance of the Storage class.
+     * @throws IOException
+     * @throws FileFormatNotSupportedException
+     */
     public static Storage getInstance() throws IOException,
             FileFormatNotSupportedException {
         if (storageInstance == null) {
@@ -50,6 +58,14 @@ public class Storage {
         return storageInstance;
     }
 
+    /**
+     * Always creates a new instance of the Storage class. 
+     * For debugging purposes.
+     *
+     * @return An object instance of the Storage class.
+     * @throws IOException
+     * @throws FileFormatNotSupportedException
+     */
     public static Storage getNewInstance() throws IOException,
             FileFormatNotSupportedException {
         storageInstance = new Storage();
@@ -58,7 +74,17 @@ public class Storage {
         return storageInstance;
     }
 
-    // Add/Update a task to file
+    /**
+     * Add or update a task back to storage
+     *
+     * @param task
+     *            : task to be added or updated
+     * @throws TaskNotFoundException
+     *             : trying to update a not existing task
+     * @throws IOException
+     *             : wrong IO operations
+     * @throws TimeIntervalOverlapException
+     */
     public void writeTaskToFile(Task task) throws TaskNotFoundException,
             IOException, TimeIntervalOverlapException {
         ApplicationLogger.getLogger().log(Level.INFO,
@@ -66,44 +92,88 @@ public class Storage {
         taskFile.writeTaskToFile(task);
     }
 
-    // Get a task by task ID
+    /**
+     * Get a task by its id
+     *
+     * @param taskID
+     *            : the id of a task
+     * @return a task
+     * @throws TaskNotFoundException
+     *             : trying to get a not existing task
+     */
     public Task getTask(int taskID) throws TaskNotFoundException {
         return taskFile.getTask(taskID);
     }
 
-    // Return a copy of existing task for update
+    /**
+     * Get a copy of an exiting task by its id
+     *
+     * @param taskID
+     *            : the id of a task
+     * @return a copy of an exiting task
+     * @throws TaskNotFoundException
+     *             : trying to get a not existing task
+     */
     public Task getTaskCopy(int taskID) throws TaskNotFoundException {
         return taskFile.getTaskCopy(taskID);
     }
 
-    // Get a list of all the Tasks
+    /**
+     * Get all tasks that are not deleted
+     *
+     * @return all tasks that are not deleted
+     */
     public ArrayList<Task> getAllTasks() {
         return taskFile.getAllTasks();
     }
 
-    // Get a list of all active tasks
-    // To be the default display.
+    /**
+     * Get all tasks that are active
+     *
+     * @return all tasks that are active
+     */
     public ArrayList<Task> getAllActiveTasks() {
         return taskFile.getAllActiveTasks();
     }
 
-    // Get a list of all the completed task
-    // This method is for clearing all the completed tasks
+    /**
+     * Get all tasks that are completed but not deleted
+     *
+     * @return all tasks that completed but not deleted
+     */
     public ArrayList<Task> getAllCompletedTasks() {
         return taskFile.getAllCompletedTasks();
     }
 
-    // Search a list of tasks with certain key words
-    // Assume keywords of name and note is only one string
+    /**
+     * Search tasks by the given keyword table
+     *
+     * @param keyWordTable
+     *            : the key word table to be searched
+     * @return the search result
+     * @throws InvalidDateFormatException
+     * @throws InvalidInputException 
+     */
     public ArrayList<Task> searchTask(
             Hashtable<ParamEnum, ArrayList<String>> keyWordTable)
             throws InvalidDateFormatException, InvalidInputException {
         return taskFile.searchTask(keyWordTable);
     }
 
-    // Search a list of tasks within certain interval only
-    public ArrayList<Task> suggestedSearchTask(Hashtable<ParamEnum, ArrayList<String>> keyWordTable) throws InvalidDateFormatException, InvalidInputException {
-        Hashtable<ParamEnum, ArrayList<String>> searchKeyWordTable = (Hashtable<ParamEnum, ArrayList<String>>) keyWordTable.clone();
+    /**
+     * Search suggested tasks by the given keyword table
+     *
+     * @param keyWordTable
+     *            : the key word table to be searched
+     * @return the search result
+     * @throws InvalidDateFormatException
+     * @throws InvalidInputException 
+     */
+    public ArrayList<Task> suggestedSearchTask(
+            Hashtable<ParamEnum, ArrayList<String>> keyWordTable) 
+            throws InvalidDateFormatException, InvalidInputException {
+        Hashtable<ParamEnum, ArrayList<String>> searchKeyWordTable =
+            (Hashtable<ParamEnum, ArrayList<String>>) keyWordTable.clone();
         searchKeyWordTable.remove(ParamEnum.NAME);
         ArrayList<Task> taskList = searchTask(searchKeyWordTable);
         Collections.sort(taskList);

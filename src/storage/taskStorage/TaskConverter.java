@@ -39,7 +39,7 @@ class TaskConverter {
             Task task = gson.fromJson(taskString, Task.class);
             return task;
         } catch (Exception e) {
-        	throw new FileFormatNotSupportedException("Storage File Corrupted.");
+        	throw new FileFormatNotSupportedException("Storage file corrupted.");
         }
     }
 }
