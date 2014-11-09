@@ -9,6 +9,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Hashtable;
 
 import logic.Logic;
@@ -37,6 +38,7 @@ public class LogicTest {
     Method display = logicClass.getDeclaredMethod("display", Hashtable.class);
     LogicApi logicApiObject;
     Logic logicObject;
+    int thisYear = Calendar.getInstance().get(Calendar.YEAR);
 
     public LogicTest() throws NoSuchMethodException, NoSuchFieldException {
     }
@@ -189,8 +191,14 @@ public class LogicTest {
 
         assertEquals("Test is good", task.getNote());
         assertTrue(task.isDeadlineTask());
-        assertEquals("20-10-2015 09:00",
+        if (thisYear == 2015) {
+            assertEquals("20 Oct 09:00",
                 DateParser.parseCalendar(task.getDateDue()));
+        } else {
+            assertEquals("20 Oct 2015 09:00",
+                DateParser.parseCalendar(task.getDateDue()));
+        }
+
     }
 
     @Test
@@ -224,9 +232,17 @@ public class LogicTest {
         task = updateFeedback.getTaskList().get(0);
 
         assertTrue(task.isTimedTask());
-        assertEquals("23-10-2015 09:00",
+
+        if (thisYear == 2015) {
+            assertEquals("23 Oct 09:00",
                 DateParser.parseCalendar(task.getDateStart()));
-        assertEquals("23-10-2015 11:00",
+            assertEquals("23 Oct 11:00",
                 DateParser.parseCalendar(task.getDateEnd()));
+        } else {
+            assertEquals("23 Oct 2015 09:00",
+                DateParser.parseCalendar(task.getDateStart()));
+            assertEquals("23 Oct 2015 11:00",
+                DateParser.parseCalendar(task.getDateEnd()));
+        }
     }
 }

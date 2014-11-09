@@ -320,7 +320,7 @@ public class IntegrationTest {
     @Test
     public final void testConditionalTasks() throws Exception {
         Command addCommand = parser
-                .parseCommand("Add CS2103T from 23 Dec 1992 00:00 to 23 Dec 2002 00:00 or from 7 Oct 2014 00:00 to 8 Oct 2014 00:00");
+                .parseCommand("Add CS2103T from 23 Dec 1992 00:00 to 23 Dec 2002 00:00 or from 7 Oct 2013 00:00 to 8 Oct 2013 00:00");
         Feedback feedback = logicApiObject.executeCommand(addCommand);
         Task task = feedback.getTaskList().get(0);
         assertEquals("Task name is correct", "CS2103T", task.getName());
@@ -328,22 +328,22 @@ public class IntegrationTest {
                 .size() == 2);
         assertEquals(
                 "First start date is correct",
-                "23-12-1992 00:00",
+                "23 Dec 1992 00:00",
                 DateParser.parseCalendar(task.getConditionalDates().get(0)
                         .getStartDate()));
         assertEquals(
                 "Second start date is correct",
-                "7-10-2014 00:00",
+                "7 Oct 2013 00:00",
                 DateParser.parseCalendar(task.getConditionalDates().get(1)
                         .getStartDate()));
         assertEquals(
                 "First due date is correct",
-                "23-12-2002 00:00",
+                "23 Dec 2002 00:00",
                 DateParser.parseCalendar(task.getConditionalDates().get(0)
                         .getEndDate()));
         assertEquals(
                 "Second due date is correct",
-                "8-10-2014 00:00",
+                "8 Oct 2013 00:00",
                 DateParser.parseCalendar(task.getConditionalDates().get(1)
                         .getEndDate()));
     }
