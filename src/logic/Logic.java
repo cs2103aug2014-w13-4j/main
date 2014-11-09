@@ -476,7 +476,7 @@ public class Logic {
         if (lastAction == null) {
             throw new HistoryNotFoundException(ERROR_UNDO_MESSAGE);
         } else {
-            ArrayList<Task> tasks = lastAction.getTask();
+            ArrayList<Task> tasks = lastAction.getTasks();
             // Add all history task back to current task
             for (Task task : tasks) {
                 storage.writeTaskToFile(task);

@@ -20,7 +20,7 @@ public class History {
 
     public History(CommandEnum command, ArrayList<Task> tasks) {
         setCommand(command);
-        setTask(tasks);
+        setTasks(tasks);
     }
 
     public CommandEnum getCommand() {
@@ -31,11 +31,11 @@ public class History {
         this.command = command;
     }
 
-    public ArrayList<Task> getTask() {
+    public ArrayList<Task> getTasks() {
         return tasks;
     }
 
-    public void setTask(ArrayList<Task> tasks) {
+    public void setTasks(ArrayList<Task> tasks) {
         this.tasks = tasks;
     }
 }
