@@ -8,7 +8,6 @@ import java.util.logging.Level;
 
 import command.ParamEnum;
 import common.ApplicationLogger;
-import common.IntervalSearch;
 import common.Task;
 import common.exceptions.FileFormatNotSupportedException;
 import common.exceptions.InvalidDateFormatException;
