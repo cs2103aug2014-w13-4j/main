@@ -1,0 +1,1259 @@
+//@author: a0111010r
+
+
+
+	/**
+	 * origin: src\common\ApplicationLogger.java
+	 */
+
+
+/**
+ * This is the Application Logger responsible for logging messages and exceptions
+ * throughout the application.
+ */
+public class ApplicationLogger {
+
+    private Logger logger;
+    private static ApplicationLogger applicationLogger;
+
+    /*
+     * constructor This constructor follows the singleton pattern. It can only be
+     * called via ApplicationLogger.getLogger(). This is to ensure that there
+     * is only one instance of the ApplicationLogger object.
+     * 
+     * @throws IOException
+     */
+    private ApplicationLogger() {
+        logger = Logger.getLogger(this.getClass().getName());
+        FileHandler fileHandler;
+        try {
+            fileHandler = new FileHandler("./logs/application.log");
+            fileHandler.setFormatter(new SimpleFormatter());
+            logger.addHandler(fileHandler);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static ApplicationLogger getInstance() {
+        if (applicationLogger == null) {
+            applicationLogger = new ApplicationLogger();
+        }
+        return applicationLogger;
+    }
+
+    public static Logger getLogger() {
+        return getInstance().logger;
+    }
+}
+
+	// End of segment: src\common\ApplicationLogger.java
+
+
+
+
+
+	/**
+	 * origin: src\main\controllers\CalendarViewController.java
+	 */
+
+
+/**
+ * This is the controller responsible for the calendar portion of the UI. It displays
+ * deadline tasks as a full day event, and event or conditional tasks as timed events.
+ */
+public class CalendarViewController {
+    @FXML
+    private Agenda calendarView;
+    private Map<String, Agenda.AppointmentGroup> appointmentGroupMap;
+
+    public void initialize(Feedback initialTasks) {
+        initAppointmentGroups();
+
+        ArrayList<Task> taskList = initialTasks.getTaskList();
+        addTasksToCalendarView(taskList);
+    }
+
+    private void initAppointmentGroups() {
+        appointmentGroupMap = new HashMap<String, Agenda.AppointmentGroup>();
+        appointmentGroupMap.put("group2",
+                new Agenda.AppointmentGroupImpl().withStyleClass("group2"));
+        appointmentGroupMap.put("group5",
+                new Agenda.AppointmentGroupImpl().withStyleClass("group5"));
+        appointmentGroupMap.put("group7",
+                new Agenda.AppointmentGroupImpl().withStyleClass("group7"));
+        appointmentGroupMap.put("group12",
+                new Agenda.AppointmentGroupImpl().withStyleClass("group12"));
+    }
+
+    void updateCalendarView(ArrayList<Task> taskList) {
+        calendarView.appointments().clear();
+        addTasksToCalendarView(taskList);
+    }
+
+    private void addTasksToCalendarView(ArrayList<Task> taskList) {
+        for (Task task : taskList) {
+            if (!task.isDeleted()) {
+                if (task.isDeadlineTask()) {
+                    addDeadlineTaskToCalendarView(task);
+                } else if (task.isConditionalTask()) {
+                    addConditionalTaskToCalendarView(task);
+                } else if (task.isTimedTask()) {
+                    addTimedTaskToCalendarView(task);
+                }
+            }
+        }
+    }
+
+    private void addDeadlineTaskToCalendarView(Task task) {
+        assert (appointmentGroupMap != null) : "appointmentGroupMap was not initialized!";
+        String appointmentGroup = determineAppointmentGroup(task);
+        calendarView.appointments().add(
+                new Agenda.AppointmentImpl()
+                .withStartTime(task.getDateDue())
+                .withSummary("ID: " + task.getId())
+                .withDescription(task.getName())
+                .withAppointmentGroup(
+                        appointmentGroupMap.get(appointmentGroup))
+                        .withWholeDay(true));
+    }
+
+    private void addTimedTaskToCalendarView(Task task) {
+        assert (appointmentGroupMap != null) : "appointmentGroupMap was not initialized!";
+        String appointmentGroup = determineAppointmentGroup(task);
+        calendarView.appointments().add(
+                new Agenda.AppointmentImpl()
+                .withStartTime(task.getDateStart())
+                .withEndTime(task.getDateEnd())
+                .withSummary("ID: " + task.getId())
+                .withDescription(task.getName())
+                .withAppointmentGroup(
+                        appointmentGroupMap.get(appointmentGroup)));
+    }
+
+    private void addConditionalTaskToCalendarView(Task task) {
+        assert (appointmentGroupMap != null) : "appointmentGroupMap was not initialized!";
+        assert !task.getConditionalDates().isEmpty() : "Conditional task has no conditional dates!";
+        String appointmentGroup = determineAppointmentGroup(task);
+        for (StartEndDatePair datePair : task.getConditionalDates()) {
+            calendarView.appointments().add(
+                    new Agenda.AppointmentImpl()
+                    .withStartTime(datePair.getStartDate())
+                    .withEndTime(datePair.getEndDate())
+                    .withSummary("ID: " + task.getId())
+                    .withDescription(task.getName())
+                    .withAppointmentGroup(
+                            appointmentGroupMap.get(appointmentGroup)));
+        }
+    }
+
+    private String determineAppointmentGroup(Task task) {
+        if (task.getPriorityLevel().getName()
+                .equals(PriorityLevelEnum.GREEN.getName())) {
+            return "group7";
+        } else if (task.getPriorityLevel().getName()
+                .equals(PriorityLevelEnum.ORANGE.getName())) {
+            return "group5";
+        } else if (task.getPriorityLevel().getName()
+                .equals(PriorityLevelEnum.RED.getName())) {
+            return "group2";
+        } else {
+            return "group12";
+        }
+    }
+}
+
+	// End of segment: src\main\controllers\CalendarViewController.java
+
+
+
+
+
+	/**
+	 * origin: src\main\controllers\RootController.java
+	 */
+
+
+/**
+ * This is the root controller that is in charge of initializing all other JavaFX layouts
+ * and their corresponding controllers, if necessary. It is also responsible for executing
+ * commands, thereby interacting with the Command Parser and the Logic components.
+ */
+public class RootController {
+    LogicApi logicApi;
+
+    private BorderPane rootLayout;
+    private NotificationPane notificationPane;
+
+    private TabPane tabLayout;
+    private SingleSelectionModel<Tab> selectionModel;
+    private Tab taskListTab;
+    private Tab calendarTab;
+
+    private TaskListViewController taskListViewController;
+    private CalendarViewController calendarViewController;
+    private TaskDisplayViewController taskDisplayViewController;
+    private UserInputViewController userInputViewController;
+
+    private Scene scene;
+
+    public void initialize(Stage primaryStage) throws IOException {
+        initRootLayout();
+        initTabLayout();
+        initScene();
+        initNotificationPane();
+
+        Feedback allActiveTasks = initLogicAndGetAllActiveTasks();
+        initTaskListView(allActiveTasks);
+        initTaskDisplayView();
+        initUserInputView();
+        showStage(primaryStage);
+
+        // Initialised after showStage due to JavaFX known issue with CSS
+        // warnings
+        initCalendarView(allActiveTasks);
+    }
+
+    private Feedback initLogicAndGetAllActiveTasks() {
+        ApplicationLogger.getLogger().log(Level.INFO,
+                "Initializing Logic.");
+        try {
+            logicApi = LogicApi.getInstance();
+        } catch (IOException | FileFormatNotSupportedException e) {
+            ApplicationLogger.getLogger().log(Level.SEVERE,
+                    e.getMessage());
+
+            exitWithErrorDialog(e);
+        }
+        return logicApi.displayAllActive();
+    }
+
+    private void initRootLayout() throws IOException {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(Main.class.getResource("views/RootLayout.fxml"));
+        rootLayout = loader.load();
+    }
+
+    private void initTabLayout() throws IOException {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(Main.class.getResource("views/TabLayout.fxml"));
+        tabLayout = loader.load();
+
+        selectionModel = tabLayout.getSelectionModel();
+
+        rootLayout.setCenter(tabLayout);
+    }
+
+    private void initTaskListView(Feedback allActiveTasks) throws IOException {
+        assert (tabLayout != null) : "tabLayout was not initialized!";
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(Main.class.getResource("views/TaskListView.fxml"));
+        AnchorPane taskList = loader.load();
+
+        taskListTab = new Tab();
+        taskListTab.setText("Tasks");
+        taskListTab.setContent(taskList);
+        taskListTab.setClosable(false);
+        tabLayout.getTabs().add(taskListTab);
+
+        taskListViewController = loader.getController();
+        taskListViewController.initialize(allActiveTasks);
+    }
+
+    private void initCalendarView(Feedback allActiveTasks) throws IOException {
+        assert (tabLayout != null) : "tabLayout was not initialized!";
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(Main.class.getResource("views/CalendarView.fxml"));
+        Agenda calendarView = loader.load();
+
+        calendarTab = new Tab();
+        calendarTab.setText("Calendar");
+        calendarTab.setContent(calendarView);
+        calendarTab.setClosable(false);
+        tabLayout.getTabs().add(calendarTab);
+
+        calendarViewController = loader.getController();
+        calendarViewController.initialize(allActiveTasks);
+    }
+
+    private void initNotificationPane() throws IOException {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(Main.class
+                .getResource("views/NotificationPaneWrapper.fxml"));
+        notificationPane = loader.load();
+        notificationPane.setShowFromTop(false);
+        notificationPane.getStyleClass().add(NotificationPane.STYLE_CLASS_DARK);
+    }
+
+    private void initTaskDisplayView() throws IOException {
+        assert (notificationPane != null) : "notificationPane was not initialized!";
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(Main.class.getResource("views/TaskDisplayView.fxml"));
+        AnchorPane taskDisplay = loader.load();
+
+        notificationPane.setContent(taskDisplay);
+        rootLayout.setRight(notificationPane);
+
+        taskDisplayViewController = loader.getController();
+        taskDisplayViewController.initialize();
+    }
+
+    private void initUserInputView() throws IOException {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(Main.class.getResource("views/UserInputView.fxml"));
+        AnchorPane userInput = loader.load();
+
+        rootLayout.setBottom(userInput);
+
+        userInputViewController = loader.getController();
+        userInputViewController.initialize(this);
+    }
+
+    private void showStage(Stage primaryStage) {
+        assert (scene != null);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+
+    private void initScene() {
+        scene = new Scene(rootLayout);
+    }
+
+    void executeCommand(String userInput) {
+        CommandParser commandParser = new CommandParser();
+        if (validateUserInput(userInput)) {
+            try {
+                Command userCommand = commandParser.parseCommand(userInput);
+                if (!executeGuiCommand(userCommand)) {
+                    executeLogicCommand(userCommand);
+                }
+            } catch (Exception e) {
+                showNotification(e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private boolean executeGuiCommand(Command userCommand)
+            throws HistoryNotFoundException, InvalidInputException,
+            IOException, InvalidDateFormatException, TaskNotFoundException,
+            InvalidCommandUseException, TimeIntervalOverlapException {
+        CommandEnum commandType = userCommand.getCommand();
+        Hashtable<ParamEnum, ArrayList<String>> param = userCommand.getParam();
+        switch (commandType) {
+            case TAB:
+                tabCommand(param);
+                break;
+            default:
+                return false;
+        }
+        return true;
+    }
+
+    private void tabCommand(Hashtable<ParamEnum, ArrayList<String>> param) {
+        if (param.get(ParamEnum.KEYWORD).get(0).toLowerCase()
+                .equals("calendar")) {
+            selectionModel.select(calendarTab);
+        } else if (param.get(ParamEnum.KEYWORD).get(0).toLowerCase()
+                .equals("tasks")) {
+            selectionModel.select(taskListTab);
+        }
+    }
+
+    private void executeLogicCommand(Command userCommand)
+            throws HistoryNotFoundException, InvalidInputException,
+            IOException, InvalidDateFormatException, TaskNotFoundException,
+            InvalidCommandUseException, TimeIntervalOverlapException {
+        Feedback userCommandFeedback = logicApi.executeCommand(userCommand);
+        String feedbackMessage = userCommandFeedback.getFeedbackMessage();
+
+        showNotification(feedbackMessage);
+
+        ApplicationLogger.getLogger().log(Level.INFO,
+                "Message shown: " + feedbackMessage);
+
+        ArrayList<Task> taskList = userCommandFeedback.getTaskList();
+        if (taskList != null) {
+            taskListViewController.updateTaskList(taskList);
+            calendarViewController.updateCalendarView(taskList);
+        }
+
+        Task taskToDisplay = userCommandFeedback.getTaskDisplay();
+        taskDisplayViewController.updateTaskPanel(taskToDisplay);
+    }
+
+    private void showNotification(String feedbackMessage) {
+        notificationPane.setText(feedbackMessage);
+        notificationPane.show();
+    }
+
+    private void exitWithErrorDialog(Exception e) {
+        Action response = Dialogs.create()
+                .title("Awesome Task Manager")
+                .masthead("Error")
+                .message(e.getMessage())
+                .showError();
+        if (response.isSelected()) {
+            System.exit(1);
+        }
+    }
+
+    private boolean validateUserInput(String userInput) {
+        return (userInput != null && !userInput.isEmpty());
+    }
+}
+
+	// End of segment: src\main\controllers\RootController.java
+
+
+
+
+
+	/**
+	 * origin: src\main\controllers\TaskDisplayViewController.java
+	 */
+
+
+/**
+ * This is the controller responsible for updating the task display pane with
+ * task-specific information.
+ */
+public class TaskDisplayViewController {
+    public Label idLabel;
+    public Label taskNameLabel;
+    public Label dueDateLabel;
+    public Label startDateLabel;
+    public Label endDateLabel;
+    public Label priorityLevelLabel;
+    public Label noteLabel;
+    public Label conditionalDateLabel;
+    public Label tagLabel;
+
+    private final StringProperty idLabelValue = new SimpleStringProperty("-");
+    private final StringProperty taskNameLabelValue = new SimpleStringProperty(
+            "-");
+    private final StringProperty dueDateLabelValue = new SimpleStringProperty(
+            "-");
+    private final StringProperty startDateLabelValue = new SimpleStringProperty(
+            "-");
+    private final StringProperty endDateLabelValue = new SimpleStringProperty(
+            "-");
+    private final StringProperty priorityLevelLabelValue = new SimpleStringProperty(
+            "-");
+    private final StringProperty noteLabelValue = new SimpleStringProperty("-");
+    private final StringProperty conditionalDateLabelValue = new SimpleStringProperty(
+            "-");
+    private final StringProperty tagLabelValue = new SimpleStringProperty("-");
+
+    public void initialize() {
+        initializeGuiLabelBindings();
+    }
+
+    private void initializeGuiLabelBindings() {
+        idLabel.textProperty().bind(idLabelValue);
+        taskNameLabel.textProperty().bind(taskNameLabelValue);
+        dueDateLabel.textProperty().bind(dueDateLabelValue);
+        startDateLabel.textProperty().bind(startDateLabelValue);
+        endDateLabel.textProperty().bind(endDateLabelValue);
+        priorityLevelLabel.textProperty().bind(priorityLevelLabelValue);
+        noteLabel.textProperty().bind(noteLabelValue);
+        conditionalDateLabel.textProperty().bind(conditionalDateLabelValue);
+        tagLabel.textProperty().bind(tagLabelValue);
+    }
+
+    void updateTaskPanel(Task taskToDisplay) {
+        if (taskToDisplay == null) {
+            StringProperty[] labelValueList = {idLabelValue, taskNameLabelValue, dueDateLabelValue,
+                startDateLabelValue, endDateLabelValue, priorityLevelLabelValue, noteLabelValue,
+                conditionalDateLabelValue, tagLabelValue};
+            for (StringProperty labelValue: labelValueList) {
+                setLabelValueInGui(labelValue, null);
+            }
+        } else {
+            setLabelValueInGui(idLabelValue,
+                    Integer.toString(taskToDisplay.getId()));
+            setLabelValueInGui(taskNameLabelValue, taskToDisplay.getName());
+            setLabelValueInGui(dueDateLabelValue,
+                    DateParser.parseCalendar(taskToDisplay.getDateDue()));
+            setLabelValueInGui(startDateLabelValue,
+                    DateParser.parseCalendar(taskToDisplay.getDateStart()));
+            setLabelValueInGui(endDateLabelValue,
+                    DateParser.parseCalendar(taskToDisplay.getDateEnd()));
+            setLabelValueInGui(priorityLevelLabelValue,
+                    (taskToDisplay.getPriorityLevel() == null ? null
+                            : taskToDisplay.getPriorityLevel().name()));
+            setLabelValueInGui(noteLabelValue, taskToDisplay.getNote());
+            updateTaskPanelForConditionalDates(taskToDisplay);
+            updateTaskPanelForTags(taskToDisplay);
+        }
+    }
+
+    private void updateTaskPanelForConditionalDates(Task taskToDisplay) {
+        ArrayList<StartEndDatePair> conditionalDateList = taskToDisplay
+                .getConditionalDates();
+        String conditionalDates = "";
+        if (conditionalDateList != null) {
+            int dateId = 1;
+            for (StartEndDatePair conditionalDatePair : conditionalDateList) {
+                conditionalDates += dateId
+                        + ": "
+                        + DateParser.parseCalendar(conditionalDatePair
+                                .getStartDate())
+                        + " - "
+                        + DateParser.parseCalendar(conditionalDatePair
+                                .getEndDate()) + "\n";
+                dateId++;
+            }
+            setLabelValueInGui(conditionalDateLabelValue, conditionalDates);
+        }
+    }
+
+    private void updateTaskPanelForTags(Task taskToDisplay) {
+        ArrayList<String> tagList = taskToDisplay.getTags();
+        if (tagList != null) {
+            String tags = "";
+            for (String tag : tagList) {
+                tags += tag + " ";
+            }
+            setLabelValueInGui(tagLabelValue, tags);
+        }
+    }
+
+    private void setLabelValueInGui(StringProperty labelValue, String value) {
+        labelValue.setValue(value != null && !value.isEmpty() ? value : "-");
+    }
+}
+
+	// End of segment: src\main\controllers\TaskDisplayViewController.java
+
+
+
+
+
+	/**
+	 * origin: src\main\controllers\TaskListViewController.java
+	 */
+
+
+/**
+ * This is the controller responsible for showing and updating the list of tasks in the
+ * task list view.
+ */
+public class TaskListViewController {
+    @FXML
+    private TableView<Task> taskTableView;
+
+    private ObservableList<Task> observableTaskList;
+
+    public void initialize(Feedback initialTasks) {
+        initializeGuiTaskList(initialTasks);
+    }
+
+    private void initializeGuiTaskList(Feedback initialTasks) {
+        ArrayList<Task> taskList = initialTasks.getTaskList();
+        observableTaskList = FXCollections
+                .observableArrayList(taskList);
+        taskTableView.getItems().addAll(observableTaskList);
+        sortTaskListByDueDate();
+    }
+
+    private void sortTaskListByDueDate() {
+        FXCollections.sort(taskTableView.getItems());
+    }
+
+    void updateTaskList(ArrayList<Task> taskList) {
+        assert (taskList != null && taskList.size() >= 0);
+
+        taskTableView.getItems().clear();
+        observableTaskList = FXCollections
+                .observableArrayList(taskList);
+        taskTableView.getItems().addAll(observableTaskList);
+        sortTaskListByDueDate();
+    }
+}
+
+	// End of segment: src\main\controllers\TaskListViewController.java
+
+
+
+
+
+	/**
+	 * origin: src\main\controllers\UserInputViewController.java
+	 */
+
+
+/**
+ * This is the controller responsible for handling the user input from the TextField.
+ * It is in charge of initializing autocompletion as well as search-as-you-type
+ * functionality.
+ */
+public class UserInputViewController {
+
+    public TextField userInputField;
+    private RootController rootController;
+
+    private AutoCompletionBinding<String> autoCompletionBinding;
+    private boolean autoCompleteCommandInitialized = false;
+    private ObservableList<String> autoCompleteStringList = FXCollections
+            .observableArrayList();
+
+    public void initialize(RootController rootController) {
+        this.rootController = rootController;
+        initializeAutoComplete();
+        setFocusToUserInputField();
+    }
+
+    private void initializeAutoComplete() {
+        initializeAutoCompleteForCommands();
+    }
+
+    private void initializeAutoCompleteForCommands() {
+        if (!autoCompleteCommandInitialized) {
+            if (autoCompletionBinding != null) {
+                autoCompletionBinding.dispose();
+            }
+            autoCompleteStringList.clear();
+            for (CommandAlias commandAlias : CommandAlias.values()) {
+                for (String alias: commandAlias.alias()) {
+                    autoCompleteStringList.add(String.valueOf(alias)
+                            .toLowerCase() + " ");
+                }
+            }
+
+            autoCompletionBinding = TextFields.bindAutoCompletion(
+                    userInputField, autoCompleteStringList);
+            autoCompleteCommandInitialized = true;
+        }
+    }
+
+    public void handleUserIncrementalInput() {
+        String userInput = userInputField.getText();
+        if (userInput.split(" ")[0].equalsIgnoreCase(String
+                .valueOf(CommandEnum.SEARCH))) {
+            rootController.executeCommand(userInput);
+        }
+        System.out.println(userInput);
+    }
+
+    private void setFocusToUserInputField() {
+        userInputField.requestFocus();
+    }
+
+    public void handleUserInput() {
+        rootController.executeCommand(userInputField.getText());
+        userInputField.clear();
+    }
+}
+
+	// End of segment: src\main\controllers\UserInputViewController.java
+
+
+
+
+
+	/**
+	 * origin: src\main\factories\TaskDateFactory.java
+	 */
+
+
+/**
+ * This class formats the date in the GUI TableView to a human-readable format
+ * using the methods provided by the models.DateParser class.
+ */
+public class TaskDateFactory<T, C>
+        implements
+        Callback<TableColumn<Task, Calendar>, TableCell<Task, java.util.Calendar>> {
+
+    @Override
+    public TableCell<Task, java.util.Calendar> call(
+            TableColumn<Task, Calendar> param) {
+        TableCell<Task, java.util.Calendar> cell = new TableCell<Task, java.util.Calendar>() {
+            @Override
+            public void updateItem(java.util.Calendar item, boolean empty) {
+                super.updateItem(item, empty);
+
+                Task task = null;
+                if (getTableRow() != null) {
+                    task = (Task) getTableRow().getItem();
+                }
+
+                if (task != null) {
+                    if (task.isConfirmed() && item == null || empty) {
+                        setText("-");
+                        setStyle("");
+                    } else if (task.isConfirmed()) {
+                        setText(DateParser.parseCalendar(item));
+                    } else {
+                        setText("Unconfirmed");
+                    }
+                } else {
+                    setText(null);
+                    setStyle("");
+                }
+            }
+        };
+        return cell;
+    }
+}
+
+	// End of segment: src\main\factories\TaskDateFactory.java
+
+
+
+
+
+	/**
+	 * origin: src\main\factories\TaskDoneFactory.java
+	 */
+
+
+/**
+ * This class formats the dateEnd in the GUI TableView to a tick mark, depending
+ * on whether the task was completed. If the task was completed, dateEnd would
+ * not be null.
+ */
+public class TaskDoneFactory<T, C>
+        implements
+        Callback<TableColumn<Task, Calendar>, TableCell<Task, java.util.Calendar>> {
+
+    @Override
+    public TableCell<Task, java.util.Calendar> call(
+            TableColumn<Task, Calendar> param) {
+        TableCell<Task, java.util.Calendar> cell = new TableCell<Task, java.util.Calendar>() {
+            @Override
+            public void updateItem(java.util.Calendar item, boolean empty) {
+                super.updateItem(item, empty);
+
+                Task task = null;
+                if (getTableRow() != null) {
+                    task = (Task) getTableRow().getItem();
+                }
+
+                if (task != null) {
+                    if (!task.isCompleted() || item == null || empty) {
+                        setText(null);
+                        setStyle("");
+                    } else {
+                        // dateEnd is not null, therefore task must have been
+                        // done
+                        setText("\u2713");
+                    }
+                } else {
+                    setText(null);
+                    setStyle("");
+                }
+
+            }
+        };
+        return cell;
+    }
+}
+
+	// End of segment: src\main\factories\TaskDoneFactory.java
+
+
+
+
+
+	/**
+	 * origin: src\main\factories\TaskPriorityFactory.java
+	 */
+
+
+/**
+ * This class formats the date in the GUI TableView to a human-readable format
+ * using the methods provided by the models.DateParser class.
+ */
+public class TaskPriorityFactory<T, C>
+        implements
+        Callback<TableColumn<Task, PriorityLevelEnum>, TableCell<Task, PriorityLevelEnum>> {
+
+    @Override
+    public TableCell<Task, PriorityLevelEnum> call(
+            TableColumn<Task, PriorityLevelEnum> param) {
+        TableCell<Task, PriorityLevelEnum> cell = new TableCell<Task, PriorityLevelEnum>() {
+            @Override
+            public void updateItem(PriorityLevelEnum item, boolean empty) {
+
+                // Remove any CSS styles previously assigned
+                getStyleClass().remove("priority-green");
+                getStyleClass().remove("priority-orange");
+                getStyleClass().remove("priority-red");
+
+                super.updateItem(item, empty);
+
+                Task task = null;
+                if (getTableRow() != null) {
+                    task = (Task) getTableRow().getItem();
+                }
+
+                if (task != null) {
+                    if (item == null || empty) {
+                        setStyle("");
+                    } else {
+                        String priorityColour = "priority-"
+                                + String.valueOf(task.getPriorityLevel())
+                                        .toLowerCase();
+                        getStyleClass().add(priorityColour);
+                    }
+                } else {
+                    setText(null);
+                    setStyle("");
+                }
+            }
+        };
+        return cell;
+    }
+}
+
+	// End of segment: src\main\factories\TaskPriorityFactory.java
+
+
+
+
+
+	/**
+	 * origin: src\main\ForCollation.java
+	 */
+
+
+/* CalendarViewStyleSheet.css
+
+.background {
+    -fx-background-color: #1d1d1d;
+}
+
+.AgendaWeekSkin .Week {
+    -fx-background-color: black;
+}
+
+.AgendaWeekSkin .HourLabel {
+    -fx-fill: white;
+    -fx-stroke: transparent;
+}
+
+.AgendaWeekSkin .DayHeader {
+    -fx-background-color: black;
+}
+
+.AgendaWeekSkin .DayHeader .weekday {
+    -fx-fill: white;
+}
+
+.AgendaWeekSkin .DayHeader .weekend {
+    -fx-fill: white;
+}
+
+ */
+
+/* TaskDisplayViewStyleSheet.css
+
+.background {
+    -fx-background-color: #1d1d1d;
+}
+
+.label {
+    -fx-font-size: 11pt;
+    -fx-font-family: "Segoe UI";
+    -fx-text-fill: white;
+    -fx-opacity: 0.6;
+}
+
+.label-bright {
+    -fx-font-size: 11pt;
+    -fx-font-family: "Segoe UI";
+    -fx-text-fill: white;
+    -fx-opacity: 1;
+}
+
+.label-header {
+    -fx-font-size: 32pt;
+    -fx-font-family: "Segoe UI Light";
+    -fx-text-fill: white;
+    -fx-opacity: 1;
+}
+
+ */
+
+/* TaskListViewStyleSheet.css
+
+.background {
+    -fx-background-color: #1d1d1d;
+}
+
+.table-view {
+    -fx-base: #1d1d1d;
+    -fx-control-inner-background: #1d1d1d;
+    -fx-background-color: #1d1d1d;
+    -fx-table-cell-border-color: transparent;
+    -fx-table-header-border-color: transparent;
+    -fx-padding: 5;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: transparent;
+}
+
+.table-view .column-header, .table-view .filler {
+    -fx-size: 35;
+    -fx-border-width: 0 0 1 0;
+    -fx-background-color: transparent;
+    -fx-border-color:
+    transparent
+    transparent
+    derive(-fx-base, 80%)
+    transparent;
+    -fx-border-insets: 0 10 1 0;
+}
+
+.table-view .column-header .label {
+    -fx-font-size: 11pt;
+    -fx-font-family: "Segoe UI Light";
+    -fx-text-fill: white;
+    -fx-alignment: center-left;
+    -fx-opacity: 1;
+}
+
+.table-view:focused .table-row-cell:filled:focused:selected {
+    -fx-background-color: -fx-focus-color;
+}
+
+.priority-green {
+    -fx-background-color: green;
+}
+
+.priority-orange {
+    -fx-background-color: orange;
+}
+
+.priority-red {
+    -fx-background-color: red;
+}
+
+ */
+
+/* UserInputViewStyleSheet.css
+
+//
+// Metro style
+// Author: Pedro Duque Vieira
+// http://pixelduke.wordpress.com/2012/10/23/jmetro-windows-8-controls-on-java/
+//
+
+.text-input{
+        -fx-background-radius: 0, 0;
+
+        -fx-background-color: #d2d2d2;
+        -fx-background-insets: 0;
+
+        -fx-prompt-text-fill: #818181;
+
+        -fx-highlight-fill: #008287;
+        -fx-highlight-text-fill: white;
+        }
+
+        .text-input:hover{
+        -fx-background-color: #e2e2e2;
+        }
+
+        .text-input:focused{
+        -fx-background-color: #5c5c5c, white;
+
+        -fx-text-fill: black;
+        }
+
+ */
+
+/* CalendarView.fxml
+
+<?import jfxtras.scene.control.agenda.Agenda?>
+
+<Agenda fx:id="calendarView" xmlns:fx="http://javafx.com/fxml/1" prefHeight="600" prefWidth="650.0" xmlns="http://javafx.com/javafx/8"
+        fx:controller="main.controllers.CalendarViewController" stylesheets="main/stylesheets/CalendarViewStyleSheet.css" styleClass="background">
+</Agenda>
+
+ */
+
+/* NotificationPaneWrapper.fxml
+
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import org.controlsfx.control.NotificationPane?>
+
+<NotificationPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"/>
+
+ */
+
+/* RootLayout.fxml
+
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.BorderPane?>
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+            minWidth="-Infinity" xmlns="http://javafx.com/javafx/8"
+            fx:controller="main.controllers.RootController"/>
+
+ */
+
+/* TabLayout.fxml
+
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TabPane?>
+
+<TabPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" minHeight="600" minWidth="650.0"/>
+
+ */
+
+/* TaskDisplayView.fxml
+
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" minHeight="160.0" minWidth="400.0" prefHeight="160.0" prefWidth="400.0"
+            xmlns="http://javafx.com/javafx/8" fx:controller="main.controllers.TaskDisplayViewController"
+            stylesheets="main/stylesheets/TaskDisplayViewStyleSheet.css" styleClass="background">
+    <children>
+        <Label layoutX="7.0" layoutY="7.0" text="Task Details" AnchorPane.leftAnchor="5.0"
+               AnchorPane.topAnchor="5.0" styleClass="label-header"/>
+        <GridPane layoutX="10.0" layoutY="10.0" AnchorPane.leftAnchor="5.0"
+                  AnchorPane.topAnchor="60.0">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="390.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="80.0" prefHeight="80.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="50.0" prefHeight="50.0" vgrow="SOMETIMES"/>
+                <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            </rowConstraints>
+            <children>
+                <Label text="ID:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                <Label fx:id="idLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="0" styleClass="label-bright"/>
+                <Label text="Task Name:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <Label fx:id="taskNameLabel" text="-" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" styleClass="label-bright"/>
+                <Label text="Due Date:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                <Label fx:id="dueDateLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="2" styleClass="label-bright"/>
+                <Label text="Start Date:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
+                <Label fx:id="startDateLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="3" styleClass="label-bright"/>
+                <Label text="End Date:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+                <Label fx:id="endDateLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="4" styleClass="label-bright"/>
+                <Label text="Priority:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+                <Label fx:id="priorityLevelLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="5" styleClass="label-bright"/>
+                <Label text="Description:" GridPane.columnIndex="0" GridPane.rowIndex="6" GridPane.valignment="TOP"/>
+                <Label fx:id="noteLabel" text="-" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="6"
+                       GridPane.valignment="TOP" styleClass="label-bright"/>
+                <Label text="Conditional Dates:" GridPane.columnIndex="0" GridPane.rowIndex="7"
+                       GridPane.valignment="TOP" wrapText="true"/>
+                <Label fx:id="conditionalDateLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="7"
+                       GridPane.valignment="TOP" styleClass="label-bright"/>
+                <Label text="Tags:" GridPane.columnIndex="0" GridPane.rowIndex="8"/>
+                <Label fx:id="tagLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="8" styleClass="label-bright"/>
+            </children>
+        </GridPane>
+    </children>
+</AnchorPane>
+
+ */
+
+/* TaskListView.fxml
+
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import main.factories.TaskDoneFactory?>
+<?import main.factories.TaskDateFactory?>
+<?import main.factories.TaskPriorityFactory?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" minHeight="600.0" minWidth="650.0" prefHeight="600.0"
+            prefWidth="650.0" xmlns="http://javafx.com/javafx/8"
+            fx:controller="main.controllers.TaskListViewController" stylesheets="main/stylesheets/TaskListViewStyleSheet.css">
+    <children>
+        <TableView fx:id="taskTableView" layoutX="122.0" layoutY="62.0" prefHeight="200.0"
+                   prefWidth="400.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                   AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <columns>
+                <TableColumn prefWidth="30.0" minWidth="30.0" maxWidth="30.0" text="ID">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="id"/>
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn prefWidth="30.0" minWidth="30.0" maxWidth="20.0" text="✓">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="dateEnd"/>
+                    </cellValueFactory>
+                    <cellFactory>
+                        <TaskDoneFactory/>
+                    </cellFactory>
+                </TableColumn>
+                <TableColumn prefWidth="100.0" minWidth="100.0" text="Due">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="dateDue"/>
+                    </cellValueFactory>
+                    <cellFactory>
+                        <TaskDateFactory/>
+                    </cellFactory>
+                </TableColumn>
+                <TableColumn prefWidth="100.0" minWidth="100.0" text="Start">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="dateStart"/>
+                    </cellValueFactory>
+                    <cellFactory>
+                        <TaskDateFactory/>
+                    </cellFactory>
+                </TableColumn>
+                <TableColumn prefWidth="100.0" minWidth="100.0" text="End">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="dateEnd"/>
+                    </cellValueFactory>
+                    <cellFactory>
+                        <TaskDateFactory/>
+                    </cellFactory>
+                </TableColumn>
+                <TableColumn prefWidth="225.0" minWidth="225.0" text="Task Name">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="name"/>
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn prefWidth="5.0" minWidth="5.0" maxWidth="5.0" text="">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="priorityLevel"/>
+                    </cellValueFactory>
+                    <cellFactory>
+                        <TaskPriorityFactory/>
+                    </cellFactory>
+                </TableColumn>
+            </columns>
+            <columnResizePolicy>
+                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+            </columnResizePolicy>
+        </TableView>
+    </children>
+</AnchorPane>
+
+ */
+
+/* UserInputView.fxml
+
+<?import javafx.scene.control.TextField?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" minHeight="40.0" maxHeight="40.0" minWidth="0.0" prefHeight="40.0"
+            prefWidth="160.0" xmlns="http://javafx.com/javafx/8"
+            fx:controller="main.controllers.UserInputViewController" stylesheets="main/stylesheets/UserInputViewStyleSheet.css">
+    <children>
+        <TextField fx:id="userInputField" onKeyReleased="#handleUserIncrementalInput" onAction="#handleUserInput"
+                   promptText="enter command here..." layoutX="21.0" layoutY="6.0" AnchorPane.bottomAnchor="0.0"
+                   AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" styleClass="text-input"/>
+    </children>
+</AnchorPane>
+
+ */
+	// End of segment: src\main\ForCollation.java
+
+
+
+
+
+	/**
+	 * origin: src\main\Main.java
+	 */
+
+/**
+ * The main method of the program; program execution starts here. In charge of
+ * initializing the primary Stage, and also initializes the layouts via RootController.
+ */
+public class Main extends Application {
+    private Stage primaryStage;
+
+    private RootController rootController;
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        ApplicationLogger.getLogger().log(Level.INFO,
+                "Initializing JavaFX UI.");
+
+        initPrimaryStage(primaryStage);
+        initLayouts();
+    }
+
+    private void initPrimaryStage(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+        this.primaryStage.setTitle("Awesome Task Manager");
+    }
+
+    private void initLayouts() throws FileFormatNotSupportedException {
+        assert (primaryStage != null);
+        try {
+            rootController = new RootController();
+            rootController.initialize(primaryStage);
+        } catch (IOException e) {
+            ApplicationLogger.getLogger().log(Level.SEVERE,
+                    e.getMessage());
+        }
+    }
+}
+
+	// End of segment: src\main\Main.java
+
+
+
+
+
+	/**
+	 * origin: src\tests\DateParserTest.java
+	 */
+
+public class DateParserTest {
+
+    @Test
+    public final void parseCalendarTest() throws InvalidDateFormatException {
+        Calendar date;
+        String dateString;
+        String expectedDateString;
+
+        dateString = DateParser.parseCalendar(null);
+        expectedDateString = null;
+        assertEquals("Null input should result in null output", expectedDateString, dateString);
+
+        date = DateParser.parseString("20-10-1999 23:00");
+        dateString = DateParser.parseCalendar(date);
+        expectedDateString = "20 Oct 1999 23:00";
+        assertEquals("Date seems to be parsed wrongly", expectedDateString, dateString);
+
+        int thisYear = Calendar.getInstance().get(Calendar.YEAR);
+        date = DateParser.parseString("20-10-" + thisYear + " 23:00");
+        dateString = DateParser.parseCalendar(date);
+        expectedDateString = "20 Oct 23:00";
+        assertEquals("Date this year seems to be parsed wrongly", expectedDateString, dateString);
+    }
+
+    @Test
+    public final void parseStringTest() throws InvalidDateFormatException {
+        String dateString = "31-12-2014";
+        Calendar calendarDate = DateParser.parseString(dateString);
+        Calendar expectedCalendarDate = new GregorianCalendar();
+        expectedCalendarDate.set(2014, Calendar.DECEMBER, 31);
+        assertEquals("Parsed date doesn't match user entered date", expectedCalendarDate.getTime(), calendarDate.getTime());
+    }
+}
+	// End of segment: src\tests\DateParserTest.java
+
+
+
+
+

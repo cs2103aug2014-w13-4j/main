@@ -5,8 +5,11 @@ import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
+//@author A0111010R
+
 /**
- * @author szhlibrary
+ * This is the Application Logger responsible for logging messages and exceptions
+ * throughout the application.
  */
 public class ApplicationLogger {
 
@@ -15,7 +18,7 @@ public class ApplicationLogger {
 
     /*
      * constructor This constructor follows the singleton pattern. It can only be
-     * called via ApplicationLogger.getInstance(). This is to ensure that there
+     * called via ApplicationLogger.getLogger(). This is to ensure that there
      * is only one instance of the ApplicationLogger object.
      * 
      * @throws IOException

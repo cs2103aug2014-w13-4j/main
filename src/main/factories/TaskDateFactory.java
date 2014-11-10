@@ -9,11 +9,11 @@ import java.util.Calendar;
 import common.DateParser;
 import common.Task;
 
+//@author A0111010R
+
 /**
  * This class formats the date in the GUI TableView to a human-readable format
  * using the methods provided by the models.DateParser class.
- *
- * @author szhlibrary
  */
 public class TaskDateFactory<T, C>
         implements

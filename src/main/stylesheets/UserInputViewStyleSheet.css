@@ -12,7 +12,7 @@
 
     -fx-prompt-text-fill: #818181;
 
-    -fx-highlight-fill: #008287; /* TODO: this probably is the "active" color" */
+    -fx-highlight-fill: #008287;
     -fx-highlight-text-fill: white;
 }
 
