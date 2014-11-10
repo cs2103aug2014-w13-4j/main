@@ -7,7 +7,7 @@ import java.util.logging.Level;
 import java.util.Calendar;
 import com.rits.cloning.Cloner;
 
-import storage.Storage;
+import storage.StorageApi;
 import command.CommandEnum;
 import command.ParamEnum;
 import common.ApplicationLogger;
@@ -51,7 +51,7 @@ public class Logic {
             instance = new Logic();
             ApplicationLogger.getLogger()
                     .log(Level.INFO, "Initializing Logic.");
-            instance.storage = Storage.getInstance();
+            instance.storage = StorageApi.getInstance();
         }
         return instance;
     }
@@ -67,7 +67,7 @@ public class Logic {
             FileFormatNotSupportedException {
         instance = new Logic();
         ApplicationLogger.getLogger().log(Level.INFO, "Initializing Logic.");
-        instance.storage = Storage.getNewInstance();
+        instance.storage = StorageApi.getNewInstance();
         return instance;
     }
 
@@ -105,7 +105,7 @@ public class Logic {
     private static long HOUR_TO_MILLIS = 3600000;
     private static int MAX_RESULT = 3;
     private static int START_VALUE = 0;
-    Storage storage = null;
+    StorageApi storage = null;
 
     private LogicUndo logicUndo = new LogicUndo();
 
