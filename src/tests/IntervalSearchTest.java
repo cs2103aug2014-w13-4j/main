@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import common.IntervalSearch;
 
+//@author A0098722W
 public class IntervalSearchTest {
 
     IntervalSearch tr;

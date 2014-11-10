@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 
 import common.Command;
 
+//@author A0098722W
 /**
  * This class helps to recognize the command given by the user from its string
  * format, and format it into the common Command object that could then be

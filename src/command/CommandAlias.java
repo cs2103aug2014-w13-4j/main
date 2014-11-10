@@ -1,5 +1,6 @@
 package command;
 
+//@author A0098722W
 public enum CommandAlias {
     ADD(CommandEnum.ADD, "add"),
     DELETE(CommandEnum.DELETE, "delete", "remove"),

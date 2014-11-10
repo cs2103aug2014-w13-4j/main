@@ -13,6 +13,7 @@ import com.joestelmach.natty.Parser;
 
 import common.exceptions.InvalidDateFormatException;
 
+//@author A0098722W
 public class DateParser {
     private static final String INVALID_DATE_FORMAT_MESSAGE = "Date format: '%1$s' is invalid!";
     private static final String DISPLAY_DATE_FORMAT = "%d %s %02d:%02d";
@@ -73,6 +74,7 @@ public class DateParser {
         return inputDate;
     }
 
+ //@author A0111010R
     /**
      * A function to parse a given calendar object into its date string format
      *
@@ -110,6 +112,7 @@ public class DateParser {
         return String.format(DISPLAY_DATE_FORMAT, day, month, hour, minute);
     }
 
+ //@author A0098722W
     /**
      * Format a date from dd-mm-yyyy format into natty acceptable date format
      *
