@@ -11,7 +11,12 @@ import java.util.Collections;
 import common.Feedback;
 import common.Task;
 
+//@author A0111010R
+
 /**
+ * This is the controller responsible for showing and updating the list of tasks in the
+ * task list view.
+ *
  * @author szhlibrary
  */
 public class TaskListViewController {

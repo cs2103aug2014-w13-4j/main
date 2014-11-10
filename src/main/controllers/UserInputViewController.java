@@ -9,7 +9,13 @@ import javafx.scene.control.TextField;
 import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
 
+//@author A0111010R
+
 /**
+ * This is the controller responsible for handling the user input from the TextField.
+ * It is in charge of initializing autocompletion as well as search-as-you-type
+ * functionality.
+ *
  * @author szhlibrary
  */
 public class UserInputViewController {
