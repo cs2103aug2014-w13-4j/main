@@ -19,6 +19,8 @@ import logic.LogicApi;
 import main.Main;
 
 import org.controlsfx.control.NotificationPane;
+import org.controlsfx.control.action.Action;
+import org.controlsfx.dialog.Dialogs;
 
 import java.io.IOException;
 import java.util.*;
@@ -60,14 +62,6 @@ public class RootController {
         // Initialised after showStage due to JavaFX known issue with CSS
         // warnings
         initCalendarView(allActiveTasks);
-
-        showNotificationOnError(allActiveTasks);
-    }
-
-    private void showNotificationOnError(Feedback allActiveTasks) {
-        if (!allActiveTasks.getFeedbackMessage().isEmpty()) {
-            showNotification(allActiveTasks.getFeedbackMessage());
-        }
     }
 
     private Feedback initLogicAndGetAllActiveTasks() {
@@ -78,7 +72,8 @@ public class RootController {
         } catch (IOException | FileFormatNotSupportedException e) {
             ApplicationLogger.getLogger().log(Level.SEVERE,
                     e.getMessage());
-            return new Feedback(e.getMessage(), new ArrayList<Task>(), null);
+
+            showErrorMessage(e);
         }
         return logicApi.displayAllActive();
     }
@@ -233,6 +228,17 @@ public class RootController {
     private void showNotification(String feedbackMessage) {
         notificationPane.setText(feedbackMessage);
         notificationPane.show();
+    }
+
+    private void showErrorMessage(Exception e) {
+        Action response = Dialogs.create()
+                .title("Awesome Task Manager")
+                .masthead("Error")
+                .message(e.getMessage())
+                .showError();
+        if (response.isSelected()) {
+            System.exit(1);
+        }
     }
 
     private boolean validateUserInput(String userInput) {
