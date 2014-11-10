@@ -27,6 +27,7 @@ import java.util.*;
 import java.util.logging.Level;
 
 //@author A0111010R
+
 /**
  * This is the root controller that is in charge of initializing all other JavaFX layouts
  * and their corresponding controllers, if necessary. It is also responsible for executing
@@ -196,10 +197,10 @@ public class RootController {
         switch (commandType) {
             case TAB:
                 if (param.get(ParamEnum.KEYWORD).get(0).toLowerCase()
-                    .equals("calendar")) {
+                        .equals("calendar")) {
                     selectionModel.select(calendarTab);
                 } else if (param.get(ParamEnum.KEYWORD).get(0).toLowerCase()
-                    .equals("tasks")) {
+                        .equals("tasks")) {
                     selectionModel.select(taskListTab);
                 }
                 break;
