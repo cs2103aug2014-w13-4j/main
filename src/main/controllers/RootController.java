@@ -7,12 +7,7 @@ import common.ApplicationLogger;
 import common.Command;
 import common.Feedback;
 import common.Task;
-import common.exceptions.HistoryNotFoundException;
-import common.exceptions.InvalidCommandUseException;
-import common.exceptions.InvalidDateFormatException;
-import common.exceptions.InvalidInputException;
-import common.exceptions.TaskNotFoundException;
-import common.exceptions.TimeIntervalOverlapException;
+import common.exceptions.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -50,13 +45,13 @@ public class RootController {
 
     private Scene scene;
 
-    public void initialize(Stage primaryStage, Feedback allActiveTasks,
-            LogicApi logicApi) throws IOException {
-        setLogic(logicApi);
+    public void initialize(Stage primaryStage) throws IOException {
         initRootLayout();
         initTabLayout();
         initScene();
         initNotificationPane();
+
+        Feedback allActiveTasks = initLogicAndGetAllActiveTasks();
         initTaskListView(allActiveTasks);
         initTaskDisplayView();
         initUserInputView();
@@ -65,10 +60,27 @@ public class RootController {
         // Initialised after showStage due to JavaFX known issue with CSS
         // warnings
         initCalendarView(allActiveTasks);
+
+        showNotificationOnError(allActiveTasks);
     }
 
-    private void setLogic(LogicApi logicApi) {
-        this.logicApi = logicApi;
+    private void showNotificationOnError(Feedback allActiveTasks) {
+        if (!allActiveTasks.getFeedbackMessage().isEmpty()) {
+            showNotification(allActiveTasks.getFeedbackMessage());
+        }
+    }
+
+    private Feedback initLogicAndGetAllActiveTasks() {
+        ApplicationLogger.getLogger().log(Level.INFO,
+                "Initializing Logic.");
+        try {
+            logicApi = LogicApi.getInstance();
+        } catch (IOException | FileFormatNotSupportedException e) {
+            ApplicationLogger.getLogger().log(Level.SEVERE,
+                    e.getMessage());
+            return new Feedback(e.getMessage(), new ArrayList<Task>(), null);
+        }
+        return logicApi.displayAllActive();
     }
 
     private void initRootLayout() throws IOException {
