@@ -173,10 +173,6 @@ public class RootController {
         scene = new Scene(rootLayout);
     }
 
-    /**
-     * Executes the command that the user typed in.
-     * @param userInput
-     */
     void executeCommand(String userInput) {
         CommandParser commandParser = new CommandParser();
         if (validateUserInput(userInput)) {
@@ -203,7 +199,6 @@ public class RootController {
                 tabCommand(param);
                 break;
             default:
-                //executeLogicCommand(userCommand);
                 return false;
         }
         return true;
