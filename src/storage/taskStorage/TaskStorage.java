@@ -118,7 +118,7 @@ public class TaskStorage {
                 addTimeIntervalToIntervalTree(task);
             } else if (!isTaskTimeValid(task) && !task.isDeleted()) {
                 throw new FileFormatNotSupportedException(
-                        "Events are overlapping");
+                        "Events are overlapping!");
             }
             nextTaskIndex ++;
         }
@@ -199,7 +199,7 @@ public class TaskStorage {
             }
         } else {
             throw new TaskNotFoundException(
-                    "Cannot return  task since the current task doesn't exist");
+                    "The task doesn't exist!");
         }
         return requiredTask;
     }
@@ -225,7 +225,7 @@ public class TaskStorage {
             }
         } else {
             throw new TaskNotFoundException(
-                    "Cannot return  task since the current task doesn't exist");
+                    "The task doesn't exist!");
         }
         return requiredTask;
     }
