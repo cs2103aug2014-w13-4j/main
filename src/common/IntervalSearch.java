@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
+//@author A0098722W-Unused
 /**
  * This class helps to keep track of the dates of all the events from the user.
  * It helps to ensure no crash of event as well as finding empty slots for user.

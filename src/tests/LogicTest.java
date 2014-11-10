@@ -26,6 +26,7 @@ import common.PriorityLevelEnum;
 import common.Task;
 import common.exceptions.FileFormatNotSupportedException;
 
+//@author A0098722W
 public class LogicTest {
     Class<LogicApi> logicApiClass = LogicApi.class;
     Class<Logic> logicClass = Logic.class;
@@ -74,6 +75,12 @@ public class LogicTest {
     }
 
     @Test
+    /**
+     * Test the addition of a new new task object
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
+     * @throws InvocationTargetException
+     */
     public void testAdd() throws IllegalAccessException,
     IllegalArgumentException, InvocationTargetException {
         Hashtable<ParamEnum, ArrayList<String>> params = new Hashtable<ParamEnum, ArrayList<String>>();
@@ -95,6 +102,12 @@ public class LogicTest {
     }
 
     @Test
+    /**
+     * Test adding of prioority level to a task
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
+     * @throws InvocationTargetException
+     */
     public void testAddWithIntPriorityLevel() throws IllegalAccessException,
     IllegalArgumentException, InvocationTargetException {
         Hashtable<ParamEnum, ArrayList<String>> params = new Hashtable<ParamEnum, ArrayList<String>>();
@@ -111,6 +124,12 @@ public class LogicTest {
     }
 
     @Test
+    /**
+     * Test that a task can be successfully delete from the tasklist
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
+     * @throws InvocationTargetException
+     */
     public void testDelete() throws IllegalAccessException,
     IllegalArgumentException, InvocationTargetException {
         Hashtable<ParamEnum, ArrayList<String>> params = new Hashtable<ParamEnum, ArrayList<String>>();
@@ -132,6 +151,12 @@ public class LogicTest {
     }
 
     @Test
+    /**
+     * Test that a test can be succesfully completed
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
+     * @throws InvocationTargetException
+     */
     public void testCompleted() throws IllegalAccessException,
     IllegalArgumentException, InvocationTargetException {
         Hashtable<ParamEnum, ArrayList<String>> params = new Hashtable<ParamEnum, ArrayList<String>>();
@@ -163,6 +188,12 @@ public class LogicTest {
     }
 
     @Test
+    /**
+     * Test the update method of a task
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
+     * @throws InvocationTargetException
+     */
     public void testUpdate() throws IllegalAccessException,
     IllegalArgumentException, InvocationTargetException {
         Hashtable<ParamEnum, ArrayList<String>> params = new Hashtable<ParamEnum, ArrayList<String>>();
@@ -202,6 +233,12 @@ public class LogicTest {
     }
 
     @Test
+    /**
+     * Test that a task can be updated from a deadline task to a timed task
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
+     * @throws InvocationTargetException
+     */
     public void testUpdateDeadlineToTimed() throws IllegalAccessException,
     IllegalArgumentException, InvocationTargetException {
         Hashtable<ParamEnum, ArrayList<String>> params = new Hashtable<ParamEnum, ArrayList<String>>();

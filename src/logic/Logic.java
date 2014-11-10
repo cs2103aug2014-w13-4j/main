@@ -389,7 +389,8 @@ public class Logic {
                 MessageCreator.createMessage(SEARCH_MESSAGE,
                         String.valueOf(taskList.size()), null), taskList);
     }
-
+    
+  //@author A0098722W
     /**
      * Suggest a list of date that fulfill the user requirements
      *
@@ -512,6 +513,7 @@ public class Logic {
         }
     }
 
+  //@author A0114368E
     private void addEndTaskToTaskList(ArrayList<Task> taskList, Calendar endTime) {
         Task endTask = new Task();
         endTask.setDateStart(endTime);
@@ -825,6 +827,7 @@ public class Logic {
                         param, ParamEnum.END_DATE));
     }
 
+  //@author A0098722W
     /**
      * Return a calendar to the nearest thirty minutes block
      *
@@ -836,13 +839,14 @@ public class Logic {
         if (dateTime % TIME_BLOCK == 0) {
             return date;
         } else {
-            dateTime = ((dateTime / TIME_BLOCK) + 1) * TIME_BLOCK;
+            dateTime = ((dateTime / TIME_BLOCK) + NEXT) * TIME_BLOCK;
             Calendar nearestBlock = Calendar.getInstance();
             nearestBlock.setTimeInMillis(dateTime);
             return nearestBlock;
         }
     }
 
+  //@author A0114368E
     private void updateConditionalTask(
             Hashtable<ParamEnum, ArrayList<String>> param, int taskId, Task task)
             throws InvalidInputException, InvalidDateFormatException {

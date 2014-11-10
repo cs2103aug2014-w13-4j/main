@@ -1,11 +1,14 @@
 package command;
 
 import java.util.Hashtable;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import common.ApplicationLogger;
 import common.Command;
 
+//@author A0098722W
 /**
  * This class helps to recognize the command given by the user from its string
  * format, and format it into the common Command object that could then be
@@ -16,6 +19,7 @@ import common.Command;
  */
 public class CommandParser {
 
+    private static final String LOG_COMMAND_PARSED = "Parse user command string: \"%1$s\".";
     private static final int FIRST_GROUP = 1;
     private static final String FIRST_WORD_PATTERN = "^([\\w]+)";
     private static final String INDIVIDUAL_PARAM_PATTERN = "%1$s|";
@@ -45,6 +49,9 @@ public class CommandParser {
      */
     public Command parseCommand(String commandString) throws Exception {
         assert commandString != null;
+        ApplicationLogger.getLogger()
+        .log(Level.INFO, String.format(LOG_COMMAND_PARSED,commandString));
+        
         CommandEnum commandType = getCommandType(commandString);
         String commandTypeString = getFirstWord(commandString);
 

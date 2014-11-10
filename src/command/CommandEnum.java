@@ -1,5 +1,6 @@
 package command;
 
+//@author A0098722W
 /**
  * This enum describe the different kind of params enum that are allowed for
  * each of the command
