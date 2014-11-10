@@ -31,8 +31,6 @@ import common.exceptions.TimeIntervalOverlapException;
  * as specified by the user. It also interacts with storage to retrieve the
  * task, or to write the task back to storage
  *
- * @author chocs
- *
  */
 public class Logic {
 
@@ -395,7 +393,7 @@ public class Logic {
      *         of dates that fulfill the user requirements
      *
      * @param param
-     * @return Feedback 
+     * @return Feedback
      * @throws InvalidDateFormatException
      * @throws InvalidInputException
      */
