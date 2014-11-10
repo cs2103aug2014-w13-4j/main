@@ -77,7 +77,7 @@ public class RootController {
             ApplicationLogger.getLogger().log(Level.SEVERE,
                     e.getMessage());
 
-            showErrorMessage(e);
+            exitWithErrorDialog(e);
         }
         return logicApi.displayAllActive();
     }
@@ -173,12 +173,18 @@ public class RootController {
         scene = new Scene(rootLayout);
     }
 
+    /**
+     * Executes the command that the user typed in.
+     * @param userInput
+     */
     void executeCommand(String userInput) {
         CommandParser commandParser = new CommandParser();
         if (validateUserInput(userInput)) {
             try {
                 Command userCommand = commandParser.parseCommand(userInput);
-                executeGuiCommand(userCommand);
+                if (!executeGuiCommand(userCommand)) {
+                    executeLogicCommand(userCommand);
+                }
             } catch (Exception e) {
                 showNotification(e.getMessage());
                 e.printStackTrace();
@@ -186,7 +192,7 @@ public class RootController {
         }
     }
 
-    private void executeGuiCommand(Command userCommand)
+    private boolean executeGuiCommand(Command userCommand)
             throws HistoryNotFoundException, InvalidInputException,
             IOException, InvalidDateFormatException, TaskNotFoundException,
             InvalidCommandUseException, TimeIntervalOverlapException {
@@ -194,16 +200,22 @@ public class RootController {
         Hashtable<ParamEnum, ArrayList<String>> param = userCommand.getParam();
         switch (commandType) {
             case TAB:
-                if (param.get(ParamEnum.KEYWORD).get(0).toLowerCase()
-                        .equals("calendar")) {
-                    selectionModel.select(calendarTab);
-                } else if (param.get(ParamEnum.KEYWORD).get(0).toLowerCase()
-                        .equals("tasks")) {
-                    selectionModel.select(taskListTab);
-                }
+                tabCommand(param);
                 break;
             default:
-                executeLogicCommand(userCommand);
+                //executeLogicCommand(userCommand);
+                return false;
+        }
+        return true;
+    }
+
+    private void tabCommand(Hashtable<ParamEnum, ArrayList<String>> param) {
+        if (param.get(ParamEnum.KEYWORD).get(0).toLowerCase()
+                .equals("calendar")) {
+            selectionModel.select(calendarTab);
+        } else if (param.get(ParamEnum.KEYWORD).get(0).toLowerCase()
+                .equals("tasks")) {
+            selectionModel.select(taskListTab);
         }
     }
 
@@ -234,7 +246,7 @@ public class RootController {
         notificationPane.show();
     }
 
-    private void showErrorMessage(Exception e) {
+    private void exitWithErrorDialog(Exception e) {
         Action response = Dialogs.create()
                 .title("Awesome Task Manager")
                 .masthead("Error")
