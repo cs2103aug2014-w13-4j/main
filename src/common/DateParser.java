@@ -37,7 +37,6 @@ public class DateParser {
      */
     public static Calendar parseString(String dateString)
             throws InvalidDateFormatException {
-        // TODO: Change this!
         if (dateString.isEmpty()) {
             return null;
         }
