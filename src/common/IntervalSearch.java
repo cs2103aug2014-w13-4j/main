@@ -11,7 +11,7 @@ import java.util.HashMap;
  * This class helps to keep track of the dates of all the events from the user.
  * It helps to ensure no crash of event as well as finding empty slots for user.
  *
- * @author xuanyi
+ *
  *
  */
 public class IntervalSearch {
@@ -25,7 +25,7 @@ public class IntervalSearch {
      * Helper class to represent an date interval. Supports check for overlap of
      * interval.
      *
-     * @author xuanyi
+     *
      *
      */
     public static class DateRange implements Comparable<DateRange> {

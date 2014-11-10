@@ -14,7 +14,7 @@ import common.Command;
  * format, and format it into the common Command object that could then be
  * process easily by the other components of the project.
  *
- * @author xuanyi
+ *
  *
  */
 public class CommandParser {

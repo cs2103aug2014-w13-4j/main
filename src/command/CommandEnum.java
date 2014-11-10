@@ -5,7 +5,7 @@ package command;
  * This enum describe the different kind of params enum that are allowed for
  * each of the command
  *
- * @author xuanyi
+ *
  *
  */
 public enum CommandEnum {

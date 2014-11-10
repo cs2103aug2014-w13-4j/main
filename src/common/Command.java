@@ -11,7 +11,7 @@ import command.ParamEnum;
  * This class acts a a common object for different components of the project to
  * interpret the given command of the user
  * 
- * @author xuanyi
+ * 
  *
  */
 public class Command {
