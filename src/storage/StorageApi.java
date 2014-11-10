@@ -21,37 +21,37 @@ import storage.taskStorage.TaskStorage;
  * @author Chuyu This class reads/writes task to file. It also supports power
  *         search.
  */
-public class Storage {
-    private static Storage storageInstance;
+public class StorageApi {
+    private static StorageApi storageInstance;
     private TaskStorage taskFile;
 
-    private static final String FILE_NAME_TASK_STORAGE = "TaskStorage.data";
+    private static final String FILE_NAME_TASK_STORAGE = "taskStorage.data";
 
     /**
      * This constructor follows the singleton pattern.
-     * It can only be called within the current class (Storage.getInstance()) 
-     * This is to ensure that only there is exactly one instance of Storage class
+     * It can only be called within the current class (StorageApi.getInstance()) 
+     * This is to ensure that only there is exactly one instance of StorageApi class
      *
      * @throws FileFormatNotSupportedException
      * @throws IOException
      */
-    protected Storage() throws IOException, FileFormatNotSupportedException {
+    protected StorageApi() throws IOException, FileFormatNotSupportedException {
         ApplicationLogger.getLogger().log(Level.INFO,
                 "Initializing Storage.");
     }
 
     /**
-     * Always creates a new instance of the Storage class. 
+     * Always creates a new instance of the StorageApi class. 
      * This follows the singleton pattern.
      *
-     * @return An object instance of the Storage class.
+     * @return An object instance of the StorageApi class.
      * @throws IOException
      * @throws FileFormatNotSupportedException
      */
-    public static Storage getInstance() throws IOException,
+    public static StorageApi getInstance() throws IOException,
             FileFormatNotSupportedException {
         if (storageInstance == null) {
-            storageInstance = new Storage();
+            storageInstance = new StorageApi();
             storageInstance.taskFile = TaskStorage
                     .getInstance(FILE_NAME_TASK_STORAGE);
         }
@@ -59,16 +59,16 @@ public class Storage {
     }
 
     /**
-     * Always creates a new instance of the Storage class. 
+     * Always creates a new instance of the StorageApi class. 
      * For debugging purposes.
      *
-     * @return An object instance of the Storage class.
+     * @return An object instance of the StorageApi class.
      * @throws IOException
      * @throws FileFormatNotSupportedException
      */
-    public static Storage getNewInstance() throws IOException,
+    public static StorageApi getNewInstance() throws IOException,
             FileFormatNotSupportedException {
-        storageInstance = new Storage();
+        storageInstance = new StorageApi();
         storageInstance.taskFile = TaskStorage
                 .getNewInstance(FILE_NAME_TASK_STORAGE);
         return storageInstance;
