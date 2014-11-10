@@ -10,9 +10,11 @@ import java.util.regex.Pattern;
 
 import com.joestelmach.natty.DateGroup;
 import com.joestelmach.natty.Parser;
+
 import common.exceptions.InvalidDateFormatException;
 
 public class DateParser {
+    private static final String INVALID_DATE_FORMAT_MESSAGE = "Date format: '%1$s' is invalid!";
     private static final String DISPLAY_DATE_FORMAT = "%d %s %02d:%02d";
     private static final String FULL_DISPLAY_DATE_FORMAT = "%d %s %d %02d:%02d";
     private static final String CONVERSION_DATE_FORMAT = "\\d\\d[\\\\\\-\\.]\\d\\d[\\\\\\-\\.]\\d{2}(?:\\d{2})?";
@@ -58,12 +60,14 @@ public class DateParser {
         for (DateGroup group : groups) {
             List<Date> dates = group.getDates();
             if (dates.size() > INVALID_FORMAT) {
-                throw new InvalidDateFormatException("'" + dateString + "'"
-                        + " is invalid!");
+                throw new InvalidDateFormatException(MessageCreator.createMessage(INVALID_DATE_FORMAT_MESSAGE, dateString, null));
             } else {
                 inputDate = new GregorianCalendar();
                 inputDate.setTime(dates.get(0));
             }
+        }
+        if (inputDate == null) {
+            throw new InvalidDateFormatException(MessageCreator.createMessage(INVALID_DATE_FORMAT_MESSAGE, dateString, null));
         }
 
         return inputDate;

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.Calendar;
+
 import com.rits.cloning.Cloner;
 
 import storage.StorageApi;
@@ -33,6 +34,11 @@ import common.exceptions.TimeIntervalOverlapException;
  *
  */
 public class Logic {
+
+    private static final int NEXT = 1;
+    private static final int HOURS_TO_SECONDS = 3600;
+    private static final String ERROR_SUGGEST_MESSAGE = "Start and end date and duration are required";
+    private static final int MAX_INVALID_DURATION = 0;
 
     /**
      * This constructor follows the singleton pattern It can only be called with
@@ -80,7 +86,7 @@ public class Logic {
     private static final String INVALID_TASK_ID_MESSAGE = "Task ID: %1$s is invalid!";
     private static final String INVALID_DATE_ID_MESSAGE = "Date ID: %1$s is invalid!";
     private static final String ERROR_UPDATE_CONDITIONAL_TASK_MESSAGE = "Task %1$s is a conditional task, so it should contain multiple start and end dates";
-    private static final String ERROR_COMPLETE_MESSAGE = "Only confirmed and uncompleted tasks without an end date before can be completed";
+    private static final String ERROR_COMPLETE_MESSAGE = "Only uncompleted deadline tasks can be completed";
     private static final String ERROR_DATE_INPUT_MESSAGE = "The date parameters provided are invalid.";
     private static final String ERROR_CLEAR_MESSAGE = "The given parameters for clear are invalid.";
     private static final String ERROR_DISPLAY_MESSAGE = "The display keyword: %1$s is invalid.";
@@ -129,7 +135,7 @@ public class Logic {
             throws InvalidInputException, TaskNotFoundException, IOException,
             InvalidCommandUseException, TimeIntervalOverlapException {
         int taskId = getTaskId(param);
-        Task task = getTaskFromSuggestion(taskId);
+        Task task = getTaskFromSuggestion(taskId-1);
         String name = task.getName();
         TaskModifier.resetId(task);
         storage.writeTaskToFile(task);
@@ -399,44 +405,103 @@ public class Logic {
      */
     Feedback suggest(Hashtable<ParamEnum, ArrayList<String>> param)
             throws InvalidDateFormatException, InvalidInputException {
-        ArrayList<Task> taskList = storage.suggestedSearchTask(param);
-
+        if (!hasTimedTaskParams(param) || hasEmptyDurationParam(param)) {
+            throw new InvalidInputException(ERROR_SUGGEST_MESSAGE);
+        }
         suggestions.clear();
-        Calendar startTime = roundToNearestBlock(DateParser.parseString(param
-                .get(ParamEnum.START_DATE).get(START_VALUE)));
-        Task startTask = new Task();
-        startTask.setDateEnd(startTime);
-        taskList.add(START_VALUE, startTask);
-        Calendar endTime = roundToNearestBlock(DateParser.parseString(param
-                .get(ParamEnum.END_DATE).get(START_VALUE)));
-        Task endTask = new Task();
-        endTask.setDateStart(endTime);
-        taskList.add(endTask);
+        
+        ArrayList<Task> taskList = storage.suggestedSearchTask(param);
+        // Round off the given time interval to the nearest 30min block
+        // and add into tasklist to facilitate search
+        Calendar startTime = processDateString(param
+                .get(ParamEnum.START_DATE).get(START_VALUE));
+        Calendar endTime = processDateString(param
+                .get(ParamEnum.END_DATE).get(START_VALUE));
+        addStartTaskToTaskList(taskList, startTime);
+        addEndTaskToTaskList(taskList, endTime);
+        
+        float duration = getDuration(param);
+        assert duration > MAX_INVALID_DURATION;
 
-        int duration = Integer.parseInt(param.get(ParamEnum.DURATION).get(
-                START_VALUE));
+        generateSuggestions(param, taskList, startTime, endTime, duration);
+        String message = getSuggestionMessage();
 
+        return createTaskAndTaskListFeedback(
+                MessageCreator.createMessage(message, "", null), suggestions,
+                null);
+    }
+
+    /**
+     * Process the date to ensure that it starts after current time and is round off to the nearest block
+     * @param dateString
+     * @return
+     * @throws InvalidDateFormatException
+     */
+    private Calendar processDateString(String dateString) throws InvalidDateFormatException {
+        Calendar userInputTime = DateParser.parseString(dateString);
+        if (userInputTime.before(Calendar.getInstance())) {
+            return roundToNearestBlock(Calendar.getInstance());
+        } else {
+            return roundToNearestBlock(userInputTime);
+        }
+    }
+
+    private String getSuggestionMessage() {
+        String message;
+        if (suggestions.isEmpty()) {
+            message = NO_SUGGESTION_MESSAGE;
+        } else {
+            message = SUGGESTION_MESSAGE;
+        }
+        return message;
+    }
+
+    private float getDuration(Hashtable<ParamEnum, ArrayList<String>> param)
+            throws InvalidInputException {
+        float duration;
+        String durationString = param.get(ParamEnum.DURATION).get(START_VALUE);
+        try {
+            duration = Float.parseFloat(durationString);
+        } catch (NumberFormatException e) {
+            throw new InvalidInputException(MessageCreator.createMessage(
+                    "Duration %1$s is invalid.", durationString, null));
+        }
+        if (duration <= MAX_INVALID_DURATION) {
+            throw new InvalidInputException(MessageCreator.createMessage(
+                    "Duration %1$s is invalid.", durationString, null));
+        }
+        return duration;
+    }
+
+    /**
+     * Look for empty slot within the given interval which satisfy the user duration
+     * @param param
+     *           : the requirements specified by the user
+     * @param taskList of all the task in the interval
+     * @param startTime of the interval to find the empty slot
+     * @param endTime of the interval to find the empty slot
+     * @param duration of the empty slot to look for
+     * @throws InvalidDateFormatException
+     * @throws InvalidInputException
+     */
+    private void generateSuggestions(
+            Hashtable<ParamEnum, ArrayList<String>> param,
+            ArrayList<Task> taskList, Calendar startTime, Calendar endTime,
+            float duration) throws InvalidDateFormatException,
+            InvalidInputException {
+        int suggestionCounter = 1;
         while (suggestions.size() < MAX_RESULT) {
             int i;
-            int suggestionCounter = 0;
             Calendar curr;
             Calendar next;
             for (i = 0; i < taskList.size() - 1; i++) {
                 curr = roundToNearestBlock(taskList.get(i).getDateEnd());
-                next = roundToNearestBlock(taskList.get(i + 1).getDateStart());
-
-                if (curr.getTimeInMillis() >= startTime.getTimeInMillis()
-                        && next.getTimeInMillis() <= endTime.getTimeInMillis()
-                        && (next.getTimeInMillis() - curr.getTimeInMillis()) >= (duration * HOUR_TO_MILLIS)) {
-                    Task newTask = new Task();
-                    newTask.setId(suggestionCounter++);
-                    TaskModifier.modifyTimedTask(param, newTask);
-                    newTask.setDateStart(curr);
-                    Calendar temp = (Calendar) curr.clone();
-                    temp.add(Calendar.HOUR_OF_DAY, duration);
-                    newTask.setDateEnd(temp);
-                    taskList.add(i + 1, newTask);
-                    suggestions.add(newTask);
+                next = roundToNearestBlock(taskList.get(i + NEXT).getDateStart());
+                if (isValidTimeSlot(startTime, endTime, duration, curr, next)) {
+                    addTimeSlotToSuggestion(param, taskList, duration, i,
+                            suggestionCounter, curr);
+                    suggestionCounter++;
+                    System.out.println(suggestionCounter);
                     break;
                 }
             }
@@ -445,17 +510,59 @@ public class Logic {
                 break;
             }
         }
+    }
 
-        String message;
-        if (suggestions.isEmpty()) {
-            message = NO_SUGGESTION_MESSAGE;
-        } else {
-            message = SUGGESTION_MESSAGE;
-        }
+    private void addEndTaskToTaskList(ArrayList<Task> taskList, Calendar endTime) {
+        Task endTask = new Task();
+        endTask.setDateStart(endTime);
+        taskList.add(endTask);
+    }
 
-        return createTaskAndTaskListFeedback(
-                MessageCreator.createMessage(message, "", null), suggestions,
-                null);
+    private void addStartTaskToTaskList(ArrayList<Task> taskList,
+            Calendar startTime) {
+        Task startTask = new Task();
+        startTask.setDateEnd(startTime);
+        taskList.add(START_VALUE, startTask);
+    }
+
+    private boolean isValidTimeSlot(Calendar startTime, Calendar endTime,
+            float duration, Calendar curr, Calendar next) {
+        return curr.getTimeInMillis() >= startTime.getTimeInMillis()
+                && next.getTimeInMillis() <= endTime.getTimeInMillis()
+                && (next.getTimeInMillis() - curr.getTimeInMillis()) >= (duration * HOUR_TO_MILLIS);
+    }
+
+    /**
+     * Add the given interval to the current task and suggestion list
+     * @param param
+     *           : the requirements specified by the user
+     * @param taskList of task within the interval
+     * @param duration given by the user for the empty slot
+     * @param i the current counter
+     * @param suggestionCounter index of the suggestion
+     * @param curr
+     * @throws InvalidDateFormatException
+     * @throws InvalidInputException
+     */
+    private void addTimeSlotToSuggestion(
+            Hashtable<ParamEnum, ArrayList<String>> param,
+            ArrayList<Task> taskList, float duration, int i,
+            int suggestionCounter, Calendar curr)
+            throws InvalidDateFormatException, InvalidInputException {
+        Task newTask = new Task();
+        newTask.setId(suggestionCounter);
+        TaskModifier.modifyTimedTask(param, newTask);
+        newTask.setDateStart(curr);
+        Calendar temp = (Calendar) curr.clone();
+        temp.add(Calendar.SECOND, (int) (duration * HOURS_TO_SECONDS));
+        newTask.setDateEnd(temp);
+        taskList.add(i + 1, newTask);
+        suggestions.add(newTask);
+    }
+
+    private boolean hasEmptyDurationParam(
+            Hashtable<ParamEnum, ArrayList<String>> param) {
+        return param.get(ParamEnum.DURATION).get(0).isEmpty();
     }
 
     /**
@@ -620,7 +727,11 @@ public class Logic {
         return task;
     }
 
-    private Task getTaskFromSuggestion(int taskId) throws TaskNotFoundException {
+    private Task getTaskFromSuggestion(int taskId) throws TaskNotFoundException, InvalidCommandUseException {
+        if (suggestions.isEmpty()) {
+            throw new InvalidCommandUseException(MessageCreator.createMessage("There is no suggestion to accept"
+                    ,"", null));
+        }
         try {
             return suggestions.get(taskId);
         } catch (IndexOutOfBoundsException e) {
