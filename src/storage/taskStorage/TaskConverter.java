@@ -5,10 +5,11 @@ import com.google.gson.Gson;
 import common.Task;
 import common.exceptions.FileFormatNotSupportedException;
 
+//@author A0119502N
+
 /**
- *
- * @author Chuyu This class converts a task to a string It also converts a
- *         formatted string to task
+ * This class converts a task to a string.
+ * It also converts a formatted string to task
  */
 class TaskConverter {
     /**

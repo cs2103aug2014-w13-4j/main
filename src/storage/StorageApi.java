@@ -16,10 +16,11 @@ import common.exceptions.TaskNotFoundException;
 import common.exceptions.TimeIntervalOverlapException;
 import storage.taskStorage.TaskStorage;
 
+//@author A0119502N
+
 /**
- *
- * @author Chuyu This class reads/writes task to file. It also supports power
- *         search.
+ * This class reads/writes task to file. 
+ * It also supports power search.
  */
 public class StorageApi {
     private static StorageApi storageInstance;
