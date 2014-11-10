@@ -62,14 +62,6 @@ public class RootController {
         // Initialised after showStage due to JavaFX known issue with CSS
         // warnings
         initCalendarView(allActiveTasks);
-
-        showNotificationOnError(allActiveTasks);
-    }
-
-    private void showNotificationOnError(Feedback allActiveTasks) {
-        if (!allActiveTasks.getFeedbackMessage().isEmpty()) {
-            showNotification(allActiveTasks.getFeedbackMessage());
-        }
     }
 
     private Feedback initLogicAndGetAllActiveTasks() {
