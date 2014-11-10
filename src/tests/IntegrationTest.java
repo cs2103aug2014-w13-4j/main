@@ -23,6 +23,7 @@ import common.exceptions.HistoryNotFoundException;
 import common.exceptions.InvalidInputException;
 import common.exceptions.TaskNotFoundException;
 
+//@author A0114368E
 public class IntegrationTest {
 
     CommandParser parser;
@@ -521,12 +522,15 @@ public class IntegrationTest {
     public final void testUndoDeleteTask() throws Exception {
         CommandParser parser = new CommandParser();
         Command addCommand = parser
-                .parseCommand("Add blah from 23 December 1992 to 23 December 2002");
+                .parseCommand("Add blah from 23 December 2015 to 23 December 2015");
         logicApiObject.executeCommand(addCommand);
         Command deleteCommand = parser.parseCommand("Delete 1");
         logicApiObject.executeCommand(deleteCommand);
         Command undoCommand = parser.parseCommand("undo");
-        logicApiObject.executeCommand(undoCommand);
+        Feedback feedback = logicApiObject.executeCommand(undoCommand);
+        assertEquals(1, feedback.getTaskList().size());
+        assertEquals("blah", feedback.getTaskList().get(0).getName());
+
     }
 
     /**
@@ -541,9 +545,12 @@ public class IntegrationTest {
                 .parseCommand("Add blah due 23 December 1992");
         logicApiObject.executeCommand(addCommand);
         Command updateCommand = parser.parseCommand("Update 1 name changed");
-        logicApiObject.executeCommand(updateCommand);
+        Feedback oldFeedback = logicApiObject.executeCommand(updateCommand);
+        assertEquals("changed", oldFeedback.getTaskList().get(0).getName());
         Command undoCommand = parser.parseCommand("undo");
-        logicApiObject.executeCommand(undoCommand);
+        Feedback feedback = logicApiObject.executeCommand(undoCommand);
+        assertEquals(1, feedback.getTaskList().size());
+        assertEquals("blah", feedback.getTaskList().get(0).getName());
     }
 
     @Test

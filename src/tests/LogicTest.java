@@ -132,7 +132,7 @@ public class LogicTest {
     }
 
     @Test
-    public void testConfirm() throws IllegalAccessException,
+    public void testCompleted() throws IllegalAccessException,
     IllegalArgumentException, InvocationTargetException {
         Hashtable<ParamEnum, ArrayList<String>> params = new Hashtable<ParamEnum, ArrayList<String>>();
         ArrayList<String> nameList = new ArrayList<String>();

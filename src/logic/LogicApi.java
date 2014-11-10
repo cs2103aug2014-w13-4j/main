@@ -147,14 +147,26 @@ public class LogicApi {
                 }
                 break;
             case SUGGEST:
-                return logic.suggest(param);
+                if (hasStartEndDurationParams(param)) {
+                    return logic.suggest(param);
+                }
+                break;
             case ACCEPT:
-                return logic.accept(param);
+                if (!isKeywordParamEmpty(param)) {
+                    return logic.accept(param);
+                }
             default:
                 break;
             }
             throw new InvalidInputException(INVALID_COMMAND_MESSAGE);
         }
+    }
+
+    private boolean hasStartEndDurationParams(
+            Hashtable<ParamEnum, ArrayList<String>> param) {
+        return param.containsKey(ParamEnum.START_DATE)
+                && param.containsKey(ParamEnum.END_DATE)
+                && param.containsKey(ParamEnum.DURATION);
     }
 
     private boolean hasBothBeforeAndAfterParams(

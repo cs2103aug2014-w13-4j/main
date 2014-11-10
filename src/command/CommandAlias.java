@@ -8,28 +8,26 @@ public enum CommandAlias {
     SEARCH(CommandEnum.SEARCH, "search", "find"),
     DISPLAY(CommandEnum.DISPLAY, "display", "show"),
     DONE(CommandEnum.DONE, "done", "complete"),
-    TAG(CommandEnum.TAG, "\\+"),
-    LEVEL(CommandEnum.LEVEL, "level", "priority"),
     CONFIRM(CommandEnum.CONFIRM, "confirm"),
     CLEAR(CommandEnum.CLEAR, "clear"),
     TAB(CommandEnum.TAB, "tab"),
     SUGGEST(CommandEnum.SUGGEST, "suggest"),
     ACCEPT(CommandEnum.ACCEPT, "accept");
-    
+
     private final CommandEnum command;
     private final String[] alias;
-    
+
     CommandAlias(CommandEnum command, String... aliasList) {
         this.command = command;
         this.alias = aliasList;
     }
-    
+
     public CommandEnum command() {
         return this.command;
     }
-    
+
     public String[] alias() {
         return this.alias;
     }
-    
+
 }

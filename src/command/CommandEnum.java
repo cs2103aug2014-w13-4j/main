@@ -22,8 +22,6 @@ public enum CommandEnum {
     DISPLAY("display", ParamEnum.KEYWORD),
     DONE("done", ParamEnum.KEYWORD, ParamEnum.DATE),
     COMPLETE("complete", ParamEnum.KEYWORD, ParamEnum.DATE),
-    TAG("\\+", ParamEnum.KEYWORD),
-    LEVEL("level", ParamEnum.KEYWORD),
     CONFIRM("confirm", ParamEnum.KEYWORD, ParamEnum.ID),
     CLEAR("clear", ParamEnum.KEYWORD),
     TAB("tab", ParamEnum.KEYWORD),

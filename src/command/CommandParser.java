@@ -16,6 +16,7 @@ import common.Command;
  */
 public class CommandParser {
 
+    private static final int FIRST_GROUP = 1;
     private static final String FIRST_WORD_PATTERN = "^([\\w]+)";
     private static final String INDIVIDUAL_PARAM_PATTERN = "%1$s|";
     private static final String COMMAND_PATTERN = "(%1$s)(.*?)(?=%2$s$)";
@@ -43,6 +44,7 @@ public class CommandParser {
      * @throws Exception
      */
     public Command parseCommand(String commandString) throws Exception {
+        assert commandString != null;
         CommandEnum commandType = getCommandType(commandString);
         String commandTypeString = getFirstWord(commandString);
 
@@ -138,6 +140,7 @@ public class CommandParser {
      */
     private String makePatternString(CommandEnum commandType,
             String commandTypeString) {
+        assert commandType != null;
         String paramsPatternString = makeParamsPatternString(commandType);
         String completePattern = String.format(COMPLETE_PATTERN,
                 commandTypeString, paramsPatternString, paramsPatternString);
@@ -152,9 +155,10 @@ public class CommandParser {
      * @return
      */
     private String makeParamsPatternString(CommandEnum commandType) {
+        assert commandType != null;
         ParamEnum[] params = commandType.params();
         String paramsPattern = "";
-
+        
         for (ParamEnum param : params) {
             paramsPattern += String.format(INDIVIDUAL_PARAM_PATTERN,
                     param.regex());
@@ -164,6 +168,7 @@ public class CommandParser {
     }
 
     private CommandEnum getCommandType(String commandString) throws Exception {
+        assert commandString != null;
         String firstWord = getFirstWord(commandString).toLowerCase();
         if (commandEnumTable.containsKey(firstWord)) {
             return commandEnumTable.get(firstWord);
@@ -178,7 +183,7 @@ public class CommandParser {
         Matcher matcher = pattern.matcher(commandString);
 
         if (matcher.find()) {
-            return matcher.group(1);
+            return matcher.group(FIRST_GROUP);
         } else {
             return null;
         }
