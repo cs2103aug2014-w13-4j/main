@@ -45,21 +45,11 @@ public class Main extends Application {
     private void initLayouts() throws FileFormatNotSupportedException {
         assert (primaryStage != null);
         try {
-            Feedback allActiveTasks = initLogicAndGetAllActiveTasks();
             rootController = new RootController();
-            rootController.initialize(primaryStage, allActiveTasks,
-                    logicApi);
+            rootController.initialize(primaryStage);
         } catch (IOException e) {
             ApplicationLogger.getLogger().log(Level.SEVERE,
                     e.getMessage());
         }
-    }
-
-    private Feedback initLogicAndGetAllActiveTasks() throws IOException,
-            FileFormatNotSupportedException {
-        ApplicationLogger.getLogger().log(Level.INFO,
-                "Initializing Logic.");
-        logicApi = LogicApi.getInstance();
-        return logicApi.displayAllActive();
     }
 }
