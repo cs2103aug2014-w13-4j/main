@@ -30,7 +30,7 @@ public class StorageApi {
     /**
      * This constructor follows the singleton pattern.
      * It can only be called within the current class (StorageApi.getInstance()) 
-     * This is to ensure that only there is exactly one instance of StorageApi class
+     * This is to ensure that there is exactly one instance of StorageApi class
      *
      * @throws FileFormatNotSupportedException
      * @throws IOException
