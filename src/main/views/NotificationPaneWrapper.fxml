@@ -2,4 +2,4 @@
 
 <?import org.controlsfx.control.NotificationPane?>
 
-<NotificationPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"></NotificationPane>
+<NotificationPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"/>

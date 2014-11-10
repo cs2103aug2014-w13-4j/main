@@ -10,8 +10,11 @@ import common.Feedback;
 import common.PriorityLevelEnum;
 import common.Task;
 
+//@author A0111010R
+
 /**
- * @author szhlibrary
+ * This is the controller responsible for the calendar portion of the UI. It displays
+ * deadline tasks as a full day event, and event or conditional tasks as timed events.
  */
 public class CalendarViewController {
     @FXML

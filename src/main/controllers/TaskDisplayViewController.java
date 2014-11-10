@@ -10,11 +10,13 @@ import java.util.ArrayList;
 import common.DateParser;
 import common.Task;
 
+//@author A0111010R
+
 /**
- * @author szhlibrary
+ * This is the controller responsible for updating the task display pane with
+ * task-specific information.
  */
 public class TaskDisplayViewController {
-
     public Label idLabel;
     public Label taskNameLabel;
     public Label dueDateLabel;

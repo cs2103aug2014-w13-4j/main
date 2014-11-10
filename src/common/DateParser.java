@@ -80,7 +80,6 @@ public class DateParser {
         if (date != null) {
             int thisYear = Calendar.getInstance().get(Calendar.YEAR);
             int day = date.get(Calendar.DAY_OF_MONTH);
-            //int month = date.get(Calendar.MONTH) + 1;
             String month = new SimpleDateFormat("MMM").format(new Date(date.getTimeInMillis()));
             int year = date.get(Calendar.YEAR);
             int hour = date.get(Calendar.HOUR_OF_DAY);

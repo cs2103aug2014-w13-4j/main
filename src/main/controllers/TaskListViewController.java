@@ -6,13 +6,15 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableView;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 import common.Feedback;
 import common.Task;
 
+//@author A0111010R
+
 /**
- * @author szhlibrary
+ * This is the controller responsible for showing and updating the list of tasks in the
+ * task list view.
  */
 public class TaskListViewController {
     @FXML
