@@ -2,24 +2,20 @@ package main;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
-import logic.LogicApi;
-import main.controllers.RootController;
-
 import java.io.IOException;
 import java.util.logging.Level;
-
 import common.ApplicationLogger;
-import common.Feedback;
 import common.exceptions.FileFormatNotSupportedException;
+import main.controllers.RootController;
 
+//@author A0111010R
 /**
- * The main method of the program; program execution starts here.
+ * The main method of the program; program execution starts here. In charge of
+ * initializing the primary Stage, and also initializes the layouts via RootController.
  *
  * @author szhlibrary
  */
 public class Main extends Application {
-    private LogicApi logicApi;
-
     private Stage primaryStage;
 
     private RootController rootController;
