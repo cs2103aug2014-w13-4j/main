@@ -16,6 +16,7 @@ import common.Command;
  */
 public class CommandParser {
 
+    private static final int FIRST_GROUP = 1;
     private static final String FIRST_WORD_PATTERN = "^([\\w]+)";
     private static final String INDIVIDUAL_PARAM_PATTERN = "%1$s|";
     private static final String COMMAND_PATTERN = "(%1$s)(.*?)(?=%2$s$)";
@@ -178,7 +179,7 @@ public class CommandParser {
         Matcher matcher = pattern.matcher(commandString);
 
         if (matcher.find()) {
-            return matcher.group(1);
+            return matcher.group(FIRST_GROUP);
         } else {
             return null;
         }
