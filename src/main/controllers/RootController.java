@@ -26,7 +26,12 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
 
+//@author A0111010R
 /**
+ * This is the root controller that is in charge of initializing all other JavaFX layouts
+ * and their corresponding controllers, if necessary. It is also responsible for executing
+ * commands, thereby interacting with the Command Parser and the Logic components.
+ *
  * @author szhlibrary
  */
 public class RootController {
