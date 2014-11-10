@@ -9,7 +9,6 @@ import java.util.ArrayList;
  * user. It contains the feedback message that will be shown in the notification
  * pane, the task list that is shown in the table view, and the individual task
  * that is shown in the task display.
- *
  */
 public class Feedback {
 

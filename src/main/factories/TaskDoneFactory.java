@@ -14,8 +14,6 @@ import common.Task;
  * This class formats the dateEnd in the GUI TableView to a tick mark, depending
  * on whether the task was completed. If the task was completed, dateEnd would
  * not be null.
- *
- * @author szhlibrary
  */
 public class TaskDoneFactory<T, C>
         implements

@@ -15,8 +15,6 @@ import org.controlsfx.control.textfield.TextFields;
  * This is the controller responsible for handling the user input from the TextField.
  * It is in charge of initializing autocompletion as well as search-as-you-type
  * functionality.
- *
- * @author szhlibrary
  */
 public class UserInputViewController {
 

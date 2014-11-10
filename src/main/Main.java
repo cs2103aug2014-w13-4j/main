@@ -12,8 +12,6 @@ import main.controllers.RootController;
 /**
  * The main method of the program; program execution starts here. In charge of
  * initializing the primary Stage, and also initializes the layouts via RootController.
- *
- * @author szhlibrary
  */
 public class Main extends Application {
     private Stage primaryStage;

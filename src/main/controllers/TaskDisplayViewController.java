@@ -15,8 +15,6 @@ import common.Task;
 /**
  * This is the controller responsible for updating the task display pane with
  * task-specific information.
- *
- * @author szhlibrary
  */
 public class TaskDisplayViewController {
     public Label idLabel;
